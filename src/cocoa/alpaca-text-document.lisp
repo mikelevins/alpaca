@@ -12,13 +12,23 @@
 (in-package :alpaca)
 
 (defclass alpaca-text-document (ns:ns-document)
-  ()
+  ((text :foreign-type :id))
   (:metaclass ns:+ns-object))
+
+(objc:defmethod (#/setText: :void) 
+    ((self alpaca-text-document)(new-text :id))
+  (let ((old-text (slot-value self 'text))
+        (new-text (#/retain new-text)))
+    (unless (%null-ptr-p old-text)
+      (#/release old-text))
+    (setf (slot-value self 'text) new-text)
+    (let ((str (#/string new-text)))
+      (#_NSLog str))))
 
 (objc:defmethod (#/readFromData:ofType:error: :<BOOL>) ((self alpaca-text-document)(data :id)(type-name :id)(err :id))
   (let* ((read-success nil)
          (file-contents (#/initWithData:options:documentAttributes:error: 
-                         (#/alloc (@class ns:ns-attributed-string))
+                         (#/alloc (objc:@class ns:ns-attributed-string))
                          data +null-ptr+ +null-ptr+ err)))
     (unless (%null-ptr-p file-contents)
       (setf read-success t)

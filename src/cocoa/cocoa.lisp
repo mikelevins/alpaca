@@ -45,3 +45,16 @@
        (handler-case (#/run app) (error (c) (nslog c)))
        (unless (#/isRunning app) (return)))))
 
+(in-package :alpaca)
+
+;;; ---------------------------------------------------------------------
+;;; obj utils
+;;; ---------------------------------------------------------------------
+
+(defun perform-selector (obj selector &key (with-object nil))
+  (if with-object
+      (#/performSelector:withObject: obj selector with-object)
+      (#/performSelector: obj selector)))
+
+
+

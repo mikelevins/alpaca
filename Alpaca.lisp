@@ -52,6 +52,7 @@
                                   ((:file "cocoa")
                                    (:file "alpaca-text-document")
                                    (:file "alpaca-app-delegate")
+                                   (:file "menus")
                                    (:file "main-menu")
                                    (:file "main")))
                          (:file "make")))))

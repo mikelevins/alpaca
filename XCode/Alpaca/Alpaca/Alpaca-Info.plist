@@ -48,8 +48,6 @@
 	<string>10.7</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2012 mikel evins. All rights reserved.</string>
-	<key>NSMainNibFile</key>
-	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>

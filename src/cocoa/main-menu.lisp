@@ -12,40 +12,6 @@
 (in-package :alpaca)
 
 ;;; ---------------------------------------------------------------------
-;;; obj utils
-;;; ---------------------------------------------------------------------
-
-(defun perform-selector (obj selector &key (with-object nil))
-  (if with-object
-      (#/performSelector:withObject: obj selector with-object)
-      (#/performSelector: obj selector)))
-
-;;; ---------------------------------------------------------------------
-;;; menu utils
-;;; ---------------------------------------------------------------------
-
-(defun make-menu (menu-title)
-  (#/autorelease (#/initWithTitle: (#/alloc (objc:@class ns:ns-menu)) menu-title)))
-
-(defun add-menu-separator (menu)
-  (#/addItem: menu (#/separatorItem ns:ns-menu-item)))
-
-(defun add-menu-item (menu item-title 
-                      &key
-                      (action (%null-ptr))
-                      (target (%null-ptr)) ; by default target the First Responder
-                      (key-equivalent #@"")
-                      (key-equivalent-modifier-mask nil)
-                      (tag nil))
-  (let ((item (#/addItemWithTitle:action:keyEquivalent: menu item-title action key-equivalent)))
-    (when key-equivalent-modifier-mask
-      (#/setKeyEquivalentModifierMask: item key-equivalent-modifier-mask))
-    (when tag
-      (#/setTag: item tag))
-    (#/setTarget: item target)
-    item))
-
-;;; ---------------------------------------------------------------------
 ;;; application menu
 ;;; ---------------------------------------------------------------------
 
@@ -85,7 +51,7 @@
          (menu (make-menu #@"File")))
     
     (add-menu-item menu #@"New" :action (objc:@selector "newDocument:") :key-equivalent #@"n")
-    (add-menu-item menu #@"Open..." :key-equivalent #@"o")
+    (add-menu-item menu #@"Open..." :action (objc:@selector "openDocument:") :key-equivalent #@"o")
     (let ((recent-menu (make-menu #@"Open Recent"))
           (recent-item (add-menu-item menu #@"Open Recent")))
       (perform-selector recent-menu
@@ -95,13 +61,13 @@
     (add-menu-separator menu)
 
     (add-menu-item menu #@"Close" :action (objc:@selector "performClose:") :key-equivalent #@"w")
-    (add-menu-item menu #@"Save" :key-equivalent #@"s")
+    (add-menu-item menu #@"Save" :action (objc:@selector "saveDocument:") :key-equivalent #@"s")
     (add-menu-item menu #@"Save As..." :key-equivalent #@"S")
-    (add-menu-item menu #@"Revert")
+    (add-menu-item menu #@"Revert" :action (objc:@selector "revertDocumentToSaved:"))
     (add-menu-separator menu)
 
     (add-menu-item menu #@"Page Setup..." :action (objc:@selector "runPageLayout:") :target (ccl::nsapp) :key-equivalent #@"P")
-    (add-menu-item menu #@"Print..." :action (objc:@selector "print:") :target (ccl::nsapp) :key-equivalent #@"p")
+    (add-menu-item menu #@"Print..." :action (objc:@selector "printDocument:") :target (ccl::nsapp) :key-equivalent #@"p")
 
     (#/setSubmenu:forItem: main-menu menu main-item)))
 

@@ -46,6 +46,6 @@ bundle: image
 	find . -name "*.dx??fsl" -delete
 
 image: 
-	${LISP} --batch -l "Alpaca.lisp" -e "(build-alpaca \"${EXECUTABLE}\")"
+	${LISP} --batch -l "alpaca.asd" -e "(build-alpaca \"${EXECUTABLE}\")"
 
 

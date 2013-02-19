@@ -16,7 +16,7 @@ LISP=${CCL_DIR}/dx86cl64
 
 APPNAME=Alpaca
 BUNDLE=${APPNAME}.app
-XCODE=XCode/Alpaca/Alpaca
+BUNDLE_RSRC=./assets/bundle_resources
 
 EXECUTABLE=${APPNAME}.image
 
@@ -36,11 +36,10 @@ tidy:
 bundle: image
 	mkdir -p ./${BUNDLE}/Contents/Resources/en.lproj/
 	mkdir -p ./${BUNDLE}/Contents/MacOS
-#	ibtool ./${XCODE}/en.lproj/MainMenu.xib --compile ./${BUNDLE}/Contents/Resources/en.lproj/MainMenu.nib
-	cp ./${XCODE}/en.lproj/Credits.rtf ./${BUNDLE}/Contents/Resources/en.lproj/Credits.rtf
-	cp ./${XCODE}/en.lproj/InfoPlist.strings ./${BUNDLE}/Contents/Resources/en.lproj/InfoPlist.strings
-	cp ./${XCODE}/Alpaca-Info.plist ./${BUNDLE}/Contents/Info.plist
-	cp ./XCode/Alpaca/alpaca.icns ./${BUNDLE}/Contents/Resources/alpaca.icns
+	cp ./${BUNDLE_RSRC}/en.lproj/Credits.rtf ./${BUNDLE}/Contents/Resources/en.lproj/Credits.rtf
+	cp ./${BUNDLE_RSRC}/en.lproj/InfoPlist.strings ./${BUNDLE}/Contents/Resources/en.lproj/InfoPlist.strings
+	cp ./${BUNDLE_RSRC}/Alpaca-Info.plist ./${BUNDLE}/Contents/Info.plist
+	cp ./${BUNDLE_RSRC}/Alpaca.icns ./${BUNDLE}/Contents/Resources/alpaca.icns
 	mv ./${EXECUTABLE} ./${BUNDLE}/Contents/MacOS/${APPNAME}
 	find . -name "*.dfsl" -delete
 	find . -name "*.dx??fsl" -delete

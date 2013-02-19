@@ -1,7 +1,7 @@
 ;;;; ***********************************************************************
 ;;;; FILE IDENTIFICATION
 ;;;;
-;;;; Name:          alpaca-app-delegate.lisp
+;;;; Name:          delegate.lisp
 ;;;; Project:       Alpaca
 ;;;; Purpose:       application delegate
 ;;;; Author:        mikel evins
@@ -16,9 +16,7 @@
   (:metaclass ns:+ns-object))
 
 (objc:defmethod (#/applicationDidFinishLaunching: :void) ((self alpaca-app-delegate) notification)
-  (let ((doc-controller (#/sharedDocumentController ns:ns-document-controller)))
-    ))
+  )
 
 (objc:defmethod (#/newDocument: :void) ((self alpaca-app-delegate) notification)
-  (let ((doc-controller (#/sharedDocumentController ns:ns-document-controller)))
-    ))
+  )

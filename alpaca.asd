@@ -50,8 +50,7 @@
                          (:module cocoa :serial t
                                   :components
                                   ((:file "cocoa")
-                                   (:file "alpaca-text-document")
-                                   (:file "alpaca-app-delegate")
+                                   (:file "delegate")
                                    (:file "menus")
                                    (:file "main-menu")
                                    (:file "main")))

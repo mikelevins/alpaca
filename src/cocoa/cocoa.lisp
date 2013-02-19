@@ -48,7 +48,7 @@
 (in-package :alpaca)
 
 ;;; ---------------------------------------------------------------------
-;;; obj utils
+;;; objc utils
 ;;; ---------------------------------------------------------------------
 
 (defun perform-selector (obj selector &key (with-object nil))

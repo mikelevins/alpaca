@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>ActiveLayerIndex</key>
-	<integer>0</integer>
+	<integer>2</integer>
 	<key>ApplicationVersion</key>
 	<array>
 		<string>com.omnigroup.OmniGrafflePro</string>
@@ -55,7 +55,507 @@
 	<array>
 		<dict>
 			<key>Bounds</key>
-			<string>{{224.00003051757818, 188.97759647046246}, {562.91461181640602, 632.02241441850879}}</string>
+			<string>{{79.999999999999716, 81.10167818361316}, {867.99999999999989, 860.80947680157931}}</string>
+			<key>Class</key>
+			<string>ShapedGraphic</string>
+			<key>ID</key>
+			<integer>10</integer>
+			<key>Layer</key>
+			<integer>0</integer>
+			<key>Shape</key>
+			<string>Circle</string>
+			<key>Style</key>
+			<dict>
+				<key>fill</key>
+				<dict>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+				<key>shadow</key>
+				<dict>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+				<key>stroke</key>
+				<dict>
+					<key>Color</key>
+					<dict>
+						<key>b</key>
+						<string>0.020247</string>
+						<key>g</key>
+						<string>0.00802594</string>
+						<key>r</key>
+						<string>0.172597</string>
+					</dict>
+					<key>Width</key>
+					<real>12</real>
+				</dict>
+			</dict>
+		</dict>
+		<dict>
+			<key>Bounds</key>
+			<string>{{11.999999999999943, 11.999999999999943}, {1000.0000000000001, 1000.0000000000001}}</string>
+			<key>Class</key>
+			<string>ShapedGraphic</string>
+			<key>ID</key>
+			<integer>11</integer>
+			<key>Layer</key>
+			<integer>0</integer>
+			<key>Shape</key>
+			<string>Circle</string>
+			<key>Style</key>
+			<dict>
+				<key>fill</key>
+				<dict>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+				<key>shadow</key>
+				<dict>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+				<key>stroke</key>
+				<dict>
+					<key>Color</key>
+					<dict>
+						<key>b</key>
+						<string>0.0219081</string>
+						<key>g</key>
+						<string>0.0086844</string>
+						<key>r</key>
+						<string>0.186757</string>
+					</dict>
+					<key>Width</key>
+					<real>12</real>
+				</dict>
+			</dict>
+		</dict>
+		<dict>
+			<key>Bounds</key>
+			<string>{{42, 43.589338598223151}, {940, 927.93682132280378}}</string>
+			<key>Class</key>
+			<string>ShapedGraphic</string>
+			<key>ID</key>
+			<integer>3</integer>
+			<key>Layer</key>
+			<integer>1</integer>
+			<key>Shape</key>
+			<string>Circle</string>
+			<key>Style</key>
+			<dict>
+				<key>fill</key>
+				<dict>
+					<key>Color</key>
+					<dict>
+						<key>b</key>
+						<string>0.0122123</string>
+						<key>g</key>
+						<string>0</string>
+						<key>r</key>
+						<string>0.518045</string>
+					</dict>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+				<key>shadow</key>
+				<dict>
+					<key>Beneath</key>
+					<string>YES</string>
+					<key>Color</key>
+					<dict>
+						<key>a</key>
+						<string>0.81</string>
+						<key>b</key>
+						<string>0</string>
+						<key>g</key>
+						<string>0</string>
+						<key>r</key>
+						<string>0</string>
+					</dict>
+					<key>Fuzziness</key>
+					<real>1.7399015426635742</real>
+					<key>ShadowVector</key>
+					<string>{6, 6}</string>
+				</dict>
+				<key>stroke</key>
+				<dict>
+					<key>Color</key>
+					<dict>
+						<key>b</key>
+						<string>0.0419648</string>
+						<key>g</key>
+						<string>0.0177783</string>
+						<key>r</key>
+						<string>0.370264</string>
+					</dict>
+					<key>Width</key>
+					<real>64</real>
+				</dict>
+			</dict>
+		</dict>
+		<dict>
+			<key>Bounds</key>
+			<string>{{224.0000305175779, 188.68074676254918}, {562.91461181640602, 623.9115640853986}}</string>
+			<key>Class</key>
+			<string>ShapedGraphic</string>
+			<key>HFlip</key>
+			<string>YES</string>
+			<key>ID</key>
+			<integer>12</integer>
+			<key>Layer</key>
+			<integer>2</integer>
+			<key>Shape</key>
+			<string>Bezier</string>
+			<key>ShapeData</key>
+			<dict>
+				<key>UnitPoints</key>
+				<array>
+					<string>{-0.47510239252476094, -0.060179617259650597}</string>
+					<string>{-0.47510239252476094, -0.060179617259650597}</string>
+					<string>{-0.32018394601214883, -0.13161952796280496}</string>
+					<string>{-0.32018394601214883, -0.13161952796280496}</string>
+					<string>{-0.32018394601214883, -0.13161952796280496}</string>
+					<string>{-0.0020478504951851884, -0.13275349479936305}</string>
+					<string>{-0.0020478504951851884, -0.13275349479936305}</string>
+					<string>{-0.0020478504951851884, -0.13275349479936305}</string>
+					<string>{0.13212258978805613, -0.13955729581871135}</string>
+					<string>{0.13212258978805613, -0.13955729581871135}</string>
+					<string>{0.13212258978805613, -0.13955729581871135}</string>
+					<string>{0.16808580058562561, -0.30398248711962039}</string>
+					<string>{0.16808580058562561, -0.30398248711962039}</string>
+					<string>{0.16808580058562561, -0.30398248711962039}</string>
+					<string>{0.20128261055261321, -0.39583380088081899}</string>
+					<string>{0.20128261055261321, -0.39583380088081899}</string>
+					<string>{0.20128261055261321, -0.39583380088081899}</string>
+					<string>{0.21234821387494307, -0.4207810712850949}</string>
+					<string>{0.21234821387494307, -0.4207810712850949}</string>
+					<string>{0.21234821387494307, -0.4207810712850949}</string>
+					<string>{0.26767596636856916, -0.47623121714226074}</string>
+					<string>{0.26905916678385822, -0.47623121714226074}</string>
+					<string>{0.27044236719914994, -0.47623121714226074}</string>
+					<string>{0.29965239693574985, -0.49883058579792688}</string>
+					<string>{0.30103559735104091, -0.49996455263448497}</string>
+					<string>{0.30241879776633218, -0.50109851947104289}</string>
+					<string>{0.31524734426978884, -0.474648994776113}</string>
+					<string>{0.3152473442697884, -0.474648994776113}</string>
+					<string>{0.31524734426978962, -0.474648994776113}</string>
+					<string>{0.35896745789580498, -0.46727371158397252}</string>
+					<string>{0.35896745789580498, -0.46727371158397252}</string>
+					<string>{0.35896745789580498, -0.46727371158397252}</string>
+					<string>{0.39917546977637663, -0.44300453022437414}</string>
+					<string>{0.39917546977637663, -0.44300453022437414}</string>
+					<string>{0.39917546977637663, -0.44300453022437414}</string>
+					<string>{0.42361191452524205, -0.41927121196092271}</string>
+					<string>{0.42361191452524205, -0.41927121196092271}</string>
+					<string>{0.42361191452524205, -0.41927121196092271}</string>
+					<string>{0.42361191452524205, -0.38604454227180884}</string>
+					<string>{0.42361191452524205, -0.38604454227180884}</string>
+					<string>{0.42361191452524205, -0.38604454227180884}</string>
+					<string>{0.46270748904264236, -0.3652166962937527}</string>
+					<string>{0.46270748904264236, -0.3652166962937527}</string>
+					<string>{0.46270748904264236, -0.3652166962937527}</string>
+					<string>{0.48345549527201281, -0.3527430610916148}</string>
+					<string>{0.48345549527201281, -0.3527430610916148}</string>
+					<string>{0.48345549527201281, -0.3527430610916148}</string>
+					<string>{0.48898829693317464, -0.34934116058194098}</string>
+					<string>{0.48898829693317464, -0.34820719374538334}</string>
+					<string>{0.48898829693317464, -0.34707322690882553}</string>
+					<string>{0.49802304842699019, -0.33383118696014219}</string>
+					<string>{0.49802304842699008, -0.33383118696014219}</string>
+					<string>{0.49802304842699008, -0.33383118696014219}</string>
+					<string>{0.5, -0.32275563039710464}</string>
+					<string>{0.5, -0.32275563039710464}</string>
+					<string>{0.5, -0.32275563039710464}</string>
+					<string>{0.49209219370795271, -0.3116800738340671}</string>
+					<string>{0.49209219370795271, -0.3116800738340671}</string>
+					<string>{0.49209219370795271, -0.3116800738340671}</string>
+					<string>{0.48616133898891856, -0.2990222949048803}</string>
+					<string>{0.48616133898891856, -0.2990222949048803}</string>
+					<string>{0.48616133898891856, -0.2990222949048803}</string>
+					<string>{0.46270748904264236, -0.29944661977338927}</string>
+					<string>{0.46270748904264236, -0.29944661977338927}</string>
+					<string>{0.46270748904264236, -0.29944661977338927}</string>
+					<string>{0.45025868530502122, -0.29264281875404086}</string>
+					<string>{0.45025868530502122, -0.29264281875404086}</string>
+					<string>{0.45025868530502122, -0.29264281875404086}</string>
+					<string>{0.42397787741448884, -0.29831265293683107}</string>
+					<string>{0.42397787741448884, -0.29831265293683107}</string>
+					<string>{0.42397787741448884, -0.29831265293683107}</string>
+					<string>{0.37418266246400789, -0.29037488508092557}</string>
+					<string>{0.37418266246400789, -0.29037488508092557}</string>
+					<string>{0.37418266246400789, -0.29037488508092557}</string>
+					<string>{0.36311705914168102, -0.28243711722501863}</string>
+					<string>{0.36311705914168102, -0.28243711722501863}</string>
+					<string>{0.36311705914168102, -0.28243711722501863}</string>
+					<string>{0.35205145581934916, -0.25408794631106901}</string>
+					<string>{0.35205145581934916, -0.25408794631106901}</string>
+					<string>{0.35205145581934916, -0.25408794631106901}</string>
+					<string>{0.35481785664993148, -0.22460480856056031}</string>
+					<string>{0.35481785664993148, -0.22460480856056031}</string>
+					<string>{0.35481785664993148, -0.22460480856056031}</string>
+					<string>{0.35343465623464021, -0.18151406877135667}</string>
+					<string>{0.35343465623464021, -0.18151406877135667}</string>
+					<string>{0.35343465623464021, -0.18151406877135667}</string>
+					<string>{0.35758425748051348, -0.15203093102084919}</string>
+					<string>{0.35758425748051348, -0.15203093102084919}</string>
+					<string>{0.35758425748051348, -0.15203093102084919}</string>
+					<string>{0.35481785664993148, -0.10553829072197096}</string>
+					<string>{0.35481785664993148, -0.10553829072197096}</string>
+					<string>{0.35481785664993148, -0.10553829072197096}</string>
+					<string>{0.35343465623464021, -0.061313584096208684}</string>
+					<string>{0.35343465623464021, -0.061313584096208684}</string>
+					<string>{0.35343465623464021, -0.061313584096208684}</string>
+					<string>{0.35066825540405866, -0.025026645326353236}</string>
+					<string>{0.35066825540405866, -0.025026645326353236}</string>
+					<string>{0.35066825540405866, -0.025026645326353236}</string>
+					<string>{0.33960265208172857, 0.0067244260972707526}</string>
+					<string>{0.33960265208172857, 0.0067244260972707526}</string>
+					<string>{0.33960265208172857, 0.0067244260972707526}</string>
+					<string>{0.32715384834410843, 0.038475497520895408}</string>
+					<string>{0.32715384834410843, 0.038475497520895408}</string>
+					<string>{0.32715384834410843, 0.038475497520895408}</string>
+					<string>{0.32023784626765261, 0.05094913272303303}</string>
+					<string>{0.32023784626765261, 0.054351033232706847}</string>
+					<string>{0.32023784626765261, 0.05775293374238033}</string>
+					<string>{0.31608824502178101, 0.069092602107959977}</string>
+					<string>{0.31608824502178101, 0.069092602107959977}</string>
+					<string>{0.31608824502178101, 0.069092602107959977}</string>
+					<string>{0.31193864377590674, 0.089504005166004874}</string>
+					<string>{0.31193864377590674, 0.089504005166004874}</string>
+					<string>{0.31193864377590674, 0.089504005166004874}</string>
+					<string>{0.3050226416994497, 0.10424557404125889}</string>
+					<string>{0.3050226416994497, 0.10424557404125889}</string>
+					<string>{0.3050226416994497, 0.10424557404125889}</string>
+					<string>{0.29257383796182956, 0.11558524240683909}</string>
+					<string>{0.29257383796182956, 0.11558524240683909}</string>
+					<string>{0.29257383796182956, 0.11558524240683909}</string>
+					<string>{0.2815082346394997, 0.14280044648423051}</string>
+					<string>{0.2815082346394997, 0.14280044648423051}</string>
+					<string>{0.2815082346394997, 0.14280044648423051}</string>
+					<string>{0.25937702799484219, 0.17228358423473855}</string>
+					<string>{0.25937702799484219, 0.17228358423473855}</string>
+					<string>{0.25937702799484219, 0.17228358423473855}</string>
+					<string>{0.239042392362384, 0.18039108203804799}</string>
+					<string>{0.239042392362384, 0.18039108203804799}</string>
+					<string>{0.239042392362384, 0.18039108203804799}</string>
+					<string>{0.2153189734862373, 0.18830219386878855}</string>
+					<string>{0.2153189734862373, 0.18830219386878855}</string>
+					<string>{0.2153189734862373, 0.18830219386878855}</string>
+					<string>{0.18053460432324586, 0.20063275514868906}</string>
+					<string>{0.18053460432324586, 0.20063275514868906}</string>
+					<string>{0.18053460432324586, 0.20063275514868906}</string>
+					<string>{0.169469001000918, 0.24258952810133527}</string>
+					<string>{0.169469001000918, 0.24258952810133527}</string>
+					<string>{0.169469001000918, 0.24258952810133527}</string>
+					<string>{0.15010419518684182, 0.29701993625611856}</string>
+					<string>{0.15010419518684182, 0.29701993625611856}</string>
+					<string>{0.15010419518684182, 0.29701993625611856}</string>
+					<string>{0.143188193110386, 0.31629737247760414}</string>
+					<string>{0.143188193110386, 0.31629737247760414}</string>
+					<string>{0.143188193110386, 0.31629737247760414}</string>
+					<string>{0.12658978812689181, 0.38093348216140988}</string>
+					<string>{0.12658978812689181, 0.38093348216140988}</string>
+					<string>{0.12658978812689181, 0.38093348216140988}</string>
+					<string>{0.1182905856351445, 0.42175628827749634}</string>
+					<string>{0.1182905856351445, 0.42175628827749634}</string>
+					<string>{0.1182905856351445, 0.42175628827749634}</string>
+					<string>{0.10999138314339763, 0.44443562500865808}</string>
+					<string>{0.10999138314339763, 0.44443562500865808}</string>
+					<string>{0.10999138314339763, 0.44443562500865808}</string>
+					<string>{0.10584178189752458, 0.45237339286456368}</string>
+					<string>{0.10584178189752458, 0.45237339286456368}</string>
+					<string>{0.10584178189752458, 0.45237339286456368}</string>
+					<string>{0.080944174422282078, 0.44670355868177425}</string>
+					<string>{0.080944174422282078, 0.44670355868177425}</string>
+					<string>{0.080944174422282078, 0.44670355868177425}</string>
+					<string>{0.069878571099954323, 0.45350735970112233}</string>
+					<string>{0.069878571099954323, 0.45350735970112233}</string>
+					<string>{0.069878571099954323, 0.45350735970112233}</string>
+					<string>{0.060196168192915844, 0.47732066326884115}</string>
+					<string>{0.060196168192915844, 0.47732066326884115}</string>
+					<string>{0.060196168192915844, 0.47732066326884115}</string>
+					<string>{0.060196168192915844, 0.49206223214409572}</string>
+					<string>{0.058812967777625569, 0.49319619898065259}</string>
+					<string>{0.057429767362333073, 0.49433016581720901}</string>
+					<string>{0.057429767362333073, 0.50000000000000022}</string>
+					<string>{0.056046566947042797, 0.50000000000000022}</string>
+					<string>{0.054663366531750301, 0.50000000000000022}</string>
+					<string>{0.035298560717675453, 0.49773206632688494}</string>
+					<string>{0.035298560717675453, 0.49773206632688494}</string>
+					<string>{0.035298560717675453, 0.49773206632688494}</string>
+					<string>{0.00071855033539647284, 0.49092826530753575}</string>
+					<string>{0.00071855033539647284, 0.49092826530753575}</string>
+					<string>{0.00071855033539647284, 0.49092826530753575}</string>
+					<string>{-0.018646255478682039, 0.47958859694195688}</string>
+					<string>{-0.018646255478682039, 0.47958859694195688}</string>
+					<string>{-0.018646255478682039, 0.47958859694195688}</string>
+					<string>{-0.032478259631592676, 0.4546413265376803}</string>
+					<string>{-0.032478259631592676, 0.4546413265376803}</string>
+					<string>{-0.032478259631592676, 0.4546413265376803}</string>
+					<string>{-0.013113453817517939, 0.43309595664307765}</string>
+					<string>{-0.013113453817517939, 0.43309595664307765}</string>
+					<string>{-0.013113453817517939, 0.43309595664307765}</string>
+					<string>{-0.011730253402224444, 0.39907695154633882}</string>
+					<string>{-0.011730253402224444, 0.39907695154633882}</string>
+					<string>{-0.011730253402224444, 0.39907695154633882}</string>
+					<string>{-0.02556225755513708, 0.34918241073778633}</string>
+					<string>{-0.02556225755513708, 0.34918241073778633}</string>
+					<string>{-0.02556225755513708, 0.34918241073778633}</string>
+					<string>{-0.036627860877464724, 0.28227836738086509}</string>
+					<string>{-0.036627860877464724, 0.28227836738086509}</string>
+					<string>{-0.036627860877464724, 0.28227836738086509}</string>
+					<string>{-0.02556225755513708, 0.20063275514868906}</string>
+					<string>{-0.02556225755513708, 0.20063275514868906}</string>
+					<string>{-0.02556225755513708, 0.20063275514868906}</string>
+					<string>{-0.087806276243236558, 0.18929308678310863}</string>
+					<string>{-0.087806276243236558, 0.18929308678310863}</string>
+					<string>{-0.087806276243236558, 0.18929308678310863}</string>
+					<string>{-0.13068548911726519, 0.18475721943687662}</string>
+					<string>{-0.13068548911726519, 0.18475721943687662}</string>
+					<string>{-0.13068548911726519, 0.18475721943687662}</string>
+					<string>{-0.18709993503136901, 0.15331656227971535}</string>
+					<string>{-0.18571673461607652, 0.15445052911627344}</string>
+					<string>{-0.18433353420078202, 0.15558449595283175}</string>
+					<string>{-0.22612631777235326, 0.1518721811766941}</string>
+					<string>{-0.22612631777235326, 0.1518721811766941}</string>
+					<string>{-0.22612631777235326, 0.1518721811766941}</string>
+					<string>{-0.25655672690875841, 0.20743655616803558}</string>
+					<string>{-0.25655672690875841, 0.20743655616803558}</string>
+					<string>{-0.25655672690875841, 0.20743655616803558}</string>
+					<string>{-0.26208952856992263, 0.21650829086050183}</string>
+					<string>{-0.26208952856992263, 0.21650829086050183}</string>
+					<string>{-0.26208952856992263, 0.21650829086050183}</string>
+					<string>{-0.28560393562987263, 0.24712539544756473}</string>
+					<string>{-0.28560393562987263, 0.24712539544756473}</string>
+					<string>{-0.28560393562987263, 0.24712539544756473}</string>
+					<string>{-0.29805273936749399, 0.2777425000346323}</string>
+					<string>{-0.29805273936749399, 0.2777425000346323}</string>
+					<string>{-0.29805273936749399, 0.2777425000346323}</string>
+					<string>{-0.32156714642744355, 0.29361803574644552}</string>
+					<string>{-0.32156714642744355, 0.29361803574644552}</string>
+					<string>{-0.32156714642744355, 0.29361803574644552}</string>
+					<string>{-0.34784795431797699, 0.30835960462169809}</string>
+					<string>{-0.34784795431797699, 0.30835960462169809}</string>
+					<string>{-0.34784795431797699, 0.30835960462169809}</string>
+					<string>{-0.34093195224151873, 0.33557480869909173}</string>
+					<string>{-0.34093195224151873, 0.33557480869909173}</string>
+					<string>{-0.34093195224151873, 0.33557480869909173}</string>
+					<string>{-0.34646475390268383, 0.36052207910336698}</string>
+					<string>{-0.34646475390268383, 0.36052207910336698}</string>
+					<string>{-0.34646475390268383, 0.36052207910336698}</string>
+					<string>{-0.33954875182622801, 0.3820674489979683}</string>
+					<string>{-0.33954875182622801, 0.3820674489979683}</string>
+					<string>{-0.33954875182622801, 0.3820674489979683}</string>
+					<string>{-0.33954875182622801, 0.3979429847097804}</string>
+					<string>{-0.33954875182622801, 0.3979429847097804}</string>
+					<string>{-0.33954875182622801, 0.3979429847097804}</string>
+					<string>{-0.34231515265680856, 0.4104166199119188}</string>
+					<string>{-0.34231515265680856, 0.4104166199119188}</string>
+					<string>{-0.34231515265680856, 0.4104166199119188}</string>
+					<string>{-0.33816555141093618, 0.42856008929684664}</string>
+					<string>{-0.33816555141093618, 0.42856008929684664}</string>
+					<string>{-0.33816555141093618, 0.42856008929684664}</string>
+					<string>{-0.3741287622085071, 0.42742612246028888}</string>
+					<string>{-0.3741287622085071, 0.42629215562373135}</string>
+					<string>{-0.3741287622085071, 0.42515818878717226}</string>
+					<string>{-0.39211036760729157, 0.41835438776782397}</string>
+					<string>{-0.39211036760729157, 0.41835438776782397}</string>
+					<string>{-0.39211036760729157, 0.41835438776782397}</string>
+					<string>{-0.40870877259078375, 0.39454108420010714}</string>
+					<string>{-0.40870877259078375, 0.39454108420010714}</string>
+					<string>{-0.40870877259078375, 0.39454108420010714}</string>
+					<string>{-0.42945677882015321, 0.37526364797862044}</string>
+					<string>{-0.42945677882015321, 0.37526364797862044}</string>
+					<string>{-0.42945677882015321, 0.37526364797862044}</string>
+					<string>{-0.44605518380364984, 0.33444084186253242}</string>
+					<string>{-0.44605518380364984, 0.33444084186253242}</string>
+					<string>{-0.44605518380364984, 0.33444084186253242}</string>
+					<string>{-0.4640367892024323, 0.29815390309267609}</string>
+					<string>{-0.4640367892024323, 0.29815390309267609}</string>
+					<string>{-0.4640367892024323, 0.29815390309267609}</string>
+					<string>{-0.44190558255777457, 0.25392919646691459}</string>
+					<string>{-0.44190558255777457, 0.25392919646691459}</string>
+					<string>{-0.44190558255777457, 0.25392919646691459}</string>
+					<string>{-0.43498958048131875, 0.20403465565836343}</string>
+					<string>{-0.43360638006602648, 0.20403465565836343}</string>
+					<string>{-0.43222317965073376, 0.20403465565836343}</string>
+					<string>{-0.43360638006602648, 0.15300614801325285}</string>
+					<string>{-0.43360638006602648, 0.15300614801325285}</string>
+					<string>{-0.43360638006602648, 0.15300614801325285}</string>
+					<string>{-0.44467198338835712, 0.11558524240683909}</string>
+					<string>{-0.44467198338835712, 0.11558524240683909}</string>
+					<string>{-0.44467198338835712, 0.11558524240683909}</string>
+					<string>{-0.47786879335534149, 0.082700204146656464}</string>
+					<string>{-0.47786879335534149, 0.082700204146656464}</string>
+					<string>{-0.47786879335534149, 0.082700204146656464}</string>
+					<string>{-0.50000000000000011, 0.04414533170368462}</string>
+					<string>{-0.50000000000000011, 0.04414533170368462}</string>
+					<string>{-0.50000000000000011, 0.04414533170368462}</string>
+					<string>{-0.49861679958471095, -0.0034812754317515848}</string>
+					<string>{-0.49861679958471095, -0.0034812754317515848}</string>
+					<string>{-0.49861679958471095, -0.0034812754317515848}</string>
+					<string>{-0.4903175970929653, -0.032964413182259067}</string>
+					<string>{-0.4903175970929653, -0.032964413182259067}</string>
+					<string>{-0.4903175970929653, -0.032964413182259067}</string>
+					<string>{-0.47510239252476094, -0.060179617259650597}</string>
+				</array>
+			</dict>
+			<key>Style</key>
+			<dict>
+				<key>fill</key>
+				<dict>
+					<key>Color</key>
+					<dict>
+						<key>b</key>
+						<string>0.030588</string>
+						<key>g</key>
+						<string>0.00851104</string>
+						<key>r</key>
+						<string>0.374278</string>
+					</dict>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+				<key>shadow</key>
+				<dict>
+					<key>Beneath</key>
+					<string>YES</string>
+					<key>Color</key>
+					<dict>
+						<key>b</key>
+						<string>0</string>
+						<key>g</key>
+						<string>0</string>
+						<key>r</key>
+						<string>0</string>
+					</dict>
+					<key>Draws</key>
+					<string>NO</string>
+					<key>Fuzziness</key>
+					<real>0.42759749293327332</real>
+					<key>ShadowVector</key>
+					<string>{7, 7}</string>
+				</dict>
+				<key>stroke</key>
+				<dict>
+					<key>Color</key>
+					<dict>
+						<key>b</key>
+						<string>0.0214208</string>
+						<key>g</key>
+						<string>0</string>
+						<key>r</key>
+						<string>0.182872</string>
+					</dict>
+					<key>Width</key>
+					<real>16</real>
+				</dict>
+			</dict>
+		</dict>
+		<dict>
+			<key>Bounds</key>
+			<string>{{224.00003051757778, 188.68074676254906}, {562.91461181640625, 623.91156408539871}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>HFlip</key>
@@ -63,7 +563,7 @@
 			<key>ID</key>
 			<integer>9</integer>
 			<key>Layer</key>
-			<integer>0</integer>
+			<integer>3</integer>
 			<key>Shape</key>
 			<string>Bezier</string>
 			<key>ShapeData</key>
@@ -409,7 +909,7 @@
 			<key>ID</key>
 			<integer>6</integer>
 			<key>Layer</key>
-			<integer>1</integer>
+			<integer>4</integer>
 			<key>Shape</key>
 			<string>Bezier</string>
 			<key>ShapeData</key>
@@ -732,13 +1232,13 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{72, 72}, {880, 880}}</string>
+			<string>{{72, 73.2043435340575}, {880, 868.70681145113508}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>ID</key>
 			<integer>7</integer>
 			<key>Layer</key>
-			<integer>2</integer>
+			<integer>5</integer>
 			<key>Shape</key>
 			<string>Circle</string>
 			<key>Style</key>
@@ -786,47 +1286,6 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{12, 12}, {1000, 1000}}</string>
-			<key>Class</key>
-			<string>ShapedGraphic</string>
-			<key>ID</key>
-			<integer>3</integer>
-			<key>Layer</key>
-			<integer>3</integer>
-			<key>Shape</key>
-			<string>Circle</string>
-			<key>Style</key>
-			<dict>
-				<key>fill</key>
-				<dict>
-					<key>Color</key>
-					<dict>
-						<key>b</key>
-						<string>0.0122123</string>
-						<key>g</key>
-						<string>0</string>
-						<key>r</key>
-						<string>0.518045</string>
-					</dict>
-				</dict>
-				<key>stroke</key>
-				<dict>
-					<key>Color</key>
-					<dict>
-						<key>b</key>
-						<string>0.0335542</string>
-						<key>g</key>
-						<string>0.0760568</string>
-						<key>r</key>
-						<string>0.187965</string>
-					</dict>
-					<key>Width</key>
-					<real>16</real>
-				</dict>
-			</dict>
-		</dict>
-		<dict>
-			<key>Bounds</key>
 			<string>{{82.000152587890625, 11}, {859.99970546988561, 986.13299560546875}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
@@ -835,7 +1294,7 @@
 			<key>ImageID</key>
 			<integer>3</integer>
 			<key>Layer</key>
-			<integer>4</integer>
+			<integer>6</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -884,6 +1343,36 @@
 			<key>Lock</key>
 			<string>NO</string>
 			<key>Name</key>
+			<string>Layer 6</string>
+			<key>Print</key>
+			<string>YES</string>
+			<key>View</key>
+			<string>YES</string>
+		</dict>
+		<dict>
+			<key>Lock</key>
+			<string>YES</string>
+			<key>Name</key>
+			<string>Layer 2</string>
+			<key>Print</key>
+			<string>YES</string>
+			<key>View</key>
+			<string>YES</string>
+		</dict>
+		<dict>
+			<key>Lock</key>
+			<string>YES</string>
+			<key>Name</key>
+			<string>Layer 7</string>
+			<key>Print</key>
+			<string>YES</string>
+			<key>View</key>
+			<string>YES</string>
+		</dict>
+		<dict>
+			<key>Lock</key>
+			<string>YES</string>
+			<key>Name</key>
 			<string>Layer 5</string>
 			<key>Print</key>
 			<string>YES</string>
@@ -914,16 +1403,6 @@
 			<key>Lock</key>
 			<string>YES</string>
 			<key>Name</key>
-			<string>Layer 2</string>
-			<key>Print</key>
-			<string>YES</string>
-			<key>View</key>
-			<string>YES</string>
-		</dict>
-		<dict>
-			<key>Lock</key>
-			<string>NO</string>
-			<key>Name</key>
 			<string>Layer 1</string>
 			<key>Print</key>
 			<string>YES</string>
@@ -953,7 +1432,7 @@
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2013-02-19 08:32:02 +0000</string>
+	<string>2013-03-02 09:14:14 +0000</string>
 	<key>Modifier</key>
 	<string>mikel evins</string>
 	<key>NotesVisible</key>
@@ -1060,7 +1539,7 @@
 			<array>
 				<string>Canvas 1</string>
 				<real>1</real>
-				<real>0.067500002682209015</real>
+				<real>0.125</real>
 			</array>
 		</array>
 	</dict>

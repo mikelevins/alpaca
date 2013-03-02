@@ -1,0 +1,66 @@
+body {
+  background: #262626;
+  margin: 0;
+  padding: 0;
+  margin-top: 5px;
+  overflow: hidden;
+}
+
+button {
+  margin: 0;
+}
+
+.buttons {
+  background: #262626;
+  padding: 2px;
+  height: 25px;
+}
+
+.CodeMirror {
+  margin: 0;
+  padding: 0;
+}
+
+.CodeMirror-scroll {
+  height: auto;
+  overflow-y: hidden;
+  overflow-x: auto;
+  background: #262626;
+}
+
+.CodeMirror-scrollbar-filler {
+  background: #262626;
+}
+
+#editor {
+  position: absolute;
+  top: 37px;
+  bottom: 24px;
+  left: 0;
+  right: 0;
+  background: #262626;
+}
+
+.modeline {
+  font-family: "Inconsolata", "Lucida Console", monospace;
+  white-space: nowrap;
+  position: absolute;
+  bottom: 0;
+  color: #d0c0b0;
+  background: #262626;
+  padding: 2px;
+  height: 20px;
+  left: 0;
+  right: 0;
+}
+
+.modeline label {
+  font-weight: bold;
+  font-size: 11pt;
+}
+
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: transparent; border-radius: 12px; }
+::-webkit-scrollbar-thumb { border-radius: 10px; background: rgba(255,255,255,0.15); border:1px solid rgba(255,255,255, 0.40); }
+
+::-webkit-scrollbar-corner { background:transparent; }

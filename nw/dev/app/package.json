@@ -1,0 +1,13 @@
+{
+  "name": "Alpaca",
+  "version": "1.0d1",
+  "description": "A programmable editor.",
+  "main": "main.html",
+  "window": {
+    "width": 800,
+    "height": 800,
+    "show": false,
+    "title": "Alpaca",
+    "toolbar": false
+  }
+}

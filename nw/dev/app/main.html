@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Alpaca</title>
+
+    <script src="zepto.min.js"></script>
+    <script src="editor.js"></script>
+
+    <script src="cm/lib/codemirror.js"></script>
+    <script src="cm/keymap/emacs.js"></script>
+
+    <script src="cm/mode/apl/apl.js"></script>
+    <script src="cm/mode/commonlisp/commonlisp.js"></script>
+    <script src="cm/mode/css/css.js"></script>
+    <script src="cm/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="cm/mode/javascript/javascript.js"></script>
+    <script src="cm/mode/scheme/scheme.js"></script>
+    <script src="cm/mode/xml/xml.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="cm/theme/neat.css">
+    <link rel="stylesheet" href="cm/theme/elegant.css">
+    <link rel="stylesheet" href="cm/theme/erlang-dark.css">
+    <link rel="stylesheet" href="cm/theme/night.css">
+    <link rel="stylesheet" href="cm/theme/monokai.css">
+    <link rel="stylesheet" href="cm/theme/cobalt.css">
+    <link rel="stylesheet" href="cm/theme/eclipse.css">
+    <link rel="stylesheet" href="cm/theme/rubyblue.css">
+    <link rel="stylesheet" href="cm/theme/lesser-dark.css">
+    <link rel="stylesheet" href="cm/theme/xq-dark.css">
+    <link rel="stylesheet" href="cm/theme/ambiance.css">
+    <link rel="stylesheet" href="cm/theme/blackboard.css">
+    <link rel="stylesheet" href="cm/theme/vibrant-ink.css">
+    <link rel="stylesheet" href="cm/theme/solarized.css">
+    <link rel="stylesheet" href="cm/theme/twilight.css">
+    <script src="cm/mode/javascript/javascript.js"></script>
+    <link rel="stylesheet" href="cm/lib/codemirror.css">
+    <link rel="stylesheet" href="cm/theme/ambiance.css">
+
+  </head>
+  <body>
+    <div class="buttons">
+      <button id="new"> <img src="img/16x16/file_add.png"/>New  </button>
+      <button id="open"><img src="img/16x16/file.png"/>    Open </button>
+      <button id="save"><img src="img/16x16/diskette.png"/>Save </button>
+    </div>
+
+    <div id="editor"></div>
+
+    <div class="modeline">
+      <label>Filename: </label><span id="title"></span>
+      <label>Mode: </label><span id="mode"></span>
+      <label>Theme: <select onchange="selectTheme()" id=select>
+          <option selected>default</option>
+          <option>ambiance</option>
+          <option>blackboard</option>
+          <option>cobalt</option>
+          <option>eclipse</option>
+          <option>elegant</option>
+          <option>erlang-dark</option>
+          <option>lesser-dark</option>
+          <option>monokai</option>
+          <option>neat</option>
+          <option>night</option>
+          <option>rubyblue</option>
+          <option>solarized dark</option>
+          <option>solarized light</option>
+          <option>twilight</option>
+          <option>vibrant-ink</option>
+          <option>xq-dark</option>
+        </select>
+      </label>
+      <label>Width: </label><span id="mode_width"></span>
+      <label>Height: </label><span id="mode_height"></span>
+    </div>
+
+    <input style="display:none;" id="openFile" type="file" />
+    <input style="display:none;" id="saveFile" type="file" nwsaveas />
+
+    <script>
+      var input = document.getElementById("select");
+      function selectTheme() {
+      var theme = input.options[input.selectedIndex].innerHTML;
+      editor.setOption("theme", theme);
+      }
+      var choice = document.location.search &&
+      decodeURIComponent(document.location.search.slice(1));
+      if (choice) {
+      input.value = choice;
+      editor.setOption("theme", choice);
+      }
+    </script>
+
+  </body>
+</html>

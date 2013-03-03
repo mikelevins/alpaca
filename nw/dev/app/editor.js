@@ -94,70 +94,49 @@ var onChosenFileToSave = function(theFileEntry) {
   writeEditorToFile(theFileEntry);
 };
 
-function handleNewButton() {
-  if (false) {
-    newFile();
-    editor.setValue("");
-  } else {
-    var x = window.screenX + 10;
-    var y = window.screenY + 10;
-    window.open('main.html', '_blank', 'screenX=' + x + ',screenY=' + y);
-  }
+function handleCloseButton() {
+    window.close();
 }
 
-function handleOpenButton() {
-  $("#openFile").trigger("click");
+function handleMinButton() {
 }
 
-function handleSaveButton() {
-  if (fileEntry && hasWriteAccess) {
-    writeEditorToFile(fileEntry);
-  } else {
-    $("#saveFile").trigger("click");
-  }
+function handleMaxButton() {
 }
 
-function initContextMenu() {
-  menu = new gui.Menu();
-  menu.append(new gui.MenuItem({
-    label: 'Copy',
-    click: function() {
-      clipboard.set(editor.getSelection());
-    }
-  }));
-  menu.append(new gui.MenuItem({
-    label: 'Cut',
-    click: function() {
-      clipboard.set(editor.getSelection());
-      editor.replaceSelection('');
-    }
-  }));
-  menu.append(new gui.MenuItem({
-    label: 'Paste',
-    click: function() {
-      editor.replaceSelection(clipboard.get());
-    }
-  }));
+function initMenubar() {
+    var menubar = new gui.Menu({type: 'menubar'});
 
-  document.getElementById("editor").addEventListener('contextmenu',
-                                                     function(ev) { 
-    ev.preventDefault();
-    menu.popup(ev.x, ev.y);
-    return false;
-  });
+    var fileMenu = new gui.Menu();
+    fileMenu.append(new gui.MenuItem({label: 'New'}));
+    fileMenu.append(new gui.MenuItem({label: 'Open'}));
+    fileMenu.append(new gui.MenuItem({label: 'Close'}));
+    fileMenu.append(new gui.MenuItem({type: 'separator'}));
+    fileMenu.append(new gui.MenuItem({label: 'Save'}));
+    fileMenu.append(new gui.MenuItem({label: 'Save As...'}));
+
+    var fileMenuItem = new gui.MenuItem({label: 'File',submenu: fileMenu});
+
+    var viewMenu = new gui.Menu();
+    viewMenu.append(new gui.MenuItem({label: 'Buffers'}));
+
+    var viewMenuItem = new gui.MenuItem({label: 'View',submenu: viewMenu});
+
+    gui.Window.get().menu = menubar;
+    menubar.insert(fileMenuItem,1);
+    menubar.insert(viewMenuItem,3);
 }
-
 
 onload = function() {
-  initContextMenu();
+  initMenubar();
 
-  newButton = document.getElementById("new");
-  openButton = document.getElementById("open");
-  saveButton = document.getElementById("save");
+  closeButton = document.getElementById("closeButton");
+  minButton = document.getElementById("minButton");
+  maxButton = document.getElementById("maxButton");
 
-  newButton.addEventListener("click", handleNewButton);
-  openButton.addEventListener("click", handleOpenButton);
-  saveButton.addEventListener("click", handleSaveButton);
+  closeButton.addEventListener("click", handleCloseButton);
+  minButton.addEventListener("click", handleMinButton);
+  maxButton.addEventListener("click", handleMaxButton);
 
   $("#saveFile").change(function(evt) {
     onChosenFileToSave($(this).val());

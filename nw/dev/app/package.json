@@ -8,6 +8,8 @@
     "height": 800,
     "show": false,
     "title": "Alpaca",
-    "toolbar": false
+    "toolbar": false,
+    "frame": false,
+    "position": "center"
   }
 }

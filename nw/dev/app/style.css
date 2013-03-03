@@ -1,19 +1,61 @@
-body {
-  background: #262626;
-  margin: 0;
-  padding: 0;
-  margin-top: 5px;
+html {
+  margin: 0px;
+  padding: 0px;
   overflow: hidden;
 }
 
-button {
-  margin: 0;
+body {
+  background: #262626;
+  margin: 0px;
+  padding: 0px;
 }
 
-.buttons {
-  background: #262626;
-  padding: 2px;
-  height: 25px;
+.buttonbar {
+  margin-top: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  padding: 4px;
+  width: 96px;
+}
+
+#closeButton {
+  border-radius: 50%;
+  width: 12px;
+  height: 12px; 
+  display: inline-block;
+  background-image: -webkit-radial-gradient(45px 45px, circle cover, #dd0000, #880000);
+}
+
+#minButton {
+  border-radius: 50%;
+  width: 12px;
+  height: 12px; 
+  display: inline-block;
+  background-image: -webkit-radial-gradient(45px 45px, circle cover, yellow, yellow);
+}
+
+#maxButton {
+  border-radius: 50%;
+  width: 12px;
+  height: 12px; 
+  display: inline-block;
+  background-image: -webkit-radial-gradient(45px 45px, circle cover, green, green);
+}
+
+.dragarea {
+  color: #808080;
+  font-family: "Arial Black", Gadget, sans-serif;
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+}
+
+.titlebar {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 32px;
+  background: #181818;
 }
 
 .CodeMirror {
@@ -48,10 +90,12 @@ button {
   bottom: 0;
   color: #d0c0b0;
   background: #262626;
-  padding: 2px;
+  padding: 4px;
   height: 20px;
   left: 0;
   right: 0;
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
 }
 
 .modeline label {
@@ -62,5 +106,4 @@ button {
 ::-webkit-scrollbar { width: 12px; height: 12px; }
 ::-webkit-scrollbar-track { background: transparent; border-radius: 12px; }
 ::-webkit-scrollbar-thumb { border-radius: 10px; background: rgba(255,255,255,0.15); border:1px solid rgba(255,255,255, 0.40); }
-
 ::-webkit-scrollbar-corner { background:transparent; }

@@ -9,24 +9,54 @@ var fs = require("fs");
 var clipboard = gui.Clipboard.get();
 
 function handleDocumentChange(title) {
+
   var mode = "commonlisp";
   var modeName = "Common Lisp";
+
   if (title) {
     title = title.match(/[^/]+$/)[0];
     document.getElementById("title").innerHTML = title;
     document.title = title;
+
     if (title.match(/.apl$/)) {
       mode = {name: "apl", json: true};
       modeName = "APL";
+    } else if (title.match(/.c$/)) {
+      mode = "clike";
+      modeName = "C";
+    } else if (title.match(/.cpp$/)) {
+      mode = "clike";
+      modeName = "C++";
+    } else if (title.match(/.cxx$/)) {
+      mode = "clike";
+      modeName = "C++";
+    } else if (title.match(/.h$/)) {
+      mode = "clike";
+      modeName = "C";
+    } else if (title.match(/.m$/)) {
+      mode = "clike";
+      modeName = "Objective-C";
     } else if (title.match(/.clj$/)) {
       mode = "clojure";
       modeName = "Clojure";
+    } else if (title.match(/.coffee$/)) {
+      mode = "coffeescript";
+      modeName = "coffeescript";
     } else if (title.match(/.lisp$/)) {
       mode = "commonlisp";
       modeName = "Common Lisp";
     } else if (title.match(/.css$/)) {
       mode = "css";
       modeName = "CSS";
+    } else if (title.match(/.erl$/)) {
+      mode = "erlang";
+      modeName = "Erlang";
+    } else if (title.match(/.go$/)) {
+      mode = "go";
+      modeName = "Go";
+    } else if (title.match(/.hs$/)) {
+      mode = "haskell";
+      modeName = "Haskell";
     } else if (title.match(/.html$/)) {
       mode = "htmlmixed";
       modeName = "HTML";
@@ -37,16 +67,12 @@ function handleDocumentChange(title) {
       mode = "scheme";
       modeName = "Scheme";
     }
+
   } else {
-    document.getElementById("title").innerHTML = "[no document loaded]";
+    document.getElementById("title").innerHTML = "[no document]";
   }
   editor.setOption("mode", mode);
   document.getElementById("mode").innerHTML = modeName;
-
-  var ed = document.getElementById('editor');
-
-  document.getElementById("mode_width").innerHTML = ed.offsetWidth;
-  document.getElementById("mode_height").innerHTML = ed.offsetHeight;
 }
 
 function newFile() {
@@ -94,25 +120,38 @@ var onChosenFileToSave = function(theFileEntry) {
   writeEditorToFile(theFileEntry);
 };
 
-function handleCloseButton() {
-    window.close();
+function handleNewFile() {
+  if (false) {
+    newFile();
+    editor.setValue("");
+  } else {
+    var x = window.screenX + 10;
+    var y = window.screenY + 10;
+    window.open('untitled.lisp', '_blank', 'screenX=' + x + ',screenY=' + y);
+  }
 }
 
-function handleMinButton() {
+function handleOpenFile() {
+  $("#openFile").trigger("click");
 }
 
-function handleMaxButton() {
+function handleSaveFile() {
+  if (fileEntry && hasWriteAccess) {
+    writeEditorToFile(fileEntry);
+  } else {
+    $("#saveFile").trigger("click");
+  }
 }
 
 function initMenubar() {
     var menubar = new gui.Menu({type: 'menubar'});
 
     var fileMenu = new gui.Menu();
-    fileMenu.append(new gui.MenuItem({label: 'New'}));
-    fileMenu.append(new gui.MenuItem({label: 'Open'}));
+    fileMenu.append(new gui.MenuItem({label: 'New', click: handleNewFile}));
+    fileMenu.append(new gui.MenuItem({label: 'Open', click: handleOpenFile}));
     fileMenu.append(new gui.MenuItem({label: 'Close'}));
     fileMenu.append(new gui.MenuItem({type: 'separator'}));
-    fileMenu.append(new gui.MenuItem({label: 'Save'}));
+    fileMenu.append(new gui.MenuItem({label: 'Save', click: handleSaveFile}));
     fileMenu.append(new gui.MenuItem({label: 'Save As...'}));
 
     var fileMenuItem = new gui.MenuItem({label: 'File',submenu: fileMenu});
@@ -129,14 +168,6 @@ function initMenubar() {
 
 onload = function() {
   initMenubar();
-
-  closeButton = document.getElementById("closeButton");
-  minButton = document.getElementById("minButton");
-  maxButton = document.getElementById("maxButton");
-
-  closeButton.addEventListener("click", handleCloseButton);
-  minButton.addEventListener("click", handleMinButton);
-  maxButton.addEventListener("click", handleMaxButton);
 
   $("#saveFile").change(function(evt) {
     onChosenFileToSave($(this).val());
@@ -174,10 +205,6 @@ onresize = function() {
   var scrollerElement = editor.getScrollerElement();
   scrollerElement.style.width = containerWidth + 'px';
   scrollerElement.style.height = containerHeight + 'px';
-
-
-  document.getElementById("mode_width").innerHTML = container.offsetWidth;
-  document.getElementById("mode_height").innerHTML = container.offsetHeight;
 
   editor.refresh();
 }

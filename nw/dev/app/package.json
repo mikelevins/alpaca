@@ -9,7 +9,6 @@
     "show": false,
     "title": "Alpaca",
     "toolbar": false,
-    "frame": false,
     "position": "center"
   }
 }

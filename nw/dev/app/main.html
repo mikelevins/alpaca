@@ -10,12 +10,38 @@
     <script src="cm/keymap/emacs.js"></script>
 
     <script src="cm/mode/apl/apl.js"></script>
+    <script src="cm/mode/clike/clike.js"></script>
+    <script src="cm/mode/clojure/clojure.js"></script>
+    <script src="cm/mode/coffeescript/coffeescript.js"></script>
     <script src="cm/mode/commonlisp/commonlisp.js"></script>
     <script src="cm/mode/css/css.js"></script>
+    <script src="cm/mode/d/d.js"></script>
+    <script src="cm/mode/diff/diff.js"></script>
+    <script src="cm/mode/erlang/erlang.js"></script>
+    <script src="cm/mode/go/go.js"></script>
+    <script src="cm/mode/groovy/groovy.js"></script>
+    <script src="cm/mode/haskell/haskell.js"></script>
+    <script src="cm/mode/haxe/haxe.js"></script>
     <script src="cm/mode/htmlmixed/htmlmixed.js"></script>
     <script src="cm/mode/javascript/javascript.js"></script>
+    <script src="cm/mode/lua/lua.js"></script>
+    <script src="cm/mode/markdown/markdown.js"></script>
+    <script src="cm/mode/ocaml/ocaml.js"></script>
+    <script src="cm/mode/pascal/pascal.js"></script>
+    <script src="cm/mode/perl/perl.js"></script>
+    <script src="cm/mode/python/python.js"></script>
+    <script src="cm/mode/q/q.js"></script>
+    <script src="cm/mode/r/r.js"></script>
+    <script src="cm/mode/ruby/ruby.js"></script>
+    <script src="cm/mode/rust/rust.js"></script>
+    <script src="cm/mode/sass/sass.js"></script>
     <script src="cm/mode/scheme/scheme.js"></script>
+    <script src="cm/mode/shell/shell.js"></script>
+    <script src="cm/mode/smalltalk/smalltalk.js"></script>
+    <script src="cm/mode/sparql/sparql.js"></script>
+    <script src="cm/mode/verilog/verilog.js"></script>
     <script src="cm/mode/xml/xml.js"></script>
+    <script src="cm/mode/xquery/xquery.js"></script>
 
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="cm/theme/neat.css">
@@ -39,22 +65,13 @@
 
   </head>
   <body>
-    <div class="titlebar">
-      <div class="buttonbar">
-        <span id="closeButton">&nbsp;</span>
-        <span id="minButton">&nbsp;</span>
-        <span id="maxButton">&nbsp;</span>
-      </div>
-      <div class="dragarea">
-        <p>Untitled</p>
-      </div>
-    </div>
-
     <div id="editor"></div>
 
     <div class="modeline">
-      <label>Filename: </label><span id="title"></span>
+      <label>File: </label><span id="title"></span>
+
       <label>Mode: </label><span id="mode"></span>
+
       <label>Theme: <select onchange="selectTheme()" id=select>
           <option selected>default</option>
           <option>ambiance</option>
@@ -75,8 +92,6 @@
           <option>xq-dark</option>
         </select>
       </label>
-      <label>Width: </label><span id="mode_width"></span>
-      <label>Height: </label><span id="mode_height"></span>
     </div>
 
     <input style="display:none;" id="openFile" type="file" />

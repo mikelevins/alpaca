@@ -1,3 +1,7 @@
+// ----------------------------------------------------------------------
+// globals
+// ----------------------------------------------------------------------
+
 var newButton, openButton, saveButton;
 var editor;
 var menu;
@@ -7,6 +11,10 @@ var hasWriteAccess;
 var gui = require("nw.gui");
 var fs = require("fs");
 var clipboard = gui.Clipboard.get();
+
+// ----------------------------------------------------------------------
+// mode and theme 
+// ----------------------------------------------------------------------
 
 function handleDocumentChange(title) {
 
@@ -75,6 +83,11 @@ function handleDocumentChange(title) {
   document.getElementById("mode").innerHTML = modeName;
 }
 
+
+// ----------------------------------------------------------------------
+// file-handling
+// ----------------------------------------------------------------------
+
 function newFile() {
   fileEntry = null;
   hasWriteAccess = false;
@@ -110,6 +123,11 @@ function writeEditorToFile(theFileEntry) {
   });
 }
 
+
+// ----------------------------------------------------------------------
+// event-handling
+// ----------------------------------------------------------------------
+
 var onChosenFileToOpen = function(theFileEntry) {
   setFile(theFileEntry, false);
   readFileIntoEditor(theFileEntry);
@@ -143,6 +161,28 @@ function handleSaveFile() {
   }
 }
 
+// ----------------------------------------------------------------------
+// updating views
+// ----------------------------------------------------------------------
+
+onresize = function() {
+  var container = document.getElementById('editor');
+  var containerWidth = container.offsetWidth;
+  var containerHeight = container.offsetHeight;
+
+  editor.setSize(containerWidth,containerHeight);
+
+  var scrollerElement = editor.getScrollerElement();
+  scrollerElement.style.width = containerWidth + 'px';
+  scrollerElement.style.height = containerHeight + 'px';
+
+  editor.refresh();
+}
+
+// ----------------------------------------------------------------------
+// init
+// ----------------------------------------------------------------------
+
 function initMenubar() {
     var menubar = new gui.Menu({type: 'menubar'});
 
@@ -167,44 +207,35 @@ function initMenubar() {
 }
 
 onload = function() {
-  initMenubar();
+    // build the app menu
+    initMenubar();
 
-  $("#saveFile").change(function(evt) {
-    onChosenFileToSave($(this).val());
-  });
-  $("#openFile").change(function(evt) {
-    onChosenFileToOpen($(this).val());
-  });
-
-  editor = CodeMirror(
-    document.getElementById("editor"),
-    {
-      mode: {name: "javascript", json: true },
-      lineNumbers: true,
-      theme: "lesser-dark",
-      keyMap: "emacs",
-      extraKeys: {
-        "Cmd-S": function(instance) { handleSaveButton() },
-        "Ctrl-S": function(instance) { handleSaveButton() },
-      }
+    // hook up event handlers
+    $("#saveFile").change(function(evt) {
+        onChosenFileToSave($(this).val());
+    });
+    $("#openFile").change(function(evt) {
+        onChosenFileToOpen($(this).val());
     });
 
-  newFile();
-  onresize();
+    // create the editor
+    editor = CodeMirror(
+        document.getElementById("editor"),
+        {
+            mode: {name: "javascript", json: true },
+            lineNumbers: true,
+            theme: "lesser-dark",
+            keyMap: "emacs",
+            extraKeys: {
+                "Cmd-S": function(instance) { handleSaveButton() },
+                "Ctrl-S": function(instance) { handleSaveButton() },
+            }
+        });
 
-  gui.Window.get().show();
+    // create the initial document and show the window
+    newFile();
+    onresize();
+
+    gui.Window.get().show();
 };
 
-onresize = function() {
-  var container = document.getElementById('editor');
-  var containerWidth = container.offsetWidth;
-  var containerHeight = container.offsetHeight;
-
-  editor.setSize(containerWidth,containerHeight);
-
-  var scrollerElement = editor.getScrollerElement();
-  scrollerElement.style.width = containerWidth + 'px';
-  scrollerElement.style.height = containerHeight + 'px';
-
-  editor.refresh();
-}

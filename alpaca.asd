@@ -25,11 +25,12 @@
   :description "Alpaca 2: A programmable word processor"
   :author "mikel evins <mevins@me.com>"
   :license "Proprietary"
-  :depends-on (:cl-store :uuid :cl-fad)
+  :depends-on (:cl-store :cl-fad)
   :components ((:module "src"
                         :serial t
                         :components
-                        ((:file "package")))))
+                        ((:file "package")
+                         (:file "application")))))
 
 ;;; ---------------------------------------------------------------------
 ;;; system-loading

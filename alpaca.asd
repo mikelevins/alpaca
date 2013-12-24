@@ -11,6 +11,9 @@
 
 (in-package :cl-user)
 
+
+(defvar $alpaca-delivered? nil)
+
 (require :asdf)
 
 ;;; ---------------------------------------------------------------------
@@ -18,16 +21,17 @@
 ;;; ---------------------------------------------------------------------
 
 (asdf:defsystem #:alpaca
-  :version "0.6"
   :serial t
   :description "Alpaca 2: A programmable word processor"
   :author "mikel evins <mevins@me.com>"
   :license "Proprietary"
+  :depends-on (:cl-store :cl-fad)
   :components ((:module "src"
                         :serial t
                         :components
                         ((:file "package")
-                         (:file "utils")))))
+                         (:file "application")
+                         (:file "editor")))))
 
 ;;; ---------------------------------------------------------------------
 ;;; system-loading

@@ -31,7 +31,7 @@
 
   ;; -- panes ---------------------------------------------
   (:panes
-   (editor-pane rich-text-pane :reader editor-pane))
+   (editor-pane editor-pane :reader editor-pane))
   
   ;; -- layouts ---------------------------------------------
   (:layouts

@@ -4,30 +4,12 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
-	<key>CFBundleDocumentTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>txt</string>
-				<string>*</string>
-			</array>
-			<key>CFBundleTypeName</key>
-			<string>NSStringPboardType</string>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>public.plain-text</string>
-			</array>
-			<key>NSDocumentClass</key>
-			<string>AlpacaTextDocument</string>
-		</dict>
-	</array>
-	<key>CFBundleExecutable</key>
+	<key>CFBundleDisplayName</key>
 	<string>Alpaca</string>
+	<key>CFBundleExecutable</key>
+	<string>node-webkit</string>
 	<key>CFBundleIconFile</key>
-	<string>alpaca.icns</string>
+	<string>Alpaca.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.mikelevins.Alpaca</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -37,18 +19,16 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
+	<string>0.6.0</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
-	<key>LSApplicationCategoryType</key>
-	<string>public.app-category.productivity</string>
+	<string>0.6.0</string>
+	<key>LSFileQuarantineEnabled</key>
+	<true/>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.7</string>
-	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2013 mikel evins. All rights reserved.</string>
+	<string>10.6.0</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSSupportsAutomaticGraphicsSwitching</key>
+	<true/>
 </dict>
 </plist>

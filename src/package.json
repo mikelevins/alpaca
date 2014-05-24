@@ -1,5 +1,8 @@
 {
     "name": "Alpaca",
     "main": "core/alpaca.html",
-    "window": { "toolbar": false }
+    "window": { "toolbar": false,
+                "title": "Untitled",
+                "position": "center"
+              }
 }

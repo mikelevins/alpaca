@@ -9,18 +9,14 @@
 ;;;; ***********************************************************************
 
 (require :asdf)
-
-(eval-when (:load-toplevel :compile-toplevel :execute)
-  (let* ((this-file *load-pathname*)
-         (this-directory (pathname-directory this-file))
-         (parent-directory (merge-pathnames "../" (make-pathname :directory this-directory))))))
+(require :objc-support)
 
 (asdf:defsystem #:alpaca
   :serial t
   :description "alpaca: the programmable editor"
   :author "mikel evins <mevins@me.com>"
   :license "Apacahe 2.0"
-  :depends-on (:cl-fad :cl-gap-buffer :cl-conspack :colorize)
+  :depends-on (:cffi :cl-fad :cl-gap-buffer :cl-conspack :colorize)
   :components ((:module "src"
                         :serial t
                         :components ((:file "package")
@@ -31,3 +27,16 @@
 
 ;;; (load-alpaca)
 
+(defun build-alpaca ()
+  (load-alpaca)
+  (let* ((project-path (slot-value (asdf:find-system :alpaca) 'asdf/component:absolute-pathname))
+         (bundle-path (merge-pathnames "alpaca.app/" project-path))
+         (alpaca-path (merge-pathnames "Contents/MacOS/alpaca" bundle-path)))
+    (ccl:save-application alpaca-path
+                          :toplevel-function (intern "ALPACA-TOPLEVEL" (find-package :alpaca))
+                          :application-class (find-class (intern "ALPACA-APPLICATION"
+                                                                 (find-package :alpaca)))
+                          :prepend-kernel t)))
+
+;;; (load-alpaca)
+;;; (build-alpaca)

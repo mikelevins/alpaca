@@ -67,8 +67,7 @@
              (path *contents-path* "Info.plist"))
   (copy-file (path *assets-bundle-path* "Alpaca.icns")
              (path *resources-path* "Alpaca.icns"))
-  ;;(build-image path)
-  )
+  (build-image (path *macos-path* "Alpaca")))
 
 ;;; (load-alpaca)
 ;;; (build-alpaca)

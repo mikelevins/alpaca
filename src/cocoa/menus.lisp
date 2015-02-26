@@ -1,11 +1,10 @@
 ;;;; ***********************************************************************
-;;;; FILE IDENTIFICATION
 ;;;;
 ;;;; Name:          menus.lisp
 ;;;; Project:       Alpaca
 ;;;; Purpose:       menu-building utilities
 ;;;; Author:        mikel evins
-;;;; Copyright:     2011 by mikel evins
+;;;; Copyright:     2011-2015 by mikel evins
 ;;;;
 ;;;; ***********************************************************************
 

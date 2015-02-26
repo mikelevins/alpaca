@@ -1,11 +1,10 @@
 ;;;; ***********************************************************************
-;;;; FILE IDENTIFICATION
 ;;;;
 ;;;; Name:          main.lisp
 ;;;; Project:       Alpaca - a near-minimal Cocoa application
 ;;;; Purpose:       build the Alpaca application image
 ;;;; Author:        mikel evins
-;;;; Copyright:     2009 by mikel evins
+;;;; Copyright:     2009-2015 by mikel evins
 ;;;;
 ;;;; ***********************************************************************
 

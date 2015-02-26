@@ -43,6 +43,8 @@
                          (:module cocoa :serial t
                                   :components
                                   ((:file "cocoa")
+                                   (:file "keymaps")
+                                   (:file "init")
                                    (:file "delegate")
                                    (:file "menus")
                                    (:file "main-menu")

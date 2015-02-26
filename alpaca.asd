@@ -61,6 +61,12 @@
   (ensure-directories-exist *en.lproj-path*)
   (copy-file (path *assets-bundle-path* "en.lproj/Credits.rtf")
              (path *en.lproj-path* "Credits.rtf"))
+  (copy-file (path *assets-bundle-path* "en.lproj/InfoPlist.strings")
+             (path *en.lproj-path* "InfoPlist.strings"))
+  (copy-file (path *assets-bundle-path* "Info.plist")
+             (path *contents-path* "Info.plist"))
+  (copy-file (path *assets-bundle-path* "Alpaca.icns")
+             (path *resources-path* "Alpaca.icns"))
   ;;(build-image path)
   )
 

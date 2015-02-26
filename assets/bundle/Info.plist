@@ -27,7 +27,7 @@
 	<key>CFBundleExecutable</key>
 	<string>Alpaca</string>
 	<key>CFBundleIconFile</key>
-	<string>alpaca.icns</string>
+	<string>Alpaca.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.mikelevins.Alpaca</string>
 	<key>CFBundleInfoDictionaryVersion</key>

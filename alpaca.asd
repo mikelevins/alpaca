@@ -11,37 +11,30 @@
 
 (in-package :cl-user)
 
+(require :asdf)
 (require "OBJC-SUPPORT")
-
-;;; ---------------------------------------------------------------------
-;;; dev-time path utils
-;;; ---------------------------------------------------------------------
-
-(let* ((path *load-truename*)
-       (project-root (make-pathname :directory (pathname-directory path))))
-  ;;; when the app is delivered, we redefine path-base to resolve
-  ;;; paths relative to the app bundle
-  (defun path-base () project-root))
-
-(defun path (p)(merge-pathnames p (path-base)))
-
-(defun add-to-asdf (path)
-  (pushnew (truename (merge-pathnames path (path-base)))
-           asdf:*central-registry* :test 'equalp))
 
 ;;; ---------------------------------------------------------------------
 ;;; system definitions and loaders
 ;;; ---------------------------------------------------------------------
 
-(defpackage #:alpaca-asd
-  (:use :cl :asdf))
+(defparameter *alpaca-root* (make-pathname :directory (pathname-directory *load-truename*)))
+(defparameter *assets-path* (merge-pathnames "assets/" *alpaca-root*))
+(defparameter *assets-bundle-path* (merge-pathnames "bundle/" *assets-path*))
+(defparameter *bundle-path* (merge-pathnames "Alpaca.app/" *alpaca-root*))
+(defparameter *contents-path* (merge-pathnames "Contents/" *bundle-path*))
+(defparameter *macos-path* (merge-pathnames "MacOS/" *contents-path*))
+(defparameter *resources-path* (merge-pathnames "Resources/" *contents-path*))
+(defparameter *en.lproj-path* (merge-pathnames "en.lproj/" *resources-path*))
 
-(in-package :alpaca-asd)
+(defun path (stem-path leaf-path)
+  (merge-pathnames leaf-path stem-path))
 
-(defsystem alpaca
+(asdf:defsystem #:alpaca
   :name "alpaca"
-  :version "0.6"
+  :version "1.0.0d1"
   :author "mikel evins"
+  :license "Apache License v 2.0"
   :description "Alpaca, the Programmable Editor"
   :serial t
   :components ((:module src :serial t
@@ -62,8 +55,14 @@
   (asdf::oos 'asdf:compile-op :alpaca)
   (asdf::oos 'asdf:load-op :alpaca))
 
-(defun build-alpaca (path)
+(defun build-alpaca ()
   (load-alpaca)
-  (build-image path))
+  (ensure-directories-exist *macos-path*)
+  (ensure-directories-exist *en.lproj-path*)
+  (copy-file (path *assets-bundle-path* "en.lproj/Credits.rtf")
+             (path *en.lproj-path* "Credits.rtf"))
+  ;;(build-image path)
+  )
 
 ;;; (load-alpaca)
+;;; (build-alpaca)

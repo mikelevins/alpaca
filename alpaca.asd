@@ -1,42 +1,69 @@
 ;;;; ***********************************************************************
+;;;; FILE IDENTIFICATION
 ;;;;
-;;;; Name:          alpaca.asd
-;;;; Project:       a programmable editor
-;;;; Purpose:       system definition
+;;;; Name:          Alpaca.lisp
+;;;; Project:       The Alpaca Text Editor
+;;;; Purpose:       build the Alpaca application image
 ;;;; Author:        mikel evins
-;;;; Copyright:     2014 by mikel evins
+;;;; Copyright:     2011 by mikel evins
 ;;;;
 ;;;; ***********************************************************************
 
-(require :asdf)
-(require :objc-support)
+(in-package :cl-user)
 
-(asdf:defsystem #:alpaca
+(require "OBJC-SUPPORT")
+
+;;; ---------------------------------------------------------------------
+;;; dev-time path utils
+;;; ---------------------------------------------------------------------
+
+(let* ((path *load-truename*)
+       (project-root (make-pathname :directory (pathname-directory path))))
+  ;;; when the app is delivered, we redefine path-base to resolve
+  ;;; paths relative to the app bundle
+  (defun path-base () project-root))
+
+(defun path (p)(merge-pathnames p (path-base)))
+
+(defun add-to-asdf (path)
+  (pushnew (truename (merge-pathnames path (path-base)))
+           asdf:*central-registry* :test 'equalp))
+
+;;; ---------------------------------------------------------------------
+;;; system definitions and loaders
+;;; ---------------------------------------------------------------------
+
+(defpackage #:alpaca-asd
+  (:use :cl :asdf))
+
+(in-package :alpaca-asd)
+
+(defsystem alpaca
+  :name "alpaca"
+  :version "0.6"
+  :author "mikel evins"
+  :description "Alpaca, the Programmable Editor"
   :serial t
-  :description "alpaca: the programmable editor"
-  :author "mikel evins <mevins@me.com>"
-  :license "Apacahe 2.0"
-  :depends-on (:cffi :cl-fad :cl-gap-buffer :cl-conspack :colorize)
-  :components ((:module "src"
-                        :serial t
-                        :components ((:file "package")
-                                     (:file "alpaca")))))
+  :components ((:module src :serial t
+                        :components
+                        ((:file "package")
+                         (:module cocoa :serial t
+                                  :components
+                                  ((:file "cocoa")
+                                   (:file "delegate")
+                                   (:file "menus")
+                                   (:file "main-menu")
+                                   (:file "main")))
+                         (:file "make")))))
+
+(in-package :cl-user)
 
 (defun load-alpaca ()
-  (asdf:load-system :alpaca))
+  (asdf::oos 'asdf:compile-op :alpaca)
+  (asdf::oos 'asdf:load-op :alpaca))
 
-;;; (load-alpaca)
-
-(defun build-alpaca ()
+(defun build-alpaca (path)
   (load-alpaca)
-  (let* ((project-path (slot-value (asdf:find-system :alpaca) 'asdf/component:absolute-pathname))
-         (bundle-path (merge-pathnames "alpaca.app/" project-path))
-         (alpaca-path (merge-pathnames "Contents/MacOS/alpaca" bundle-path)))
-    (ccl:save-application alpaca-path
-                          :toplevel-function (intern "ALPACA-TOPLEVEL" (find-package :alpaca))
-                          :application-class (find-class (intern "ALPACA-APPLICATION"
-                                                                 (find-package :alpaca)))
-                          :prepend-kernel t)))
+  (build-image path))
 
 ;;; (load-alpaca)
-;;; (build-alpaca)

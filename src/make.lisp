@@ -1,22 +1,16 @@
 ;;;; ***********************************************************************
 ;;;; FILE IDENTIFICATION
 ;;;;
-;;;; Name:          package.lisp
+;;;; Name:          make.lisp
 ;;;; Project:       Alpaca - a near-minimal Cocoa application
-;;;; Purpose:       define the Alpaca package
+;;;; Purpose:       Build the app's executable image
 ;;;; Author:        mikel evins
 ;;;; Copyright:     2009 by mikel evins
 ;;;;
 ;;;; ***********************************************************************
 
-(in-package :ccl)
+(in-package #:cl-user)
 
-;;; ------------------------------------------------------------
-;;; Package ALPACA
-;;; ------------------------------------------------------------
-
-(in-package :cl-user)
-
-(defpackage ALPACA (:use :common-lisp :ccl))
-
+(defun build-image (path)
+  (save-application path :application-class 'alpaca::alpaca-application :prepend-kernel t))
 

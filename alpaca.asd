@@ -40,15 +40,13 @@
   :components ((:module src :serial t
                         :components
                         ((:file "package")
-                         (:module cocoa :serial t
-                                  :components
-                                  ((:file "cocoa")
-                                   (:file "keymaps")
-                                   (:file "init")
-                                   (:file "delegate")
-                                   (:file "menus")
-                                   (:file "main-menu")
-                                   (:file "main")))
+                         (:file "cocoa")
+                         (:file "keymaps")
+                         (:file "init")
+                         (:file "delegate")
+                         (:file "menus")
+                         (:file "main-menu")
+                         (:file "main")
                          (:file "make")))))
 
 (in-package :cl-user)

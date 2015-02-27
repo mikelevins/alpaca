@@ -18,6 +18,7 @@
 ;;; system definitions and loaders
 ;;; ---------------------------------------------------------------------
 
+(defparameter *ccl-home* (translate-logical-pathname "ccl:"))
 (defparameter *alpaca-root* (make-pathname :directory (pathname-directory *load-truename*)))
 (defparameter *assets-path* (merge-pathnames "assets/" *alpaca-root*))
 (defparameter *assets-bundle-path* (merge-pathnames "bundle/" *assets-path*))
@@ -32,7 +33,7 @@
 
 (asdf:defsystem #:alpaca
   :name "alpaca"
-  :version "1.0.0d1"
+  :version "1.0.0"
   :author "mikel evins"
   :license "Apache License v 2.0"
   :description "Alpaca, the Programmable Editor"
@@ -58,7 +59,37 @@
 (defun build-alpaca ()
   (load-alpaca)
   (ensure-directories-exist *macos-path*)
+  (ensure-directories-exist (path *macos-path* "darwin-x86-headers64/cocoa/"))
+  (ensure-directories-exist (path *macos-path* "darwin-x86-headers64/libc/"))
   (ensure-directories-exist *en.lproj-path*)
+  (copy-file (path *ccl-home* "darwin-x86-headers64/cocoa/constants.cdb")
+             (path *macos-path* "darwin-x86-headers64/cocoa/constants.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/cocoa/functions.cdb")
+             (path *macos-path* "darwin-x86-headers64/cocoa/functions.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/cocoa/objc-classes.cdb")
+             (path *macos-path* "darwin-x86-headers64/cocoa/objc-classes.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/cocoa/objc-methods.cdb")
+             (path *macos-path* "darwin-x86-headers64/cocoa/objc-methods.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/cocoa/records.cdb")
+             (path *macos-path* "darwin-x86-headers64/cocoa/records.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/cocoa/types.cdb")
+             (path *macos-path* "darwin-x86-headers64/cocoa/types.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/cocoa/vars.cdb")
+             (path *macos-path* "darwin-x86-headers64/cocoa/vars.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/libc/constants.cdb")
+             (path *macos-path* "darwin-x86-headers64/libc/constants.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/libc/functions.cdb")
+             (path *macos-path* "darwin-x86-headers64/libc/functions.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/libc/objc-classes.cdb")
+             (path *macos-path* "darwin-x86-headers64/libc/objc-classes.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/libc/objc-methods.cdb")
+             (path *macos-path* "darwin-x86-headers64/libc/objc-methods.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/libc/records.cdb")
+             (path *macos-path* "darwin-x86-headers64/libc/records.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/libc/types.cdb")
+             (path *macos-path* "darwin-x86-headers64/libc/types.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/libc/vars.cdb")
+             (path *macos-path* "darwin-x86-headers64/libc/vars.cdb"))
   (copy-file (path *assets-bundle-path* "en.lproj/Credits.rtf")
              (path *en.lproj-path* "Credits.rtf"))
   (copy-file (path *assets-bundle-path* "en.lproj/InfoPlist.strings")

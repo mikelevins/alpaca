@@ -19,7 +19,18 @@
   (load-alpaca-init-file))
 
 (objc:defmethod (#/newDocument: :void) ((self alpaca-app-delegate) notification)
-  (let ((doc-controller (#/sharedDocumentController (@class ns:ns-document-controller))))
-    (:openUntitledDocumentOfType:display:
-     doc-controller (%make-nsstring "NSStringPboardType")
-     t)))
+  (objc:with-autorelease-pool
+    (let* ((windowmask (logior #$NSTitledWindowMask
+                               #$NSClosableWindowMask
+                               #$NSResizableWindowMask
+                               #$NSMiniaturizableWindowMask)))
+      (ns:with-ns-rect (rect 100 100 800 600)
+        (let* ((w (#/autorelease
+                   (#/initWithContentRect:styleMask:backing:defer:
+                    (#/alloc (objc:@class ns-window)) rect windowmask #$NSBackingStoreBuffered #$NO)))
+               (controller (#/autorelease (#/initWithWindow: (#/alloc (objc:@class ns-window-controller)) w)))
+               (app (ccl::nsapp)))
+          (#/makeKeyAndOrderFront: w app))))))
+
+(objc:defmethod (#/applicationOpenUntitledFile :void) ((self alpaca-app-delegate))
+  (#/newDocument: self nil))

@@ -29,5 +29,6 @@
     (let* ((app (ccl::nsapp))
            (delegate (#/autorelease (#/init (#/alloc alpaca-app-delegate)))))
       (#/setDelegate: app delegate)
+      (#/setActivationPolicy: app #$NSApplicationActivationPolicyRegular)
       (setup-menus)
       (ccl::run-event-loop))))

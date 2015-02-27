@@ -5,25 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDocumentTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>txt</string>
-				<string>*</string>
-			</array>
-			<key>CFBundleTypeName</key>
-			<string>NSStringPboardType</string>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>public.plain-text</string>
-			</array>
-			<key>NSDocumentClass</key>
-			<string>AlpacaTextDocument</string>
-		</dict>
-	</array>
+	<array></array>
 	<key>CFBundleExecutable</key>
 	<string>Alpaca</string>
 	<key>CFBundleIconFile</key>

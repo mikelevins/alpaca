@@ -25,10 +25,9 @@
                                #$NSResizableWindowMask
                                #$NSMiniaturizableWindowMask)))
       (ns:with-ns-rect (rect 100 100 800 600)
-        (let* ((w (#/autorelease
-                   (#/initWithContentRect:styleMask:backing:defer:
-                    (#/alloc (objc:@class ns-window)) rect windowmask #$NSBackingStoreBuffered #$NO)))
-               (controller (#/autorelease (#/initWithWindow: (#/alloc (objc:@class ns-window-controller)) w)))
+        (let* ((w (#/initWithContentRect:styleMask:backing:defer:
+                    (#/alloc (objc:@class ns-window)) rect windowmask #$NSBackingStoreBuffered #$NO))
+               (controller (#/initWithWindow: (#/alloc (objc:@class ns-window-controller)) w))
                (app (ccl::nsapp)))
           (#/makeKeyAndOrderFront: w app))))))
 

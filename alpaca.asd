@@ -44,6 +44,7 @@
                          (:file "cocoa")
                          (:file "keymaps")
                          (:file "init")
+                         (:file "editor")
                          (:file "delegate")
                          (:file "menus")
                          (:file "main-menu")

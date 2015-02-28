@@ -16,20 +16,13 @@
 
 (objc:defmethod (#/applicationDidFinishLaunching: :void) ((self alpaca-app-delegate) notification)
   (init-alpaca-keymaps)
-  (load-alpaca-init-file))
+  (load-alpaca-init-file)
+  (#/newDocument: self nil))
 
 (objc:defmethod (#/newDocument: :void) ((self alpaca-app-delegate) notification)
-  (objc:with-autorelease-pool
-    (let* ((windowmask (logior #$NSTitledWindowMask
-                               #$NSClosableWindowMask
-                               #$NSResizableWindowMask
-                               #$NSMiniaturizableWindowMask)))
-      (ns:with-ns-rect (rect 100 100 800 600)
-        (let* ((w (#/initWithContentRect:styleMask:backing:defer:
-                    (#/alloc (objc:@class ns-window)) rect windowmask #$NSBackingStoreBuffered #$NO))
-               (controller (#/initWithWindow: (#/alloc (objc:@class ns-window-controller)) w))
-               (app (ccl::nsapp)))
-          (#/makeKeyAndOrderFront: w app))))))
+  (let ((w (make-editor-window))
+        (app (ccl::nsapp)))
+    (#/makeKeyAndOrderFront: w app)))
 
 (objc:defmethod (#/applicationOpenUntitledFile :void) ((self alpaca-app-delegate))
   (#/newDocument: self nil))

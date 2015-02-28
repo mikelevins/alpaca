@@ -12,10 +12,12 @@
 
 
 (defclass alpaca-text-view (ns:ns-text-view)
-  ()
+  ((document :foreign-type :id :accessor document))
   (:metaclass ns:+ns-object))
 
-
+(defclass alpaca-document (ns:ns-document)
+  ()
+  (:metaclass ns:+ns-object))
 
 (defun editor-window-mask ()
   (logior #$NSTitledWindowMask

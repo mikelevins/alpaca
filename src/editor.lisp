@@ -21,7 +21,7 @@
 
 (objc:defmethod #/initWithFrame:textContainer:
     ((self alpaca-text-view) (frame ns:ns-rect) (container :id))
-  (let ((new (cl::call-next-method frame container)))
+  (let ((new (call-next-method frame container)))
     (unless (%null-ptr-p new)
       (#/setAllowsUndo: new t))
     new))

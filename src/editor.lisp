@@ -11,6 +11,10 @@
 (in-package :alpaca)
 
 
+;;; ---------------------------------------------------------------------
+;;; the plain text view
+;;; ---------------------------------------------------------------------
+
 (defclass alpaca-text-view (ns:ns-text-view)
   ((document :foreign-type :id :accessor document))
   (:metaclass ns:+ns-object))
@@ -22,9 +26,17 @@
       (#/setAllowsUndo: new t))
     new))
 
+;;; ---------------------------------------------------------------------
+;;; the plain text document
+;;; ---------------------------------------------------------------------
+
 (defclass alpaca-document (ns:ns-document)
   ()
   (:metaclass ns:+ns-object))
+
+;;; ---------------------------------------------------------------------
+;;; editor window
+;;; ---------------------------------------------------------------------
 
 (defun editor-window-mask ()
   (logior #$NSTitledWindowMask

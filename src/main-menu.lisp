@@ -21,23 +21,38 @@
                       (objc:@selector "setAppleMenu:")
                       :with-object menu)
 
-    (add-menu-item menu #@"About Alpaca" :action (objc:@selector "orderFrontStandardAboutPanel:") :target (ccl::nsapp))
+    (add-menu-item menu #@"About Alpaca"
+                   :action (objc:@selector "orderFrontStandardAboutPanel:")
+                   :target (ccl::nsapp))
     (add-menu-separator menu)
 
     (add-menu-item menu #@"Preferences..." :key-equivalent #@"," :target (ccl::nsapp))
+
     (let ((services-menu (make-menu #@"Services"))
           (services-item (add-menu-item menu #@"Services" :target (ccl::nsapp))))
       (#/setSubmenu:forItem: menu services-menu services-item)
       (#/setServicesMenu: (ccl::nsapp) services-menu))
+
     (add-menu-separator menu)
 
-    (add-menu-item menu #@"Hide Alpaca" :action (objc:@selector "hide:") :target (ccl::nsapp) :key-equivalent #@"h")
-    (add-menu-item menu #@"Hide Others" :action (objc:@selector "hideOtherApplications:") :target (ccl::nsapp)
-                   :key-equivalent #@"h" :key-equivalent-modifier-mask (logior #$NSCommandKeyMask #$NSAlternateKeyMask))
-    (add-menu-item menu #@"Show All" :action (objc:@selector "unhideAllApplications:") :target (ccl::nsapp))
+    (add-menu-item menu #@"Hide Alpaca"
+                   :action (objc:@selector "hide:")
+                   :target (ccl::nsapp)
+                   :key-equivalent #@"h")
+    (add-menu-item menu #@"Hide Others"
+                   :action (objc:@selector "hideOtherApplications:")
+                   :target (ccl::nsapp)
+                   :key-equivalent #@"h"
+                   :key-equivalent-modifier-mask (logior #$NSCommandKeyMask #$NSAlternateKeyMask))
+    (add-menu-item menu #@"Show All"
+                   :action (objc:@selector "unhideAllApplications:")
+                   :target (ccl::nsapp))
     (add-menu-separator menu)
 
-    (add-menu-item menu #@"Quit" :action (objc:@selector "terminate:") :target (ccl::nsapp) :key-equivalent #@"q")
+    (add-menu-item menu #@"Quit"
+                   :action (objc:@selector "terminate:")
+                   :target (ccl::nsapp)
+                   :key-equivalent #@"q")
     
     (#/setSubmenu:forItem: main-menu menu main-item)))
 
@@ -65,8 +80,13 @@
     (add-menu-item menu #@"Revert" :action (objc:@selector "revertDocumentToSaved:"))
     (add-menu-separator menu)
 
-    (add-menu-item menu #@"Page Setup..." :action (objc:@selector "runPageLayout:") :target (ccl::nsapp) :key-equivalent #@"P")
-    (add-menu-item menu #@"Print..." :action (objc:@selector "printDocument:") :target (ccl::nsapp) :key-equivalent #@"p")
+    (add-menu-item menu #@"Page Setup..."
+                   :action (objc:@selector "runPageLayout:")
+                   :target (ccl::nsapp) :key-equivalent #@"P")
+
+    (add-menu-item menu #@"Print..."
+                   :action (objc:@selector "printDocument:")
+                   :target (ccl::nsapp) :key-equivalent #@"p")
 
     (#/setSubmenu:forItem: main-menu menu main-item)))
 
@@ -85,7 +105,9 @@
     (add-menu-item menu #@"Cut" :action (objc:@selector "cut:") :key-equivalent #@"x")
     (add-menu-item menu #@"Copy" :action (objc:@selector "copy:") :key-equivalent #@"c")
     (add-menu-item menu #@"Paste" :action (objc:@selector "paste:") :key-equivalent #@"v")
-    (add-menu-item menu #@"Paste and Match Style" :action (objc:@selector "pasteAsPlainText:") :key-equivalent #@"V")
+    (add-menu-item menu #@"Paste and Match Style"
+                   :action (objc:@selector "pasteAsPlainText:")
+                   :key-equivalent #@"V")
     (add-menu-item menu #@"Delete" :action (objc:@selector "delete:"))
     (add-menu-item menu #@"Select All" :action (objc:@selector "selectAll:") :key-equivalent #@"a")
     (add-menu-separator menu)
@@ -100,14 +122,18 @@
                      :key-equivalent #@"G" :tag #$NSFindPanelActionPrevious)
       (add-menu-item find-menu #@"Use Selection for Find" :action (objc:@selector "performFindPanelAction:") 
                      :key-equivalent #@"e" :tag #$NSFindPanelActionSetFindString)
-      (add-menu-item find-menu #@"Jump To Selection" :action (objc:@selector "centerSelectionInVisibleArea:") :key-equivalent #@"j")
+      (add-menu-item find-menu #@"Jump To Selection"
+                     :action (objc:@selector "centerSelectionInVisibleArea:") :key-equivalent #@"j")
       (#/setSubmenu:forItem: menu find-menu find-item))
 
     (let ((spelling-menu (make-menu #@"Spelling"))
           (spelling-item (add-menu-item menu #@"Spelling")))
-      (add-menu-item spelling-menu #@"Spelling..." :action (objc:@selector "showGuessPanel:") :target (ccl::nsapp) :key-equivalent #@":")
-      (add-menu-item spelling-menu #@"Check Spelling" :action (objc:@selector "checkSpelling:") :target (ccl::nsapp) :key-equivalent #@";")
-      (add-menu-item spelling-menu #@"Check Spelling as You Type" :action (objc:@selector "toggleContinuousSpellChecking:") :target (ccl::nsapp))
+      (add-menu-item spelling-menu #@"Spelling..."
+                     :action (objc:@selector "showGuessPanel:") :target (ccl::nsapp) :key-equivalent #@":")
+      (add-menu-item spelling-menu #@"Check Spelling"
+                     :action (objc:@selector "checkSpelling:") :target (ccl::nsapp) :key-equivalent #@";")
+      (add-menu-item spelling-menu #@"Check Spelling as You Type"
+                     :action (objc:@selector "toggleContinuousSpellChecking:") :target (ccl::nsapp))
       (#/setSubmenu:forItem: menu spelling-menu spelling-item))
 
     (#/setSubmenu:forItem: main-menu menu main-item)))
@@ -120,7 +146,8 @@
   (let* ((main-item (add-menu-item main-menu #@"Window"))
          (menu (make-menu #@"Window")))
 
-    (add-menu-item menu #@"Minimize" :action (objc:@selector "performMinimize:") :target (ccl::nsapp) :key-equivalent #@"m")
+    (add-menu-item menu #@"Minimize"
+                   :action (objc:@selector "performMinimize:") :target (ccl::nsapp) :key-equivalent #@"m")
     (add-menu-item menu #@"Zoom" :action (objc:@selector "performZoom:") :target (ccl::nsapp))
     (add-menu-separator menu)
 
@@ -136,7 +163,8 @@
   (let* ((main-item (add-menu-item main-menu #@"Help"))
          (menu (make-menu #@"Help")))
 
-    (add-menu-item menu #@"Alpaca Help" :action (objc:@selector "showHelp:") :target (ccl::nsapp) :key-equivalent #@"?")
+    (add-menu-item menu #@"Alpaca Help"
+                   :action (objc:@selector "showHelp:") :target (ccl::nsapp) :key-equivalent #@"?")
 
     (#/setSubmenu:forItem: main-menu menu main-item)))
 

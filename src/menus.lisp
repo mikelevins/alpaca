@@ -22,11 +22,11 @@
 
 (defun add-menu-item (menu item-title 
                       &key
-                      (action (%null-ptr))
-                      (target (%null-ptr)) ; by default target the First Responder
-                      (key-equivalent #@"")
-                      (key-equivalent-modifier-mask nil)
-                      (tag nil))
+                        (action (%null-ptr))
+                        (target (%null-ptr)) ; by default target the First Responder
+                        (key-equivalent #@"")
+                        (key-equivalent-modifier-mask nil)
+                        (tag nil))
   (let ((item (#/addItemWithTitle:action:keyEquivalent: menu item-title action key-equivalent)))
     (when key-equivalent-modifier-mask
       (#/setKeyEquivalentModifierMask: item key-equivalent-modifier-mask))

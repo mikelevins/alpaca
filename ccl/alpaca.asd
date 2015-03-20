@@ -1,0 +1,105 @@
+;;;; ***********************************************************************
+;;;; FILE IDENTIFICATION
+;;;;
+;;;; Name:          Alpaca.lisp
+;;;; Project:       The Alpaca Text Editor
+;;;; Purpose:       build the Alpaca application image
+;;;; Author:        mikel evins
+;;;; Copyright:     2011 by mikel evins
+;;;;
+;;;; ***********************************************************************
+
+(in-package :cl-user)
+
+(require :asdf)
+(require "OBJC-SUPPORT")
+
+;;; ---------------------------------------------------------------------
+;;; system definitions and loaders
+;;; ---------------------------------------------------------------------
+
+(defparameter *ccl-home* (translate-logical-pathname "ccl:"))
+(defparameter *alpaca-root* (make-pathname :directory (pathname-directory *load-truename*)))
+(defparameter *assets-path* (merge-pathnames "assets/" *alpaca-root*))
+(defparameter *assets-bundle-path* (merge-pathnames "bundle/" *assets-path*))
+(defparameter *bundle-path* (merge-pathnames "Alpaca.app/" *alpaca-root*))
+(defparameter *contents-path* (merge-pathnames "Contents/" *bundle-path*))
+(defparameter *macos-path* (merge-pathnames "MacOS/" *contents-path*))
+(defparameter *resources-path* (merge-pathnames "Resources/" *contents-path*))
+(defparameter *en.lproj-path* (merge-pathnames "en.lproj/" *resources-path*))
+
+(defun path (stem-path leaf-path)
+  (merge-pathnames leaf-path stem-path))
+
+(asdf:defsystem #:alpaca
+  :name "alpaca"
+  :version "1.0.0"
+  :author "mikel evins"
+  :license "Apache License v 2.0"
+  :description "Alpaca, the Programmable Editor"
+  :serial t
+  :components ((:module src :serial t
+                        :components
+                        ((:file "package")
+                         (:file "cocoa")
+                         (:file "keymaps")
+                         (:file "init")
+                         (:file "editor")
+                         (:file "delegate")
+                         (:file "menus")
+                         (:file "main-menu")
+                         (:file "main")
+                         (:file "make")))))
+
+(in-package :cl-user)
+
+(defun load-alpaca ()
+  (asdf::oos 'asdf:compile-op :alpaca)
+  (asdf::oos 'asdf:load-op :alpaca))
+
+(defun build-alpaca ()
+  (load-alpaca)
+  (ensure-directories-exist *macos-path*)
+  (ensure-directories-exist (path *macos-path* "darwin-x86-headers64/cocoa/"))
+  (ensure-directories-exist (path *macos-path* "darwin-x86-headers64/libc/"))
+  (ensure-directories-exist *en.lproj-path*)
+  (copy-file (path *ccl-home* "darwin-x86-headers64/cocoa/constants.cdb")
+             (path *macos-path* "darwin-x86-headers64/cocoa/constants.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/cocoa/functions.cdb")
+             (path *macos-path* "darwin-x86-headers64/cocoa/functions.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/cocoa/objc-classes.cdb")
+             (path *macos-path* "darwin-x86-headers64/cocoa/objc-classes.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/cocoa/objc-methods.cdb")
+             (path *macos-path* "darwin-x86-headers64/cocoa/objc-methods.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/cocoa/records.cdb")
+             (path *macos-path* "darwin-x86-headers64/cocoa/records.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/cocoa/types.cdb")
+             (path *macos-path* "darwin-x86-headers64/cocoa/types.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/cocoa/vars.cdb")
+             (path *macos-path* "darwin-x86-headers64/cocoa/vars.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/libc/constants.cdb")
+             (path *macos-path* "darwin-x86-headers64/libc/constants.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/libc/functions.cdb")
+             (path *macos-path* "darwin-x86-headers64/libc/functions.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/libc/objc-classes.cdb")
+             (path *macos-path* "darwin-x86-headers64/libc/objc-classes.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/libc/objc-methods.cdb")
+             (path *macos-path* "darwin-x86-headers64/libc/objc-methods.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/libc/records.cdb")
+             (path *macos-path* "darwin-x86-headers64/libc/records.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/libc/types.cdb")
+             (path *macos-path* "darwin-x86-headers64/libc/types.cdb"))
+  (copy-file (path *ccl-home* "darwin-x86-headers64/libc/vars.cdb")
+             (path *macos-path* "darwin-x86-headers64/libc/vars.cdb"))
+  (copy-file (path *assets-bundle-path* "en.lproj/Credits.rtf")
+             (path *en.lproj-path* "Credits.rtf"))
+  (copy-file (path *assets-bundle-path* "en.lproj/InfoPlist.strings")
+             (path *en.lproj-path* "InfoPlist.strings"))
+  (copy-file (path *assets-bundle-path* "Info.plist")
+             (path *contents-path* "Info.plist"))
+  (copy-file (path *assets-bundle-path* "Alpaca.icns")
+             (path *resources-path* "Alpaca.icns"))
+  (build-image (path *macos-path* "Alpaca")))
+
+;;; (load-alpaca)
+;;; (build-alpaca)

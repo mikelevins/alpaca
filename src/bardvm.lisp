@@ -83,6 +83,9 @@
 (defmethod false? ((x nothing)) t)
 (defmethod false? ((x null)) t)
 
+(defparameter +named-literals+
+  (list (end)(undefined)(nothing)(true)(false)))
+
 ;;; ---------------------------------------------------------------------
 ;;; auxiliary functions
 ;;; ---------------------------------------------------------------------
@@ -153,10 +156,10 @@
 
 (def-bard-macro define (name &rest body)
   (if (atom name)
-      `(name! (set! ,name . ,body) ',name)
+      `(|name!| (|set!| ,name . ,body) (|quote| ,name))
       (bard-macro-expand
-         `(define ,(first name) 
-            (lambda ,(rest name) . ,body)))))
+         `(|define| ,(first name) 
+                    (|lambda| ,(rest name) . ,body)))))
 
 (defun bard-macro-expand (x)
   "Macro-expand this Bard expression."
@@ -169,63 +172,60 @@
 ;;; built-in bard macro definitions
 ;;; ---------------------------------------------------------------------
 
-(def-bard-macro %let (bindings &rest body)
-  `((lambda ,(mapcar #'first bindings) . ,body)
+(def-bard-macro |%let| (bindings &rest body)
+  `((|lambda| ,(mapcar #'first bindings) . ,body)
     .,(mapcar #'second bindings)))
 
-(def-bard-macro let (bindings &rest body)
+(def-bard-macro |let| (bindings &rest body)
   (if (null bindings)
-      `(begin .,body)
-      `(%let (,(first bindings))
-         (let ,(rest bindings) . ,body))))
+      `(|begin| .,body)
+      `(|%let| (,(first bindings))
+         (|let| ,(rest bindings) . ,body))))
 
-(def-bard-macro and (&rest args)
+(def-bard-macro |and| (&rest args)
   (cond ((null args) 'T)
         ((length=1 args) (first args))
-        (t `(if ,(first args)
-                (and . ,(rest args))))))
+        (t `(|if| ,(first args)
+                (|and| . ,(rest args))))))
 
-(def-bard-macro or (&rest args)
+(def-bard-macro |or| (&rest args)
   (cond ((null args) 'nil)
         ((length=1 args) (first args))
         (t (let ((var (gensym)))
-             `(let ((,var ,(first args)))
-                (if ,var ,var (or . ,(rest args))))))))
+             `(|let| ((,var ,(first args)))
+                (|if| ,var ,var (|or| . ,(rest args))))))))
 
-(def-bard-macro cond (&rest clauses)
+(def-bard-macro |cond| (&rest clauses)
   (cond ((null clauses) nil)
         ((length=1 (first clauses))
-         `(or ,(first clauses) (cond .,(rest clauses))))
-        ((starts-with (first clauses) 'else)
-         `(begin .,(rest (first clauses))))
-        (t `(if ,(first (first clauses))
-                (begin .,(rest (first clauses)))
-                (cond .,(rest clauses))))))
+         `(|or| ,(first clauses) (|cond| .,(rest clauses))))
+        ((starts-with (first clauses) '|else|)
+         `(|begin| .,(rest (first clauses))))
+        (t `(|if| ,(first (first clauses))
+                  (|begin| .,(rest (first clauses)))
+                  (|cond| .,(rest clauses))))))
 
-(def-bard-macro case (key &rest clauses)
+(def-bard-macro |case| (key &rest clauses)
   (let ((key-val (gensym "KEY")))
-    `(let ((,key-val ,key))
-       (cond ,@(mapcar
-                #'(lambda (clause)
-                    (if (starts-with clause 'else)
-                        clause
-                        `((member ,key-val ',(first clause))
-                          .,(rest clause))))
-                clauses)))))
+    `(|let| ((,key-val ,key))
+            (|cond| ,@(mapcar
+                       #'(lambda (clause)
+                           (if (starts-with clause 'else)
+                               clause
+                               `((member ,key-val ',(first clause))
+                                 .,(rest clause))))
+                       clauses)))))
 
-(def-bard-macro define (name &rest body)
+(def-bard-macro |define| (name &rest body)
   (if (atom name)
-      `(begin (set! ,name . ,body) ',name)
-      `(define ,(first name) 
-         (lambda ,(rest name) . ,body))))
+      `(|begin| (|set!| ,name . ,body) (|quote| ,name))
+      `(|define| ,(first name) 
+                 (|lambda| ,(rest name) . ,body))))
 
-(def-bard-macro delay (computation)
-  `(lambda () ,computation))
-
-(def-bard-macro letrec (bindings &rest body)
-  `(let ,(mapcar #'(lambda (v) (list (first v) nil)) bindings)
-     ,@(mapcar #'(lambda (v) `(set! .,v)) bindings)
-     .,body))
+(def-bard-macro |letrec| (bindings &rest body)
+  `(|let| ,(mapcar #'(lambda (v) (list (first v) nil)) bindings)
+          ,@(mapcar #'(lambda (v) `(|set!| .,v)) bindings)
+          .,body))
 
 
 ;;; ---------------------------------------------------------------------
@@ -282,11 +282,11 @@
     (setf (fn-name fn) name))
   name)
 
-(set-global-var! 'name! #'name!)
+(set-global-var! '|name!| #'name!)
 
 (defun print-fn (fn &optional (stream *standard-output*) depth)
   (declare (ignore depth))
-  (format stream "{~a}" (or (fn-name fn) '??)))
+  (format stream "(~a ->)" (or (fn-name fn) '??)))
 
 (defun label-p (x) "Is x a label?" (atom x))
 
@@ -297,16 +297,16 @@
 
 (defun comp (x env val? more?)
   "Compile the expression x into a list of instructions"
-    (cond
-      ((member x '(t nil)) (comp-const x val? more?))
-      ((symbolp x) (comp-var x env val? more?))
-      ((atom x) (comp-const x val? more?))
-      ((bard-macro (first x)) (comp (bard-macro-expand x) env val? more?))
-      ((case (first x)
-         (QUOTE  (arg-count x 1)
+  (cond
+    ((member x +named-literals+) (comp-const x val? more?))
+    ((symbolp x) (comp-var x env val? more?))
+    ((atom x) (comp-const x val? more?))
+    ((bard-macro (first x)) (comp (bard-macro-expand x) env val? more?))
+    ((case (first x)
+       (|quote|  (arg-count x 1)
                  (comp-const (second x) val? more?))
-         (BEGIN  (comp-begin (rest x) env val? more?))
-         (SET!   (arg-count x 2)
+       (|begin|  (comp-begin (rest x) env val? more?))
+       (|set!|   (arg-count x 2)
                  (assert (symbolp (second x)) (x)
                          "Only symbols can be set!, not ~a in ~a"
                          (second x) x)
@@ -314,13 +314,13 @@
                       (gen-set (second x) env)
                       (if (not val?) (gen 'POP))
                       (unless more? (gen 'RETURN))))
-         (IF     (arg-count x 2 3)
+       (|if|     (arg-count x 2 3)
                  (comp-if (second x) (third x) (fourth x)
                           env val? more?))
-         (LAMBDA (when val?
+       (|lambda| (when val?
                    (let ((f (comp-lambda (second x) (rest2 x) env)))
                      (seq (gen 'FN f) (unless more? (gen 'RETURN))))))
-         (t      (comp-funcall (first x) (rest x) env val? more?))))))
+       (t      (comp-funcall (first x) (rest x) env val? more?))))))
 
 ;;; ==============================
 
@@ -482,14 +482,14 @@
 (defparameter *primitive-fns*
   '((+ 2 + true) (- 2 - true) (* 2 * true) (/ 2 / true)
     (< 2 <) (> 2 >) (<= 2 <=) (>= 2 >=) (/= 2 /=) (= 2 =)
-    (eq? 2 eq) (equal? 2 equal) (eqv? 2 eql)
-    (not 1 not) (null? 1 not)
-    (car 1 car) (cdr 1 cdr)  (cadr 1 cadr) (cons 2 cons true)
-    (list 1 list1 true) (list 2 list2 true) (list 3 list3 true)
-    (read 0 bard-read nil t) (end? 1 end?) ;***
-    (write 1 write nil t) (display 1 display nil t)
-    (newline 0 newline nil t) (compiler 1 compiler t) 
-    (name! 2 name! true t) (random 1 random true nil)))
+    (|eq?| 2 eq) (|equal?| 2 equal) (|eqv?| 2 eql)
+    (|not| 1 not) (|null?| 1 not)
+    (|car| 1 car) (|cdr| 1 cdr)  (|cadr| 1 cadr) (|cons| 2 cons true)
+    (|list| 1 list1 true) (|list| 2 list2 true) (|list| 3 list3 true)
+    (|read| 0 bard-read nil t) (|end?| 1 end?) ;***
+    (|write| 1 write nil t) (|display| 1 display nil t)
+    (|newline| 0 newline nil t) (|compiler| 1 compiler t) 
+    (|name!| 2 name! true t) (|random| 1 random true nil)))
 
 (defstruct (prim (:type list)) 
   symbol n-args opcode always side-effects)
@@ -702,10 +702,10 @@
 
 (defun init-bard-comp ()
   "Initialize values (including call/cc) for the Bard compiler."
-  (set-global-var! 'exit 
-                   (new-fn :name 'exit :args '(val) :code '((HALT))))
-  (set-global-var! 'call/cc
-                   (new-fn :name 'call/cc :args '(f)
+  (set-global-var! '|exit| 
+                   (new-fn :name '|exit| :args '(val) :code '((HALT))))
+  (set-global-var! '|call/cc|
+                   (new-fn :name '|call/cc| :args '(f)
                            :code '((ARGS 1) (CC) (LVAR 0 0 ";" f)
                                    (CALLJ 1)))) ; *** Bug fix, gat, 11/9/92
   (dolist (prim *primitive-fns*)
@@ -719,12 +719,12 @@
 ;;; ---------------------------------------------------------------------
 
 (defconstant bard-top-level
-  '(begin (define (bard)
-           (newline)
-           (display "=> ")
-           (write ((compiler (read))))
-           (bard))
-    (bard)))
+  '(|begin| (|define| (|bard|)
+             (|newline|)
+             (|display| "=> ")
+             (|write| ((|compiler| (|read|))))
+             (|bard|))
+    (|bard|)))
 
 (defun bard ()
   "A compiled Bard read-eval-print loop"
@@ -824,9 +824,9 @@
 ;;; the bard reader
 ;;; ---------------------------------------------------------------------
 
-(defvar *bard-readtable*
+(defparameter *bard-readtable*
   (let ((tbl (copy-readtable)))
-    ;;(setf (readtable-case tbl) :preserve)
+    (setf (readtable-case tbl) :preserve)
     tbl))
 
 (defun bard-read (&optional (stream *standard-input*))

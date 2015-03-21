@@ -24,30 +24,6 @@
 ;;; Code from Paradigms of Artificial Intelligence Programming
 ;;; Copyright (c) 1991 Peter Norvig
 
-;;; File interp1.lisp: simple Scheme interpreter, including macros.
-
-(defun interp (x &optional env)
-  "Interpret (evaluate) the expression x in the environment env."
-  (cond
-    ((symbolp x) (get-var x env))
-    ((atom x) x)
-    ((case (first x)
-       (QUOTE  (second x))
-       (BEGIN  (last1 (mapcar #'(lambda (y) (interp y env))
-                              (rest x))))
-       (SET!   (set-var! (second x) (interp (third x) env) env))
-       (IF     (if (interp (second x) env)
-                   (interp (third x) env)
-                   (interp (fourth x) env)))
-       (LAMBDA (let ((parms (second x))
-                     (code (maybe-add 'begin (rest2 x))))
-                 #'(lambda (&rest args)
-                     (interp code (extend-env parms args env)))))
-       (t      ;; a procedure application
-               (apply (interp (first x) env)
-                      (mapcar #'(lambda (v) (interp v env))
-                              (rest x))))))))
-
 (defun set-var! (var val env)
   "Set a variable to a value, in the given or global environment."
   (if (assoc var env)
@@ -68,113 +44,68 @@
   (let* ((default "unbound")
          (val (get var 'global-val default)))
     (if (eq val default)
-        (error "Unbound scheme variable: ~a" var)
+        (error "Unbound bard variable: ~a" var)
         val)))
 
 (defun extend-env (vars vals env)
   "Add some variables and values to an environment."
   (nconc (mapcar #'list vars vals) env))
 
-(defparameter *scheme-procs*
+(defparameter *bard-procs*
   '(+ - * / = < > <= >= cons car cdr not append list read member
     (null? null) (eq? eq) (equal? equal) (eqv? eql)
     (write prin1) (display princ) (newline terpri)))
 
-(defun init-scheme-interp ()
-  "Initialize the scheme interpreter with some global variables."
-  ;; Define Scheme procedures as CL functions:
-  (mapc #'init-scheme-proc *scheme-procs*)
-  ;; Define the boolean `constants'. Unfortunately, this won't 
-  ;; stop someone from saying: (set! t nil)
-  (set-global-var! t t)
-  (set-global-var! nil nil))
 
-(defun init-scheme-proc (f)
-  "Define a Scheme procedure as a corresponding CL function."
+(defun init-bard-proc (f)
+  "Define a Bard procedure as a corresponding CL function."
   (if (listp f)
       (set-global-var! (first f) (symbol-function (second f)))
       (set-global-var! f (symbol-function f))))
 
-(defun scheme (&optional x)
-  "A Scheme read-eval-print loop (using interp)"
-  ;; Modified by norvig Jun 11 96 to handle optional argument
-  ;; instead of always going into a loop.
-  (init-scheme-interp)
-  (if x
-      (interp x nil)
-    (loop (format t "~&==> ")
-      (print (interp (read) nil)))))
-
-;;;; The following version handles macros:
-
-(defun interp (x &optional env)
-  "Interpret (evaluate) the expression x in the environment env.
-  This version handles macros."
-  (cond
-    ((symbolp x) (get-var x env))
-    ((atom x) x)
-    ((scheme-macro (first x))              ;***
-     (interp (scheme-macro-expand x) env)) ;***
-    ((case (first x)
-       (QUOTE  (second x))
-       (BEGIN  (last1 (mapcar #'(lambda (y) (interp y env))
-                              (rest x))))
-       (SET!   (set-var! (second x) (interp (third x) env) env))
-       (IF     (if (interp (second x) env)
-                   (interp (third x) env)
-                   (interp (fourth x) env)))
-       (LAMBDA (let ((parms (second x))
-                     (code (maybe-add 'begin (rest2 x))))
-                 #'(lambda (&rest args)
-                     (interp code (extend-env parms args env)))))
-       (t      ;; a procedure application
-               (apply (interp (first x) env)
-                      (mapcar #'(lambda (v) (interp v env))
-                              (rest x))))))))
-
 ;;; ==============================
 
-(defun scheme-macro (symbol)
-  (and (symbolp symbol) (get symbol 'scheme-macro)))
+(defun bard-macro (symbol)
+  (and (symbolp symbol) (get symbol 'bard-macro)))
 
-(defmacro def-scheme-macro (name parmlist &body body)
-  "Define a Scheme macro."
-  `(setf (get ',name 'scheme-macro)
+(defmacro def-bard-macro (name parmlist &body body)
+  "Define a Bard macro."
+  `(setf (get ',name 'bard-macro)
          #'(lambda ,parmlist .,body)))
 
-(defun scheme-macro-expand (x)
-  "Macro-expand this Scheme expression."
-  (if (and (listp x) (scheme-macro (first x)))
-      (scheme-macro-expand
-        (apply (scheme-macro (first x)) (rest x)))
+(defun bard-macro-expand (x)
+  "Macro-expand this Bard expression."
+  (if (and (listp x) (bard-macro (first x)))
+      (bard-macro-expand
+        (apply (bard-macro (first x)) (rest x)))
       x))
 
 ;;; ==============================
 
-(def-scheme-macro let (bindings &rest body)
+(def-bard-macro let (bindings &rest body)
   `((lambda ,(mapcar #'first bindings) . ,body)
     .,(mapcar #'second bindings)))
 
-(def-scheme-macro let* (bindings &rest body)
+(def-bard-macro let* (bindings &rest body)
   (if (null bindings)
       `(begin .,body)
       `(let (,(first bindings))
          (let* ,(rest bindings) . ,body))))
 
-(def-scheme-macro and (&rest args)
+(def-bard-macro and (&rest args)
   (cond ((null args) 'T)
         ((length=1 args) (first args))
         (t `(if ,(first args)
                 (and . ,(rest args))))))
 
-(def-scheme-macro or (&rest args)
+(def-bard-macro or (&rest args)
   (cond ((null args) 'nil)
         ((length=1 args) (first args))
         (t (let ((var (gensym)))
              `(let ((,var ,(first args)))
                 (if ,var ,var (or . ,(rest args))))))))
 
-(def-scheme-macro cond (&rest clauses)
+(def-bard-macro cond (&rest clauses)
   (cond ((null clauses) nil)
         ((length=1 (first clauses))
          `(or ,(first clauses) (cond .,(rest clauses))))
@@ -184,7 +115,7 @@
                 (begin .,(rest (first clauses)))
                 (cond .,(rest clauses))))))
 
-(def-scheme-macro case (key &rest clauses)
+(def-bard-macro case (key &rest clauses)
   (let ((key-val (gensym "KEY")))
     `(let ((,key-val ,key))
        (cond ,@(mapcar
@@ -195,81 +126,25 @@
                           .,(rest clause))))
                 clauses)))))
 
-(def-scheme-macro define (name &rest body)
+(def-bard-macro define (name &rest body)
   (if (atom name)
       `(begin (set! ,name . ,body) ',name)
       `(define ,(first name) 
          (lambda ,(rest name) . ,body))))
 
-(def-scheme-macro delay (computation)
+(def-bard-macro delay (computation)
   `(lambda () ,computation))
 
-(def-scheme-macro letrec (bindings &rest body)
+(def-bard-macro letrec (bindings &rest body)
   `(let ,(mapcar #'(lambda (v) (list (first v) nil)) bindings)
      ,@(mapcar #'(lambda (v) `(set! .,v)) bindings)
      .,body))
 
-;;; -*- Mode: Lisp; Syntax: Common-Lisp; -*-
-;;; Code from Paradigms of Artificial Intelligence Programming
-;;; Copyright (c) 1991 Peter Norvig
-
-;;;; File compile1.lisp: Simplest version of Scheme compiler
-
-(defun comp (x env)
-  "Compile the expression x into a list of instructions"
-  (cond
-    ((symbolp x) (gen-var x env))
-    ((atom x) (gen 'CONST x))
-    ((scheme-macro (first x)) (comp (scheme-macro-expand x) env))
-    ((case (first x)
-       (QUOTE  (gen 'CONST (second x)))
-       (BEGIN  (comp-begin (rest x) env))
-       (SET!   (seq (comp (third x) env) (gen-set (second x) env)))
-       (IF     (comp-if (second x) (third x) (fourth x) env))
-       (LAMBDA (gen 'FN (comp-lambda (second x) (rest (rest x)) env)))
-       ;; Procedure application:
-       ;; Compile args, then fn, then the call
-       (t      (seq (mappend #'(lambda (y) (comp y env)) (rest x))
-                    (comp (first x) env)
-                              (gen 'call (length (rest x)))))))))
-
-;;; ==============================
-
-(defun comp-begin (exps env)
-  "Compile a sequence of expressions, popping all but the last."
-  (cond ((null exps) (gen 'CONST nil))
-        ((length=1 exps) (comp (first exps) env))
-        (t (seq (comp (first exps) env)
-                (gen 'POP)
-                (comp-begin (rest exps) env)))))
-
-;;; ==============================
-
-(defun comp-if (pred then else env)
-  "Compile a conditional expression."
-  (let ((L1 (gen-label))
-        (L2 (gen-label)))
-    (seq (comp pred env) (gen 'FJUMP L1)
-         (comp then env) (gen 'JUMP L2)
-         (list L1) (comp else env)
-         (list L2))))
 
 ;;; ==============================
 
 (defstruct (fn (:print-function print-fn))
   code (env nil) (name nil) (args nil))
-
-(defun comp-lambda (args body env)
-  "Compile a lambda form into a closure with compiled code."
-  (assert (and (listp args) (every #'symbolp args)) ()
-          "Lambda arglist must be a list of symbols, not ~a" args)
-  ;; For now, no &rest parameters.  
-  ;; The next version will support Scheme's version of &rest
-  (make-fn
-    :env env :args args
-    :code (seq (gen 'ARGS (length args))
-               (comp-begin body (cons args env))
-               (gen 'RETURN))))
 
 ;;; ==============================
 
@@ -308,19 +183,12 @@
         (gen 'LVAR (first p) (second p) ";" var)
         (gen 'GVAR var))))
 
-(defun gen-set (var env)
-  "Generate an instruction to set a variable to top-of-stack."
-  (let ((p (in-env-p var env)))
-    (if p
-        (gen 'LSET (first p) (second p) ";" var)
-        (gen 'GSET var))))
-
 ;;; ==============================
 
-(def-scheme-macro define (name &rest body)
+(def-bard-macro define (name &rest body)
   (if (atom name)
       `(name! (set! ,name . ,body) ',name)
-      (scheme-macro-expand
+      (bard-macro-expand
          `(define ,(first name) 
             (lambda ,(rest name) . ,body)))))
 
@@ -330,30 +198,11 @@
     (setf (fn-name fn) name))
   name)
 
-;; This should also go in init-scheme-interp:
 (set-global-var! 'name! #'name!)
 
 (defun print-fn (fn &optional (stream *standard-output*) depth)
   (declare (ignore depth))
   (format stream "{~a}" (or (fn-name fn) '??)))
-
-(defun show-fn (fn &optional (stream *standard-output*) (depth 0))
-  "Print all the instructions in a function.
-  If the argument is not a function, just princ it, 
-  but in a column at least 8 spaces wide."
-  (if (not (fn-p fn))
-      (format stream "~8a" fn)
-      (progn
-        (fresh-line)
-        (incf depth 8)
-        (dolist (instr (fn-code fn))
-          (if (label-p instr)
-              (format stream "~a:" instr)
-              (progn
-                (format stream "~VT" depth)
-                (dolist (arg instr)
-                  (show-fn arg stream depth))
-                (fresh-line)))))))
 
 (defun label-p (x) "Is x a label?" (atom x))
 
@@ -366,7 +215,7 @@
 ;;; Code from Paradigms of Artificial Intelligence Programming
 ;;; Copyright (c) 1991 Peter Norvig
 
-;;;; File compile2.lisp: Scheme compiler with tail recursion
+;;;; File compile2.lisp: Bard compiler with tail recursion
 ;;;; and some optimizations and primitive instructions.
 
 (defun comp (x env val? more?)
@@ -375,7 +224,7 @@
       ((member x '(t nil)) (comp-const x val? more?))
       ((symbolp x) (comp-var x env val? more?))
       ((atom x) (comp-const x val? more?))
-      ((scheme-macro (first x)) (comp (scheme-macro-expand x) env val? more?))
+      ((bard-macro (first x)) (comp (bard-macro-expand x) env val? more?))
       ((case (first x)
          (QUOTE  (arg-count x 1)
                  (comp-const (second x) val? more?))
@@ -508,23 +357,6 @@
 (defstruct (prim (:type list)) 
   symbol n-args opcode always side-effects)
 
-;;; Note change from book: some of the following primitive fns have had
-;;; trailing NIL fields made explicit, because some Lisp's will give
-;;; an error (rather than NIL), when asked to find the prim-side-effects
-;;; of a three-element list.
-
-(defparameter *primitive-fns*
-  '((+ 2 + true nil) (- 2 - true nil) (* 2 * true nil) (/ 2 / true nil)
-    (< 2 < nil nil) (> 2 > nil nil) (<= 2 <= nil nil) (>= 2 >= nil nil)
-    (/= 2 /= nil nil) (= 2 = nil nil)
-    (eq? 2 eq nil nil) (equal? 2 equal nil nil) (eqv? 2 eql nil nil)
-    (not 1 not nil nil) (null? 1 not nil nil) (cons 2 cons true nil)
-    (car 1 car nil nil) (cdr 1 cdr nil nil)  (cadr 1 cadr nil nil) 
-    (list 1 list1 true nil) (list 2 list2 true nil) (list 3 list3 true nil)
-    (read 0 read nil t) (write 1 write nil t) (display 1 display nil t)
-    (newline 0 newline nil t) (compiler 1 compiler t nil) 
-    (name! 2 name! true t) (random 1 random true nil)))
-
 (defun primitive-p (f env n-args)
   "F is a primitive if it is in the table, and is not shadowed
   by something in the environment, and has the right number of args."
@@ -551,15 +383,6 @@
             (error "Can't alter the constant ~a" var)
             (gen 'GSET var)))))
 
-;;; ==============================
-
-(defun init-scheme-comp ()
-  "Initialize the primitive functions."
-  (dolist (prim *primitive-fns*)
-     (setf (get (prim-symbol prim) 'global-val)
-           (new-fn :env nil :name (prim-symbol prim)
-                   :code (seq (gen 'PRIM (prim-symbol prim))
-                              (gen 'RETURN))))))
 
 ;;; ==============================
 
@@ -591,16 +414,12 @@
   (assemble (make-fn :env env :name name :args args
                      :code (optimize code))))
 
-;;; ==============================
-
-(defun optimize (code) code)
-(defun assemble (fn) fn)
 
 ;;; -*- Mode: Lisp; Syntax: Common-Lisp; -*-
 ;;; Code from Paradigms of Artificial Intelligence Programming
 ;;; Copyright (c) 1991 Peter Norvig
 
-;;;; File compile3.lisp: Scheme compiler with assembler
+;;;; File compile3.lisp: Bard compiler with assembler
 ;;;; and peephole optimizer.  Also the abstract machine simulator.
 ;;;; After loading this file, load the optimizers in compopt.lisp.
 
@@ -761,7 +580,7 @@
                        stack))
          
          ;; Nullary operations:
-         ((SCHEME-READ NEWLINE) ; *** fix, gat, 11/9/92
+         ((BARD-READ NEWLINE) ; *** fix, gat, 11/9/92
           (push (funcall (opcode instr)) stack))
          
          ;; Unary operations:
@@ -788,8 +607,8 @@
          ((HALT) (RETURN (top stack)))
          (otherwise (error "Unknown opcode: ~a" instr))))))
 
-(defun init-scheme-comp ()
-  "Initialize values (including call/cc) for the Scheme compiler."
+(defun init-bard-comp ()
+  "Initialize values (including call/cc) for the Bard compiler."
   (set-global-var! 'exit 
                    (new-fn :name 'exit :args '(val) :code '((HALT))))
   (set-global-var! 'call/cc
@@ -804,18 +623,18 @@
 
 ;;; ==============================
 
-(defconstant scheme-top-level
-  '(begin (define (scheme)
+(defconstant bard-top-level
+  '(begin (define (bard)
            (newline)
            (display "=> ")
            (write ((compiler (read))))
-           (scheme))
-    (scheme)))
+           (bard))
+    (bard)))
 
-(defun scheme ()
-  "A compiled Scheme read-eval-print loop"
-  (init-scheme-comp)
-  (machine (compiler scheme-top-level)))
+(defun bard ()
+  "A compiled Bard read-eval-print loop"
+  (init-bard-comp)
+  (machine (compiler bard-top-level)))
 
 (defun comp-go (exp)
   "Compile and execute the expression."
@@ -881,34 +700,33 @@
 
 (defconstant eof "EoF")
 (defun eof-object? (x) (eq x eof))
-(defvar *scheme-readtable* (copy-readtable))
-
-(defun scheme-read (&optional (stream *standard-input*))
-  (let ((*readtable* *scheme-readtable*))
-    (read stream nil eof)))
+(defvar *bard-readtable*
+  (let ((tbl (copy-readtable)))
+    ;;(setf (readtable-case tbl) :preserve)
+    tbl))
 
 ;;; ==============================
 
 (set-dispatch-macro-character #\# #\t 
                               #'(lambda (&rest ignore) t)
-                              *scheme-readtable*)
+                              *bard-readtable*)
 
 (set-dispatch-macro-character #\# #\f 
                               #'(lambda (&rest ignore) nil)
-                              *scheme-readtable*)
+                              *bard-readtable*)
 
 (set-dispatch-macro-character #\# #\d
-                              ;; In both Common Lisp and Scheme,
+                              ;; In both Common Lisp and Bard,
                               ;; #x, #o and #b are hexidecimal, octal, and binary,
                               ;; e.g. #xff = #o377 = #b11111111 = 255
-                              ;; In Scheme only, #d255 is decimal 255.
+                              ;; In Bard only, #d255 is decimal 255.
                               #'(lambda (stream &rest ignore) 
-                                  (let ((*read-base* 10)) (scheme-read stream)))
-                              *scheme-readtable*)
+                                  (let ((*read-base* 10)) (bard-read stream)))
+                              *bard-readtable*)
 
 (set-macro-character #\` 
-                     #'(lambda (s ignore) (list 'quasiquote (scheme-read s))) 
-                     nil *scheme-readtable*)
+                     #'(lambda (s ignore) (list 'quasiquote (bard-read s))) 
+                     nil *bard-readtable*)
 
 (set-macro-character #\, 
                      #'(lambda (stream ignore)
@@ -917,7 +735,7 @@
                                (list 'unquote-splicing (read stream))
                                (progn (unread-char ch stream)
                                       (list 'unquote (read stream))))))
-                     nil *scheme-readtable*)
+                     nil *bard-readtable*)
 
 ;;; ==============================
 
@@ -928,7 +746,7 @@
     (not 1 not) (null? 1 not)
     (car 1 car) (cdr 1 cdr)  (cadr 1 cadr) (cons 2 cons true)
     (list 1 list1 true) (list 2 list2 true) (list 3 list3 true)
-    (read 0 scheme-read nil t) (eof-object? 1 eof-object?) ;***
+    (read 0 bard-read nil t) (eof-object? 1 eof-object?) ;***
     (write 1 write nil t) (display 1 display nil t)
     (newline 0 newline nil t) (compiler 1 compiler t) 
     (name! 2 name! true t) (random 1 random true nil)))
@@ -936,7 +754,7 @@
 
 ;;; ==============================
 
-                                        ;(setf (scheme-macro 'quasiquote) 'quasi-q)
+                                        ;(setf (bard-macro 'quasiquote) 'quasi-q)
 
 (defun quasi-q (x)
   "Expand a quasiquote form into append, list, and cons calls."
@@ -973,12 +791,12 @@
 
 ;;; ==============================
 
-(defun scheme-read (&optional (stream *standard-input*))
-  (let ((*readtable* *scheme-readtable*))
+(defun bard-read (&optional (stream *standard-input*))
+  (let ((*readtable* *bard-readtable*))
     (convert-numbers (read stream nil eof))))
 
 (defun convert-numbers (x)
-  "Replace symbols that look like Scheme numbers with their values."
+  "Replace symbols that look like Bard numbers with their values."
   ;; Don't copy structure, make changes in place.
   (typecase x
     (cons   (setf (car x) (convert-numbers (car x)))
@@ -1003,4 +821,4 @@
 
 (defun sign-p (char) (find char "+-"))
 
-;;; (scheme)
+;;; (bard)

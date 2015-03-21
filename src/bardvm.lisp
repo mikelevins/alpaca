@@ -11,6 +11,82 @@
 
 (in-package #:bard)
 
+;;; ---------------------------------------------------------------------
+;;; named literals
+;;; ---------------------------------------------------------------------
+
+;;; end
+
+(defclass end ()
+  ()
+  (:metaclass org.tfeb.hax.singleton-classes:singleton-class))
+
+(defmethod print-object ((end end)(out stream))
+  (princ "end" out))
+
+(defun end ()(make-instance 'end))
+(defmethod end? (x) nil)
+(defmethod end? ((x end)) t)
+
+;;; undefined
+
+(defclass undefined ()
+  ()
+  (:metaclass org.tfeb.hax.singleton-classes:singleton-class))
+
+(defmethod print-object ((un undefined)(out stream))
+  (princ "undefined" out))
+
+(defun undefined ()(make-instance 'undefined))
+(defmethod undefined? (x) nil)
+(defmethod undefined? ((x undefined)) t)
+(defmethod defined? (x) t)
+(defmethod defined? ((x undefined)) nil)
+
+;;; nothing
+
+(defclass nothing ()
+  ()
+  (:metaclass org.tfeb.hax.singleton-classes:singleton-class))
+
+(defmethod print-object ((un nothing)(out stream))
+  (princ "nothing" out))
+
+(defun nothing ()(make-instance 'nothing))
+(defmethod nothing? (x) nil)
+(defmethod nothing? ((x nothing)) t)
+(defmethod something? (x) t)
+(defmethod something? ((x nothing)) nil)
+
+;;; true and false
+
+(defclass true ()
+  ()
+  (:metaclass org.tfeb.hax.singleton-classes:singleton-class))
+
+(defclass false ()
+  ()
+  (:metaclass org.tfeb.hax.singleton-classes:singleton-class))
+
+(defmethod print-object ((true true)(out stream))
+  (princ "true" out))
+
+(defmethod print-object ((false false)(out stream))
+  (princ "false" out))
+
+(defun true ()(make-instance 'true))
+(defun false ()(make-instance 'false))
+(defmethod true? (x) t)
+(defmethod true? ((x false)) nil)
+(defmethod false? (x) nil)
+(defmethod false? ((x false)) t)
+(defmethod false? ((x nothing)) t)
+(defmethod false? ((x null)) t)
+
+;;; ---------------------------------------------------------------------
+;;; auxiliary functions
+;;; ---------------------------------------------------------------------
+
 (defun length=1 (x)
   (equal 1 (length x)))
 
@@ -20,6 +96,16 @@
 (defun starts-with (list x)
   (and (consp list)
        (eql (first list) x)))
+
+(defun list1 (x) (list x))
+(defun list2 (x y) (list x y))
+(defun list3 (x y z) (list x y z))
+(defun display (x) (princ x))
+(defun newline () (terpri))
+
+;;; ---------------------------------------------------------------------
+;;; environments
+;;; ---------------------------------------------------------------------
 
 (defun set-var! (var val env)
   "Set a variable to a value, in the given or global environment."
@@ -54,15 +140,23 @@
       (set-global-var! (first f) (symbol-function (second f)))
       (set-global-var! f (symbol-function f))))
 
-;;; ==============================
+;;; ---------------------------------------------------------------------
+;;; bard macros
+;;; ---------------------------------------------------------------------
 
 (defun bard-macro (symbol)
   (and (symbolp symbol) (get symbol 'bard-macro)))
 
 (defmacro def-bard-macro (name parmlist &body body)
-  "Define a Bard macro."
   `(setf (get ',name 'bard-macro)
          #'(lambda ,parmlist .,body)))
+
+(def-bard-macro define (name &rest body)
+  (if (atom name)
+      `(name! (set! ,name . ,body) ',name)
+      (bard-macro-expand
+         `(define ,(first name) 
+            (lambda ,(rest name) . ,body)))))
 
 (defun bard-macro-expand (x)
   "Macro-expand this Bard expression."
@@ -71,7 +165,9 @@
         (apply (bard-macro (first x)) (rest x)))
       x))
 
-;;; ==============================
+;;; ---------------------------------------------------------------------
+;;; built-in bard macro definitions
+;;; ---------------------------------------------------------------------
 
 (def-bard-macro %let (bindings &rest body)
   `((lambda ,(mapcar #'first bindings) . ,body)
@@ -106,7 +202,6 @@
                 (begin .,(rest (first clauses)))
                 (cond .,(rest clauses))))))
 
-;;; BUG: doesn't eval correctly
 (def-bard-macro case (key &rest clauses)
   (let ((key-val (gensym "KEY")))
     `(let ((,key-val ,key))
@@ -133,12 +228,16 @@
      .,body))
 
 
-;;; ==============================
+;;; ---------------------------------------------------------------------
+;;; methods
+;;; ---------------------------------------------------------------------
 
 (defstruct (fn (:print-function print-fn))
   code (env nil) (name nil) (args nil))
 
-;;; ==============================
+;;; ---------------------------------------------------------------------
+;;; the compiler
+;;; ---------------------------------------------------------------------
 
 (defvar *label-num* 0)
 
@@ -176,13 +275,6 @@
         (gen 'GVAR var))))
 
 ;;; ==============================
-
-(def-bard-macro define (name &rest body)
-  (if (atom name)
-      `(name! (set! ,name . ,body) ',name)
-      (bard-macro-expand
-         `(define ,(first name) 
-            (lambda ,(rest name) . ,body)))))
 
 (defun name! (fn name)
   "Set the name field of fn, if it is an un-named fn."
@@ -339,26 +431,6 @@
 
 ;;; ==============================
 
-(defstruct (prim (:type list)) 
-  symbol n-args opcode always side-effects)
-
-(defun primitive-p (f env n-args)
-  "F is a primitive if it is in the table, and is not shadowed
-  by something in the environment, and has the right number of args."
-  (and (not (in-env-p f env))
-       (find f *primitive-fns*
-             :test #'(lambda (f prim)
-                       (and (eq f (prim-symbol prim))
-                            (= n-args (prim-n-args prim)))))))
-
-(defun list1 (x) (list x))
-(defun list2 (x y) (list x y))
-(defun list3 (x y z) (list x y z))
-(defun display (x) (princ x))
-(defun newline () (terpri))
-
-;;; ==============================
-
 (defun gen-set (var env)
   "Generate an instruction to set a variable to top-of-stack."
   (let ((p (in-env-p var env)))
@@ -399,7 +471,42 @@
   (assemble (make-fn :env env :name name :args args
                      :code (optimize code))))
 
-;;; ==============================
+(defun comp-go (exp)
+  "Compile and execute the expression."
+  (bardvm (compiler `(exit ,exp))))
+
+;;; ---------------------------------------------------------------------
+;;; primitives
+;;; ---------------------------------------------------------------------
+
+(defparameter *primitive-fns*
+  '((+ 2 + true) (- 2 - true) (* 2 * true) (/ 2 / true)
+    (< 2 <) (> 2 >) (<= 2 <=) (>= 2 >=) (/= 2 /=) (= 2 =)
+    (eq? 2 eq) (equal? 2 equal) (eqv? 2 eql)
+    (not 1 not) (null? 1 not)
+    (car 1 car) (cdr 1 cdr)  (cadr 1 cadr) (cons 2 cons true)
+    (list 1 list1 true) (list 2 list2 true) (list 3 list3 true)
+    (read 0 bard-read nil t) (end? 1 end?) ;***
+    (write 1 write nil t) (display 1 display nil t)
+    (newline 0 newline nil t) (compiler 1 compiler t) 
+    (name! 2 name! true t) (random 1 random true nil)))
+
+(defstruct (prim (:type list)) 
+  symbol n-args opcode always side-effects)
+
+(defun primitive-p (f env n-args)
+  "F is a primitive if it is in the table, and is not shadowed
+  by something in the environment, and has the right number of args."
+  (and (not (in-env-p f env))
+       (find f *primitive-fns*
+             :test #'(lambda (f prim)
+                       (and (eq f (prim-symbol prim))
+                            (= n-args (prim-n-args prim)))))))
+
+
+;;; ---------------------------------------------------------------------
+;;; instructions
+;;; ---------------------------------------------------------------------
 
 (defun opcode (instr) (if (label-p instr) :label (first instr)))
 (defun args (instr) (if (listp instr) (rest instr)))
@@ -409,7 +516,9 @@
 
 (defsetf arg1 (instr) (val) `(setf (second ,instr) ,val))
 
-;;; ==============================
+;;; ---------------------------------------------------------------------
+;;; the assembler
+;;; ---------------------------------------------------------------------
 
 (defun assemble (fn)
   "Turn a list of instructions into a vector."
@@ -464,9 +573,15 @@
                     (show-fn arg stream (+ indent 8)))
                   (fresh-line))))))))
 
-;;; ==============================
+;;; ---------------------------------------------------------------------
+;;; vm return records
+;;; ---------------------------------------------------------------------
 
 (defstruct ret-addr fn pc env)
+
+;;; ---------------------------------------------------------------------
+;;; the vm
+;;; ---------------------------------------------------------------------
 
 (defun is (instr op)
   "True if instr's opcode is OP, or one of OP when OP is a list."
@@ -581,6 +696,10 @@
          ((HALT) (RETURN (top stack)))
          (otherwise (error "Unknown opcode: ~a" instr))))))
 
+;;; ---------------------------------------------------------------------
+;;; compiler setup
+;;; ---------------------------------------------------------------------
+
 (defun init-bard-comp ()
   "Initialize values (including call/cc) for the Bard compiler."
   (set-global-var! 'exit 
@@ -595,7 +714,9 @@
                   :code (seq (gen 'PRIM (prim-symbol prim))
                              (gen 'RETURN))))))
 
-;;; ==============================
+;;; ---------------------------------------------------------------------
+;;; the bard repl
+;;; ---------------------------------------------------------------------
 
 (defconstant bard-top-level
   '(begin (define (bard)
@@ -610,14 +731,9 @@
   (init-bard-comp)
   (bardvm (compiler bard-top-level)))
 
-(defun comp-go (exp)
-  "Compile and execute the expression."
-  (bardvm (compiler `(exit ,exp))))
-
-;;;; Peephole Optimizer
-
-
-;;; ==============================
+;;; ---------------------------------------------------------------------
+;;; peephole Optimizer
+;;; ---------------------------------------------------------------------
 
 (defun optimize (code)
   "Perform peephole optimization on assembly code."
@@ -668,67 +784,8 @@
   `(dolist (op ',opcodes)
      (put-optimizer op #'(lambda ,args .,body))))
 
-;;;; Now for some additions and answers to exercises:
 
 ;;; ==============================
-
-(defconstant eof "EoF")
-(defun eof-object? (x) (eq x eof))
-(defvar *bard-readtable*
-  (let ((tbl (copy-readtable)))
-    ;;(setf (readtable-case tbl) :preserve)
-    tbl))
-
-;;; ==============================
-
-(set-dispatch-macro-character #\# #\t 
-                              #'(lambda (&rest ignore) t)
-                              *bard-readtable*)
-
-(set-dispatch-macro-character #\# #\f 
-                              #'(lambda (&rest ignore) nil)
-                              *bard-readtable*)
-
-(set-dispatch-macro-character #\# #\d
-                              ;; In both Common Lisp and Bard,
-                              ;; #x, #o and #b are hexidecimal, octal, and binary,
-                              ;; e.g. #xff = #o377 = #b11111111 = 255
-                              ;; In Bard only, #d255 is decimal 255.
-                              #'(lambda (stream &rest ignore) 
-                                  (let ((*read-base* 10)) (bard-read stream)))
-                              *bard-readtable*)
-
-(set-macro-character #\` 
-                     #'(lambda (s ignore) (list 'quasiquote (bard-read s))) 
-                     nil *bard-readtable*)
-
-(set-macro-character #\, 
-                     #'(lambda (stream ignore)
-                         (let ((ch (read-char stream)))
-                           (if (char= ch #\@)
-                               (list 'unquote-splicing (read stream))
-                               (progn (unread-char ch stream)
-                                      (list 'unquote (read stream))))))
-                     nil *bard-readtable*)
-
-;;; ==============================
-
-(defparameter *primitive-fns*
-  '((+ 2 + true) (- 2 - true) (* 2 * true) (/ 2 / true)
-    (< 2 <) (> 2 >) (<= 2 <=) (>= 2 >=) (/= 2 /=) (= 2 =)
-    (eq? 2 eq) (equal? 2 equal) (eqv? 2 eql)
-    (not 1 not) (null? 1 not)
-    (car 1 car) (cdr 1 cdr)  (cadr 1 cadr) (cons 2 cons true)
-    (list 1 list1 true) (list 2 list2 true) (list 3 list3 true)
-    (read 0 bard-read nil t) (eof-object? 1 eof-object?) ;***
-    (write 1 write nil t) (display 1 display nil t)
-    (newline 0 newline nil t) (compiler 1 compiler t) 
-    (name! 2 name! true t) (random 1 random true nil)))
-
-
-;;; ==============================
-
-                                        ;(setf (bard-macro 'quasiquote) 'quasi-q)
 
 (defun quasi-q (x)
   "Expand a quasiquote form into append, list, and cons calls."
@@ -763,11 +820,18 @@
          (list* 'list left (rest right)))
         (t (list 'cons left right))))
 
-;;; ==============================
+;;; ---------------------------------------------------------------------
+;;; the bard reader
+;;; ---------------------------------------------------------------------
+
+(defvar *bard-readtable*
+  (let ((tbl (copy-readtable)))
+    ;;(setf (readtable-case tbl) :preserve)
+    tbl))
 
 (defun bard-read (&optional (stream *standard-input*))
   (let ((*readtable* *bard-readtable*))
-    (convert-numbers (read stream nil eof))))
+    (convert-numbers (read stream nil (end)))))
 
 (defun convert-numbers (x)
   "Replace symbols that look like Bard numbers with their values."
@@ -795,4 +859,37 @@
 
 (defun sign-p (char) (find char "+-"))
 
+
+(set-dispatch-macro-character #\# #\t 
+                              #'(lambda (&rest ignore) t)
+                              *bard-readtable*)
+
+(set-dispatch-macro-character #\# #\f 
+                              #'(lambda (&rest ignore) nil)
+                              *bard-readtable*)
+
+(set-dispatch-macro-character #\# #\d
+                              ;; In both Common Lisp and Bard,
+                              ;; #x, #o and #b are hexidecimal, octal, and binary,
+                              ;; e.g. #xff = #o377 = #b11111111 = 255
+                              ;; In Bard only, #d255 is decimal 255.
+                              #'(lambda (stream &rest ignore) 
+                                  (let ((*read-base* 10)) (bard-read stream)))
+                              *bard-readtable*)
+
+(set-macro-character #\` 
+                     #'(lambda (s ignore) (list 'quasiquote (bard-read s))) 
+                     nil *bard-readtable*)
+
+(set-macro-character #\, 
+                     #'(lambda (stream ignore)
+                         (let ((ch (read-char stream)))
+                           (if (char= ch #\@)
+                               (list 'unquote-splicing (read stream))
+                               (progn (unread-char ch stream)
+                                      (list 'unquote (read stream))))))
+                     nil *bard-readtable*)
+
+
+;;; run the repl:
 ;;; (bard)

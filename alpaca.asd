@@ -14,6 +14,7 @@
   :description "Describe alpaca here"
   :author "mikel evins <mevins@me.com>"
   :serial t
+  :depends-on (:singleton-classes)
   :components ((:module "src"
                         :serial t
                         :components ((:file "package")

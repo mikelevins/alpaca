@@ -5,7 +5,8 @@
 ;;;; Purpose:       the bard interpreter
 ;;;; Author:        mikel evins
 ;;;; Copyright:     2015 by mikel evins
-;;;;
+;;;;                based on code from Paradigms of Artificial Intelligence Programming
+;;;;                Copyright (c) 1991 Peter Norvig
 ;;;; ***********************************************************************
 
 (in-package #:bard)
@@ -19,10 +20,6 @@
 (defun starts-with (list x)
   (and (consp list)
        (eql (first list) x)))
-
-;;; -*- Mode: Lisp; Syntax: Common-Lisp; -*-
-;;; Code from Paradigms of Artificial Intelligence Programming
-;;; Copyright (c) 1991 Peter Norvig
 
 (defun set-var! (var val env)
   "Set a variable to a value, in the given or global environment."
@@ -210,13 +207,6 @@
   "If symbol is in the environment, return its index numbers."
   (let ((frame (find symbol env :test #'find)))
     (if frame (list (position frame env) (position symbol frame)))))
-
-;;; -*- Mode: Lisp; Syntax: Common-Lisp; -*-
-;;; Code from Paradigms of Artificial Intelligence Programming
-;;; Copyright (c) 1991 Peter Norvig
-
-;;;; File compile2.lisp: Bard compiler with tail recursion
-;;;; and some optimizations and primitive instructions.
 
 (defun comp (x env val? more?)
   "Compile the expression x into a list of instructions"
@@ -414,17 +404,6 @@
   (assemble (make-fn :env env :name name :args args
                      :code (optimize code))))
 
-
-;;; -*- Mode: Lisp; Syntax: Common-Lisp; -*-
-;;; Code from Paradigms of Artificial Intelligence Programming
-;;; Copyright (c) 1991 Peter Norvig
-
-;;;; File compile3.lisp: Bard compiler with assembler
-;;;; and peephole optimizer.  Also the abstract machine simulator.
-;;;; After loading this file, load the optimizers in compopt.lisp.
-
-;;; Bug fixes by Erann Gat, gat@aig.Jpl.Nasa.Gov, November 1992
-
 ;;; ==============================
 
 (defun opcode (instr) (if (label-p instr) :label (first instr)))
@@ -502,7 +481,7 @@
 
 (defun top (stack) (first stack))
 
-(defun machine (f)
+(defun bardvm (f)
   "Run the abstract machine on the code for f."
   (let* ((code (fn-code f))
          (pc 0)
@@ -634,11 +613,11 @@
 (defun bard ()
   "A compiled Bard read-eval-print loop"
   (init-bard-comp)
-  (machine (compiler bard-top-level)))
+  (bardvm (compiler bard-top-level)))
 
 (defun comp-go (exp)
   "Compile and execute the expression."
-  (machine (compiler `(exit ,exp))))
+  (bardvm (compiler `(exit ,exp))))
 
 ;;;; Peephole Optimizer
 

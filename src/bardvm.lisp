@@ -48,12 +48,6 @@
   "Add some variables and values to an environment."
   (nconc (mapcar #'list vars vals) env))
 
-(defparameter *bard-procs*
-  '(+ - * / = < > <= >= cons car cdr not append list read member
-    (null? null) (eq? eq) (equal? equal) (eqv? eql)
-    (write prin1) (display princ) (newline terpri)))
-
-
 (defun init-bard-proc (f)
   "Define a Bard procedure as a corresponding CL function."
   (if (listp f)
@@ -79,15 +73,15 @@
 
 ;;; ==============================
 
-(def-bard-macro let (bindings &rest body)
+(def-bard-macro %let (bindings &rest body)
   `((lambda ,(mapcar #'first bindings) . ,body)
     .,(mapcar #'second bindings)))
 
-(def-bard-macro let* (bindings &rest body)
+(def-bard-macro let (bindings &rest body)
   (if (null bindings)
       `(begin .,body)
-      `(let (,(first bindings))
-         (let* ,(rest bindings) . ,body))))
+      `(%let (,(first bindings))
+         (let ,(rest bindings) . ,body))))
 
 (def-bard-macro and (&rest args)
   (cond ((null args) 'T)
@@ -112,6 +106,7 @@
                 (begin .,(rest (first clauses)))
                 (cond .,(rest clauses))))))
 
+;;; BUG: doesn't eval correctly
 (def-bard-macro case (key &rest clauses)
   (let ((key-val (gensym "KEY")))
     `(let ((,key-val ,key))

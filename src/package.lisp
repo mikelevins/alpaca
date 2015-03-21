@@ -11,7 +11,8 @@
 (in-package :cl-user)
 
 (defpackage #:bard
-  (:use #:cl))
+  (:use #:cl)
+  (:shadow #:display #:optimize))
 
 (defpackage #:alpaca
   (:use #:cl #:capi #:bard))

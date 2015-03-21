@@ -1,18 +1,12 @@
 ;;;; ***********************************************************************
 ;;;;
-;;;; Name:          package.lisp
+;;;; Name:          bard.lisp
 ;;;; Project:       Alpaca: a programmable editor
-;;;; Purpose:       alpaca main program
+;;;; Purpose:       the bard interpreter
 ;;;; Author:        mikel evins
 ;;;; Copyright:     2015 by mikel evins
 ;;;;
 ;;;; ***********************************************************************
 
-(in-package :cl-user)
-
-(defpackage #:bard
-  (:use #:cl))
-
-(defpackage #:alpaca
-  (:use #:cl #:capi #:bard))
+(in-package #:alpaca)
 

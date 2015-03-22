@@ -18,7 +18,22 @@
   :components ((:module "src"
                         :serial t
                         :components ((:file "package")
-                                     (:file "bardvm")
+                                     (:file "bard-types")
+                                     (:file "bard-aux")
+                                     (:file "bard-env")
+                                     (:file "bard-macros")
+                                     (:file "bard-methods")
+                                     (:file "bard-functions")
+                                     (:file "bard-compiler")
+                                     (:file "bard-quasiquote")
+                                     (:file "bard-instructions")
+                                     (:file "bard-assembler")
+                                     (:file "bard-reader")
+                                     (:file "bard-vm")
+                                     (:file "bard-primitives")
+                                     (:file "bard-opt")
+                                     (:file "bard-repl")
                                      (:file "alpaca")))))
 
 ;;; (asdf:load-system :alpaca)
+;;; (bard::bard)

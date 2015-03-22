@@ -245,6 +245,17 @@
 (defstruct (fn (:print-function print-fn))
   code (env nil) (name nil) (args nil))
 
+(defclass method ()
+  ((code :accessor method-code :initform nil :initarg :code)
+   (env :accessor method-env :initform nil :initarg :env)
+   (name :accessor method-name :initform nil :initarg :name)
+   (args :accessor method-args :initform nil :initarg :args)))
+
+(defclass function ()
+  ((name :accessor method-name :initform nil :initarg :name)
+   (args :accessor method-args :initform nil :initarg :args)
+   (methods :accessor methods :initform nil :initarg :methods)))
+
 ;;; ---------------------------------------------------------------------
 ;;; the compiler
 ;;; ---------------------------------------------------------------------
@@ -913,3 +924,4 @@
 
 ;;; run the repl:
 ;;; (bard)
+

@@ -12,7 +12,7 @@
 
 (defpackage #:bard
   (:use #:cl)
-  (:shadow #:display #:optimize))
+  (:shadow #:display #:function #:method #:optimize))
 
 (defpackage #:alpaca
   (:use #:cl #:capi #:bard))

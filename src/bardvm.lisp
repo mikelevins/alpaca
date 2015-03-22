@@ -159,7 +159,7 @@
       `(|name!| (|set!| ,name . ,body) (|quote| ,name))
       (bard-macro-expand
          `(|define| ,(first name) 
-                    (|lambda| ,(rest name) . ,body)))))
+                    (^ ,(rest name) . ,body)))))
 
 (defun bard-macro-expand (x)
   "Macro-expand this Bard expression."
@@ -173,7 +173,7 @@
 ;;; ---------------------------------------------------------------------
 
 (def-bard-macro |%let| (bindings &rest body)
-  `((|lambda| ,(mapcar #'first bindings) . ,body)
+  `((^ ,(mapcar #'first bindings) . ,body)
     .,(mapcar #'second bindings)))
 
 (def-bard-macro |let| (bindings &rest body)
@@ -220,13 +220,12 @@
   (if (atom name)
       `(|begin| (|set!| ,name . ,body) (|quote| ,name))
       `(|define| ,(first name) 
-                 (|lambda| ,(rest name) . ,body))))
+                 (^ ,(rest name) . ,body))))
 
 (def-bard-macro |letrec| (bindings &rest body)
   `(|let| ,(mapcar #'(lambda (v) (list (first v) nil)) bindings)
           ,@(mapcar #'(lambda (v) `(|set!| .,v)) bindings)
           .,body))
-
 
 ;;; ---------------------------------------------------------------------
 ;;; methods
@@ -286,7 +285,7 @@
 
 (defun print-fn (fn &optional (stream *standard-output*) depth)
   (declare (ignore depth))
-  (format stream "(~a ->)" (or (fn-name fn) '??)))
+  (format stream "(~a ^)" (or (fn-name fn) '??)))
 
 (defun label-p (x) "Is x a label?" (atom x))
 
@@ -317,7 +316,7 @@
        (|if|     (arg-count x 2 3)
                  (comp-if (second x) (third x) (fourth x)
                           env val? more?))
-       (|lambda| (when val?
+       (^ (when val?
                    (let ((f (comp-lambda (second x) (rest2 x) env)))
                      (seq (gen 'FN f) (unless more? (gen 'RETURN))))))
        (t      (comp-funcall (first x) (rest x) env val? more?))))))

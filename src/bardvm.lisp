@@ -78,10 +78,14 @@
 (defun false ()(make-instance 'false))
 (defmethod true? (x) t)
 (defmethod true? ((x false)) nil)
+(defmethod true? ((x null)) nil)
+(defmethod true? ((x nothing)) nil)
+(defmethod true? ((x undefined)) (error "undefined is neither true nor false"))
 (defmethod false? (x) nil)
 (defmethod false? ((x false)) t)
 (defmethod false? ((x nothing)) t)
 (defmethod false? ((x null)) t)
+(defmethod false? ((x undefined)) (error "undefined is neither true nor false"))
 
 (defparameter +named-literals+
   (list (end)(undefined)(nothing)(true)(false)))
@@ -95,6 +99,9 @@
 
 (defun rest2 (x)
   (rest (rest x)))
+
+(defun rest3 (x)
+  (rest (rest (rest x))))
 
 (defun starts-with (list x)
   (and (consp list)
@@ -119,9 +126,9 @@
 
 (defun get-var (var env)
   "Get the value of a variable, from the given or global environment."
-    (if (assoc var env)
-        (second (assoc var env))
-        (get-global-var var)))
+  (if (assoc var env)
+      (second (assoc var env))
+      (get-global-var var)))
 
 (defun set-global-var! (var val)
   (setf (get var 'global-val) val))
@@ -158,14 +165,14 @@
   (if (atom name)
       `(|name!| (|set!| ,name . ,body) (|quote| ,name))
       (bard-macro-expand
-         `(|define| ,(first name) 
-                    (^ ,(rest name) . ,body)))))
+       `(|define| ,(first name) 
+                  (^ ,(rest name) . ,body)))))
 
 (defun bard-macro-expand (x)
   "Macro-expand this Bard expression."
   (if (and (listp x) (bard-macro (first x)))
       (bard-macro-expand
-        (apply (bard-macro (first x)) (rest x)))
+       (apply (bard-macro (first x)) (rest x)))
       x))
 
 ;;; ---------------------------------------------------------------------
@@ -180,20 +187,20 @@
   (if (null bindings)
       `(|begin| .,body)
       `(|%let| (,(first bindings))
-         (|let| ,(rest bindings) . ,body))))
+               (|let| ,(rest bindings) . ,body))))
 
 (def-bard-macro |and| (&rest args)
   (cond ((null args) 'T)
         ((length=1 args) (first args))
         (t `(|if| ,(first args)
-                (|and| . ,(rest args))))))
+                  (|and| . ,(rest args))))))
 
 (def-bard-macro |or| (&rest args)
   (cond ((null args) 'nil)
         ((length=1 args) (first args))
         (t (let ((var (gensym)))
              `(|let| ((,var ,(first args)))
-                (|if| ,var ,var (|or| . ,(rest args))))))))
+                     (|if| ,var ,var (|or| . ,(rest args))))))))
 
 (def-bard-macro |cond| (&rest clauses)
   (cond ((null clauses) nil)
@@ -205,28 +212,11 @@
                   (|begin| .,(rest (first clauses)))
                   (|cond| .,(rest clauses))))))
 
-(def-bard-macro |case| (key &rest clauses)
-  (let ((key-val (gensym "KEY")))
-    `(|let| ((,key-val ,key))
-            (|cond| ,@(mapcar
-                       #'(lambda (clause)
-                           (if (starts-with clause 'else)
-                               clause
-                               `((member ,key-val ',(first clause))
-                                 .,(rest clause))))
-                       clauses)))))
-
 (def-bard-macro |define| (name &rest body)
   (if (atom name)
       `(|begin| (|set!| ,name . ,body) (|quote| ,name))
       `(|define| ,(first name) 
                  (^ ,(rest name) . ,body))))
-
-(def-bard-macro |letrec| (bindings &rest body)
-  `(|let| ,(mapcar #'(lambda (v) (list (first v) nil)) bindings)
-          ,@(mapcar #'(lambda (v) `(|set!| .,v)) bindings)
-          .,body))
-
 
 (def-bard-macro |when| (&rest args)
   `(|if| ,(first args)
@@ -242,14 +232,18 @@
 ;;; methods
 ;;; ---------------------------------------------------------------------
 
-(defstruct (fn (:print-function print-fn))
-  code (env nil) (name nil) (args nil))
-
 (defclass method ()
   ((code :accessor method-code :initform nil :initarg :code)
    (env :accessor method-env :initform nil :initarg :env)
    (name :accessor method-name :initform nil :initarg :name)
    (args :accessor method-args :initform nil :initarg :args)))
+
+(defmethod method? (x) nil)
+(defmethod method? ((x method)) t)
+
+(defun make-method (&key env name args code)
+  (make-instance 'method :env env :name name :args args
+                 :code (optimize code)))
 
 (defclass function ()
   ((name :accessor method-name :initform nil :initarg :name)
@@ -269,7 +263,7 @@
 
 (defun comp-show (x)
   "Compile an expression and show the resulting code"
-   (show-fn (compiler x))
+  (show-fn (compiler x))
   (values))
 
 ;;; ==============================
@@ -299,15 +293,15 @@
 
 (defun name! (fn name)
   "Set the name field of fn, if it is an un-named fn."
-  (when (and (fn-p fn) (null (fn-name fn)))
-    (setf (fn-name fn) name))
+  (when (and (method? fn) (null (method-name fn)))
+    (setf (method-name fn) name))
   name)
 
 (set-global-var! '|name!| #'name!)
 
 (defun print-fn (fn &optional (stream *standard-output*) depth)
   (declare (ignore depth))
-  (format stream "(~a ^)" (or (fn-name fn) '??)))
+  (format stream "(~a ^)" (or (method-name fn) '??)))
 
 (defun label-p (x) "Is x a label?" (atom x))
 
@@ -326,6 +320,8 @@
     ((case (first x)
        (|quote|  (arg-count x 1)
                  (comp-const (second x) val? more?))
+       (|quasiquote|  (arg-count x 1)
+                      (comp (quasi-q (second x)) env val? more?))
        (|begin|  (comp-begin (rest x) env val? more?))
        (|set!|   (arg-count x 2)
                  (assert (symbolp (second x)) (x)
@@ -339,8 +335,8 @@
                  (comp-if (second x) (third x) (fourth x)
                           env val? more?))
        (^ (when val?
-                   (let ((f (comp-lambda (second x) (rest2 x) env)))
-                     (seq (gen 'FN f) (unless more? (gen 'RETURN))))))
+            (let ((f (comp-lambda (second x) (rest2 x) env)))
+              (seq (gen 'FN f) (unless more? (gen 'RETURN))))))
        (t      (comp-funcall (first x) (rest x) env val? more?))))))
 
 ;;; ==============================
@@ -349,9 +345,9 @@
   "Report an error if form has wrong number of args."
   (let ((n-args (length (rest form))))
     (assert (<= min n-args max) (form)
-      "Wrong number of arguments for ~a in ~a: 
+            "Wrong number of arguments for ~a in ~a: 
        ~d supplied, ~d~@[ to ~d~] expected"
-      (first form) form n-args min (if (/= min max) max))))
+            (first form) form n-args min (if (/= min max) max))))
 
 ;;; ==============================
 
@@ -389,12 +385,16 @@
   (cond
     ((null pred)          ; (if nil x y) ==> y
      (comp else env val? more?))
+    ((nothing? pred)          ; (if nothing x y) ==> y
+     (comp else env val? more?))
+    ((false? pred)          ; (if false x y) ==> y
+     (comp else env val? more?))
     ((constantp pred)     ; (if t x y) ==> x
      (comp then env val? more?))
     ((and (listp pred)    ; (if (not p) x y) ==> (if p y x)
           (length=1 (rest pred))
           (primitive-p (first pred) env 1)
-          (eq (prim-opcode (primitive-p (first pred) env 1)) 'not))
+          (eq (prim-opcode (primitive-p (first pred) env 1)) '|not|))
      (comp-if (second pred) else then env val? more?))
     (t (let ((pcode (comp pred env t t))
              (tcode (comp then env val? more?))
@@ -411,7 +411,7 @@
               (seq pcode (gen 'FJUMP L1) tcode (list L1)
                    (unless more? (gen 'RETURN)))))
            (t             ; (if p x y) ==> p (FJUMP L1) x L1: y
-                          ; or p (FJUMP L1) x (JUMP L2) L1: y L2:
+                                        ; or p (FJUMP L1) x (JUMP L2) L1: y L2:
             (let ((L1 (gen-label))
                   (L2 (if more? (gen-label))))
               (seq pcode (gen 'FJUMP L1) tcode
@@ -489,8 +489,8 @@
 
 (defun new-fn (&key code env name args)
   "Build a new function."
-  (assemble (make-fn :env env :name name :args args
-                     :code (optimize code))))
+  (assemble (make-method :env env :name name :args args
+                         :code (optimize code))))
 
 (defun comp-go (exp)
   "Compile and execute the expression."
@@ -544,9 +544,9 @@
 (defun assemble (fn)
   "Turn a list of instructions into a vector."
   (multiple-value-bind (length labels)
-      (asm-first-pass (fn-code fn))
-    (setf (fn-code fn)
-          (asm-second-pass (fn-code fn)
+      (asm-first-pass (method-code fn))
+    (setf (method-code fn)
+          (asm-second-pass (method-code fn)
                            length labels))
     fn))
 
@@ -580,12 +580,12 @@
   If the argument is not a function, just princ it, 
   but in a column at least 8 spaces wide."
   ;; This version handles code that has been assembled into a vector
-  (if (not (fn-p fn))
+  (if (not (method? fn))
       (format stream "~8a" fn)
       (progn
         (fresh-line)
-        (dotimes (i (length (fn-code fn)))
-          (let ((instr (elt (fn-code fn) i)))
+        (dotimes (i (length (method-code fn)))
+          (let ((instr (elt (method-code fn) i)))
             (if (label-p instr)
                 (format stream "~a:" instr)
                 (progn
@@ -614,7 +614,7 @@
 
 (defun bardvm (f)
   "Run the abstract machine on the code for f."
-  (let* ((code (fn-code f))
+  (let* ((code (method-code f))
          (pc 0)
          (env nil)
          (stack nil)
@@ -646,15 +646,15 @@
                        stack))
          (RETURN ;; return value is top of stack; ret-addr is second
            (setf f (ret-addr-fn (second stack))
-                 code (fn-code f)
+                 code (method-code f)
                  env (ret-addr-env (second stack))
                  pc (ret-addr-pc (second stack)))
            ;; Get rid of the ret-addr, but keep the value
            (setf stack (cons (first stack) (rest2 stack))))
          (CALLJ  (pop env)                 ; discard the top frame
                  (setf f  (pop stack)
-                       code (fn-code f)
-                       env (fn-env f)
+                       code (method-code f)
+                       env (method-env f)
                        pc 0
                        n-args (arg1 instr)))
          (ARGS   (assert (= n-args (arg1 instr)) ()
@@ -673,8 +673,8 @@
                       (push (pop stack) (elt (first env) (arg1 instr))))
                  (loop for i from (- (arg1 instr) 1) downto 0 do
                       (setf (elt (first env) i) (pop stack))))
-         (FN     (push (make-fn :code (fn-code (arg1 instr))
-                                :env env) stack))
+         (FN     (push (make-method :code (method-code (arg1 instr))
+                                    :env env) stack))
          (PRIM   (push (apply (arg1 instr)
                               (loop with args = nil repeat n-args
                                  do (push (pop stack) args)
@@ -683,7 +683,7 @@
          
          ;; Continuation instructions:
          (SET-CC (setf stack (top stack)))
-         (CC     (push (make-fn
+         (CC     (push (make-method
                         :env (list (vector stack))
                         :code '((ARGS 1) (LVAR 1 0 ";" stack) (SET-CC)
                                 (LVAR 0 0) (RETURN)))
@@ -814,14 +814,14 @@
     ((vectorp x)
      (list 'apply 'vector (quasi-q (coerce x 'list))))
     ((atom x)
-     (if (constantp x) x (list 'quote x)))
-    ((starts-with x 'unquote)      
+     (if (constantp x) x (list '|quote| x)))
+    ((starts-with x '|unquote|)      
      (assert (and (rest x) (null (rest2 x))))
      (second x))
-    ((starts-with x 'quasiquote)
+    ((starts-with x '|quasiquote|)
      (assert (and (rest x) (null (rest2 x))))
      (quasi-q (quasi-q (second x))))
-    ((starts-with (first x) 'unquote-splicing)
+    ((starts-with (first x) '|unquote-splicing|)
      (if (null (rest x))
          (second (first x))
          (list 'append (second (first x)) (quasi-q (rest x)))))
@@ -834,25 +834,67 @@
   (cond ((and (constantp left) (constantp right))
          (if (and (eql (eval left) (first x))
                   (eql (eval right) (rest x)))
-             (list 'quote x)
-             (list 'quote (cons (eval left) (eval right)))))
-        ((null right) (list 'list left))
-        ((starts-with right 'list)
-         (list* 'list left (rest right)))
-        (t (list 'cons left right))))
+             (list '|quote| x)
+             (list '|quote| (cons (eval left) (eval right)))))
+        ((null right) (list '|list| left))
+        ((starts-with right '|list|)
+         (list* '|list| left (rest right)))
+        (t (list '|cons| left right))))
 
 ;;; ---------------------------------------------------------------------
 ;;; the bard reader
 ;;; ---------------------------------------------------------------------
 
+(defun bard-reader-macro-quote (stream ch)
+  "Standard ' macro reader."
+  (declare (ignore ch))
+  `(|quote| ,(COM.INFORMATIMAGO.COMMON-LISP.LISP-READER.READER:read stream t nil t)))
+
+(defun bard-reader-macro-backquote (stream ch)
+  "Standard ` macro reader."
+  (declare (ignore ch))
+  `(|quasiquote| ,(COM.INFORMATIMAGO.COMMON-LISP.LISP-READER.READER:read stream t nil t)))
+
+(defun bard-reader-macro-comma (stream ch)
+  "Standard , macro reader."
+  (declare (ignore ch))
+  `(,(if (char= #\@ (peek-char nil stream t nil t))
+         (progn
+           (read-char stream t nil t)
+           '|unquote-splicing|)
+         '|unquote|)
+     ,(COM.INFORMATIMAGO.COMMON-LISP.LISP-READER.READER:read stream t nil t)))
+
 (defparameter *bard-readtable*
-  (let ((tbl (copy-readtable)))
-    (setf (readtable-case tbl) :preserve)
+  (let ((tbl (COM.INFORMATIMAGO.COMMON-LISP.LISP-READER.READER:copy-readtable)))
+    (setf (COM.INFORMATIMAGO.COMMON-LISP.LISP-READER.READER:readtable-case tbl) :preserve)
+    (COM.INFORMATIMAGO.COMMON-LISP.LISP-READER.READER:set-macro-character
+     #\' #'bard-reader-macro-quote nil tbl)
+    (COM.INFORMATIMAGO.COMMON-LISP.LISP-READER.READER:set-macro-character
+     #\` #'bard-reader-macro-backquote nil tbl)
+    (COM.INFORMATIMAGO.COMMON-LISP.LISP-READER.READER:set-macro-character
+     #\, #'bard-reader-macro-comma nil tbl)
+    
+    (COM.INFORMATIMAGO.COMMON-LISP.LISP-READER.READER:set-dispatch-macro-character
+     #\# #\d
+     ;; In both Common Lisp and Bard,
+     ;; #x, #o and #b are hexidecimal, octal, and binary,
+     ;; e.g. #xff = #o377 = #b11111111 = 255
+     ;; In Bard only, #d255 is decimal 255.
+     #'(lambda (stream &rest ignore) 
+         (let ((*read-base* 10)) (bard-read stream)))
+     tbl)
+
     tbl))
 
 (defun bard-read (&optional (stream *standard-input*))
-  (let ((*readtable* *bard-readtable*))
-    (input-object->bard-value (read stream nil (end)))))
+  (let ((COM.INFORMATIMAGO.COMMON-LISP.LISP-READER.READER:*readtable* *bard-readtable*))
+    (input-object->bard-value
+     (COM.INFORMATIMAGO.COMMON-LISP.LISP-READER.READER:read stream nil (end)))))
+
+(defmethod bard-read-from-string ((s string))
+  (with-input-from-string (in s)
+    (bard-read in)))
 
 (defmethod input-object->bard-value (x) x)
 
@@ -883,45 +925,19 @@
          (pos (position-if #'sign-p str))
          (end (- (length str) 1)))
     (when (and pos (char-equal (char str end) #\i))
-      (let ((re (read-from-string str nil nil :start 0 :end pos))
-            (im (read-from-string str nil nil :start pos :end end)))
+      (let ((re (COM.INFORMATIMAGO.COMMON-LISP.LISP-READER.READER:read-from-string
+                 str nil nil :start 0 :end pos))
+            (im (COM.INFORMATIMAGO.COMMON-LISP.LISP-READER.READER:read-from-string
+                 str nil nil :start pos :end end)))
         (when (and (numberp re) (numberp im))
           (complex re im))))))
 
 (defun sign-p (char) (find char "+-"))
 
 
-(set-dispatch-macro-character #\# #\t 
-                              #'(lambda (&rest ignore) t)
-                              *bard-readtable*)
-
-(set-dispatch-macro-character #\# #\f 
-                              #'(lambda (&rest ignore) nil)
-                              *bard-readtable*)
-
-(set-dispatch-macro-character #\# #\d
-                              ;; In both Common Lisp and Bard,
-                              ;; #x, #o and #b are hexidecimal, octal, and binary,
-                              ;; e.g. #xff = #o377 = #b11111111 = 255
-                              ;; In Bard only, #d255 is decimal 255.
-                              #'(lambda (stream &rest ignore) 
-                                  (let ((*read-base* 10)) (bard-read stream)))
-                              *bard-readtable*)
-
-(set-macro-character #\` 
-                     #'(lambda (s ignore) (list 'quasiquote (bard-read s))) 
-                     nil *bard-readtable*)
-
-(set-macro-character #\, 
-                     #'(lambda (stream ignore)
-                         (let ((ch (read-char stream)))
-                           (if (char= ch #\@)
-                               (list 'unquote-splicing (read stream))
-                               (progn (unread-char ch stream)
-                                      (list 'unquote (read stream))))))
-                     nil *bard-readtable*)
-
 
 ;;; run the repl:
 ;;; (bard)
-
+;;; tests
+;;; 1 2.3 3/4 #b101 #xff
+;;; "foo" (quote Bar)

@@ -1,91 +1,25 @@
-;;;; ***********************************************************************
-;;;;
-;;;; Name:          bard-compiler.lisp
-;;;; Project:       Alpaca: a programmable editor
-;;;; Purpose:       the bard compiler
-;;;; Author:        mikel evins
-;;;; Copyright:     2015 by mikel evins
-;;;;                based on code from Paradigms of Artificial Intelligence Programming
-;;;;                Copyright (c) 1991 Peter Norvig
-;;;;
-;;;; ***********************************************************************
 
-(in-package #:bard)
+(in-package :bard)
 
-;;; ---------------------------------------------------------------------
-;;; the compiler
-;;; ---------------------------------------------------------------------
+;;; -*- Mode: Lisp; Syntax: Common-Lisp; -*-
+;;; Code from Paradigms of Artificial Intelligence Programming
+;;; Copyright (c) 1991 Peter Norvig
 
-(defvar *label-num* 0)
-
-(defun compiler (x)
-  "Compile an expression as if it were in a parameterless lambda."
-  (setf *label-num* 0)
-  (comp-lambda '() (list x) nil))
-
-(defun comp-show (x)
-  "Compile an expression and show the resulting code"
-  (show-method (compiler x))
-  (values))
-
-;;; ==============================
-
-(defun gen (opcode &rest args)
-  "Return a one-element list of the specified instruction."
-  (list (cons opcode args)))
-
-(defun seq (&rest code)
-  "Return a sequence of instructions"
-  (apply #'append code))
-
-(defun gen-label (&optional (label 'L))
-  "Generate a label (a symbol of the form Lnnn)"
-  (intern (format nil "~a~d" label (incf *label-num*))))
-
-;;; ==============================
-
-(defun gen-var (var env)
-  "Generate an instruction to reference a variable's value."
-  (let ((p (in-env-p var env)))
-    (if p
-        (gen 'LVAR (first p) (second p) ";" var)
-        (gen 'GVAR var))))
-
-;;; ==============================
-
-(defun name! (fn name)
-  "Set the name field of fn, if it is an un-named fn."
-  (when (and (method? fn) (null (method-name fn)))
-    (setf (method-name fn) name))
-  name)
-
-(set-global-var! '|name!| #'name!)
-
-(defun print-fn (fn &optional (stream *standard-output*) depth)
-  (declare (ignore depth))
-  (format stream "(~a ^)" (or (method-name fn) '??)))
-
-(defun label-p (x) "Is x a label?" (atom x))
-
-(defun in-env-p (symbol env)
-  "If symbol is in the environment, return its index numbers."
-  (let ((frame (find symbol env :test #'find)))
-    (if frame (list (position frame env) (position symbol frame)))))
+;;;; File compile2.lisp: Scheme compiler with tail recursion
+;;;; and some optimizations and primitive instructions.
 
 (defun comp (x env val? more?)
   "Compile the expression x into a list of instructions"
-  (cond
-    ((member x +named-literals+) (comp-const x val? more?))
-    ((symbolp x) (comp-var x env val? more?))
-    ((atom x) (comp-const x val? more?))
-    ((bard-macro (first x)) (comp (bard-macro-expand x) env val? more?))
-    ((case (first x)
-       (|quote|  (arg-count x 1)
+    (cond
+      ((member x '(t nil)) (comp-const x val? more?))
+      ((symbolp x) (comp-var x env val? more?))
+      ((atom x) (comp-const x val? more?))
+      ((scheme-macro (first x)) (comp (scheme-macro-expand x) env val? more?))
+      ((case (first x)
+         (QUOTE  (arg-count x 1)
                  (comp-const (second x) val? more?))
-       (|quasiquote|  (arg-count x 1)
-                      (comp (quasi-q (second x)) env val? more?))
-       (|begin|  (comp-begin (rest x) env val? more?))
-       (|set!|   (arg-count x 2)
+         (BEGIN  (comp-begin (rest x) env val? more?))
+         (SET!   (arg-count x 2)
                  (assert (symbolp (second x)) (x)
                          "Only symbols can be set!, not ~a in ~a"
                          (second x) x)
@@ -93,13 +27,13 @@
                       (gen-set (second x) env)
                       (if (not val?) (gen 'POP))
                       (unless more? (gen 'RETURN))))
-       (|if|     (arg-count x 2 3)
+         (IF     (arg-count x 2 3)
                  (comp-if (second x) (third x) (fourth x)
                           env val? more?))
-       (^ (when val?
-            (let ((f (comp-lambda (second x) (rest2 x) env)))
-              (seq (gen 'FN f) (unless more? (gen 'RETURN))))))
-       (t      (comp-funcall (first x) (rest x) env val? more?))))))
+         (LAMBDA (when val?
+                   (let ((f (comp-lambda (second x) (rest2 x) env)))
+                     (seq (gen 'FN f) (unless more? (gen 'RETURN))))))
+         (t      (comp-funcall (first x) (rest x) env val? more?))))))
 
 ;;; ==============================
 
@@ -107,9 +41,9 @@
   "Report an error if form has wrong number of args."
   (let ((n-args (length (rest form))))
     (assert (<= min n-args max) (form)
-            "Wrong number of arguments for ~a in ~a: 
+      "Wrong number of arguments for ~a in ~a: 
        ~d supplied, ~d~@[ to ~d~] expected"
-            (first form) form n-args min (if (/= min max) max))))
+      (first form) form n-args min (if (/= min max) max))))
 
 ;;; ==============================
 
@@ -147,16 +81,12 @@
   (cond
     ((null pred)          ; (if nil x y) ==> y
      (comp else env val? more?))
-    ((nothing? pred)          ; (if nothing x y) ==> y
-     (comp else env val? more?))
-    ((false? pred)          ; (if false x y) ==> y
-     (comp else env val? more?))
     ((constantp pred)     ; (if t x y) ==> x
      (comp then env val? more?))
     ((and (listp pred)    ; (if (not p) x y) ==> (if p y x)
           (length=1 (rest pred))
           (primitive-p (first pred) env 1)
-          (eq (prim-opcode (primitive-p (first pred) env 1)) '|not|))
+          (eq (prim-opcode (primitive-p (first pred) env 1)) 'not))
      (comp-if (second pred) else then env val? more?))
     (t (let ((pcode (comp pred env t t))
              (tcode (comp then env val? more?))
@@ -173,7 +103,7 @@
               (seq pcode (gen 'FJUMP L1) tcode (list L1)
                    (unless more? (gen 'RETURN)))))
            (t             ; (if p x y) ==> p (FJUMP L1) x L1: y
-                                        ; or p (FJUMP L1) x (JUMP L2) L1: y L2:
+                          ; or p (FJUMP L1) x (JUMP L2) L1: y L2:
             (let ((L1 (gen-label))
                   (L2 (if more? (gen-label))))
               (seq pcode (gen 'FJUMP L1) tcode
@@ -214,6 +144,43 @@
 
 ;;; ==============================
 
+(defstruct (prim (:type list)) 
+  symbol n-args opcode always side-effects)
+
+;;; Note change from book: some of the following primitive fns have had
+;;; trailing NIL fields made explicit, because some Lisp's will give
+;;; an error (rather than NIL), when asked to find the prim-side-effects
+;;; of a three-element list.
+
+(defparameter *primitive-fns*
+  '((+ 2 + true nil) (- 2 - true nil) (* 2 * true nil) (/ 2 / true nil)
+    (< 2 < nil nil) (> 2 > nil nil) (<= 2 <= nil nil) (>= 2 >= nil nil)
+    (/= 2 /= nil nil) (= 2 = nil nil)
+    (eq? 2 eq nil nil) (equal? 2 equal nil nil) (eqv? 2 eql nil nil)
+    (not 1 not nil nil) (null? 1 not nil nil) (cons 2 cons true nil)
+    (car 1 car nil nil) (cdr 1 cdr nil nil)  (cadr 1 cadr nil nil) 
+    (list 1 list1 true nil) (list 2 list2 true nil) (list 3 list3 true nil)
+    (read 0 read nil t) (write 1 write nil t) (display 1 display nil t)
+    (newline 0 newline nil t) (compiler 1 compiler t nil) 
+    (name! 2 name! true t) (random 1 random true nil)))
+
+(defun primitive-p (f env n-args)
+  "F is a primitive if it is in the table, and is not shadowed
+  by something in the environment, and has the right number of args."
+  (and (not (in-env-p f env))
+       (find f *primitive-fns*
+             :test #'(lambda (f prim)
+                       (and (eq f (prim-symbol prim))
+                            (= n-args (prim-n-args prim)))))))
+
+(defun list1 (x) (list x))
+(defun list2 (x y) (list x y))
+(defun list3 (x y z) (list x y z))
+(defun display (x) (princ x))
+(defun newline () (terpri))
+
+;;; ==============================
+
 (defun gen-set (var env)
   "Generate an instruction to set a variable to top-of-stack."
   (let ((p (in-env-p var env)))
@@ -223,12 +190,21 @@
             (error "Can't alter the constant ~a" var)
             (gen 'GSET var)))))
 
+;;; ==============================
+
+(defun init-scheme-comp ()
+  "Initialize the primitive functions."
+  (dolist (prim *primitive-fns*)
+     (setf (get (prim-symbol prim) 'global-val)
+           (new-fn :env nil :name (prim-symbol prim)
+                   :code (seq (gen 'PRIM (prim-symbol prim))
+                              (gen 'RETURN))))))
 
 ;;; ==============================
 
 (defun comp-lambda (args body env)
   "Compile a lambda form into a closure with compiled code."
-  (new-method :env env :args args
+  (new-fn :env env :args args
           :code (seq (gen-args args 0)
                      (comp-begin body
                                  (cons (make-true-list args) env)
@@ -249,16 +225,12 @@
         (t (cons (first dotted-list)
                  (make-true-list (rest dotted-list))))))
 
-(defun new-method (&key code env name args)
+(defun new-fn (&key code env name args)
   "Build a new function."
-  (assemble (make-method :env env :name name :args args
-                         :code (optimize code))))
+  (assemble (make-fn :env env :name name :args args
+                     :code (optimize code))))
 
-(defun comp-go (exp)
-  "Compile and execute the expression."
-  (bardvm (compiler `(|exit| ,exp))))
+;;; ==============================
 
-
-(defun gen1 (&rest args) "Generate a single instruction" args)
-(defun target (instr code) (second (member (arg1 instr) code)))
-(defun next-instr (code) (find-if (complement #'label-p) code))
+(defun optimize (code) code)
+(defun assemble (fn) fn)

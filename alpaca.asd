@@ -14,26 +14,15 @@
   :description "Describe alpaca here"
   :author "mikel evins <mevins@me.com>"
   :serial t
-  :depends-on (:singleton-classes :com.informatimago.common-lisp.lisp-reader)
+  :depends-on (:singleton-classes :fset :com.informatimago.common-lisp.lisp-reader)
   :components ((:module "src"
                         :serial t
                         :components ((:file "package")
-                                     (:file "bard-types")
-                                     (:file "bard-aux")
-                                     (:file "bard-env")
-                                     (:file "bard-macros")
-                                     (:file "bard-methods")
-                                     (:file "bard-functions")
-                                     (:file "bard-compiler")
-                                     (:file "bard-quasiquote")
-                                     (:file "bard-instructions")
-                                     (:file "bard-assembler")
-                                     (:file "bard-reader")
-                                     (:file "bard-vm")
-                                     (:file "bard-primitives")
-                                     (:file "bard-opt")
-                                     (:file "bard-repl")
+                                     (:file "bard-auxfns")
+                                     (:file "bard-interp1")
+                                     (:file "bard-compile1")
+                                     (:file "bard-compile2")
+                                     (:file "bard-compile3")
                                      (:file "alpaca")))))
 
 ;;; (asdf:load-system :alpaca)
-;;; (bard::bard)

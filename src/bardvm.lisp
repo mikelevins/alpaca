@@ -831,20 +831,30 @@
 
 (defun bard-read (&optional (stream *standard-input*))
   (let ((*readtable* *bard-readtable*))
-    (convert-numbers (read stream nil (end)))))
+    (input-object->bard-value (read stream nil (end)))))
 
-(defun convert-numbers (x)
-  "Replace symbols that look like Bard numbers with their values."
-  ;; Don't copy structure, make changes in place.
-  (typecase x
-    (cons   (setf (car x) (convert-numbers (car x)))
-            (setf (cdr x) (convert-numbers (cdr x)))
-	    x) ; *** Bug fix, gat, 11/9/92
-    (symbol (or (convert-number x) x))
-    (vector (dotimes (i (length x))
-              (setf (aref x i) (convert-numbers (aref x i))))
-	    x) ; *** Bug fix, gat, 11/9/92
-    (t x)))
+(defmethod input-object->bard-value (x) x)
+
+(defmethod input-object->bard-value ((x cons))
+  (setf (car x) (input-object->bard-value (car x)))
+  (setf (cdr x) (input-object->bard-value (cdr x)))
+  x)
+
+(defmethod input-object->bard-value ((x symbol))
+  (case x
+    (|end| (end))
+    (|undefined| (undefined))
+    (|nothing| (nothing))
+    (|true| (true))
+    (|false| (false))
+    (t (or (convert-number x) x))))
+
+(defmethod input-object->bard-value ((x vector))
+  (dotimes (i (length x))
+    (setf (aref x i)
+          (input-object->bard-value (aref x i))))
+  x)
+
 
 (defun convert-number (symbol)
   "If str looks like a complex number, return the number."

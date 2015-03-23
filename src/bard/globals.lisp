@@ -1,18 +1,27 @@
 ;;;; ***********************************************************************
-;;;; FILE IDENTIFICATION
 ;;;;
 ;;;; Name:          globals.lisp
 ;;;; Project:       Bard
 ;;;; Purpose:       support for global variables
 ;;;; Author:        mikel evins
-;;;; Copyright:     2014 mikel evins
-;;;;                Incrementally derived from Peter Norvig's Scheme compiler
-;;;;                Code from Paradigms of Artificial Intelligence Programming
-;;;;                Copyright (c) 1991 Peter Norvig
+;;;; Copyright:     2015 mikel evins
 ;;;;
 ;;;; ***********************************************************************
 
-(in-package :bard)
+(in-package :bard-internal)
 
-(defun set-global-var! (var val)
-  (setf (get var 'global-val) val))
+(defclass bard-globals ()
+  ((entries :reader entries :initform (make-hash-table :test #'eq)))
+  (:metaclass org.tfeb.hax.singleton-classes:singleton-class))
+
+(defun bard-globals ()(make-instance 'bard-globals))
+
+(defun global-ref (varname)
+  (let ((found (gethash varname (entries (bard-globals)) (undefined))))
+    (if (defined? found)
+        found
+        (error "Undefined global variable ~S" varname))))
+
+(defun global-set! (varname val)
+  (setf (gethash varname (entries (bard-globals)))
+        val))

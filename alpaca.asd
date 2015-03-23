@@ -10,34 +10,27 @@
 
 (in-package :cl-user)
 
+(require :asdf)
+(pushnew "/usr/local/src/folio2/" asdf:*central-registry*)
+
 (asdf:defsystem #:alpaca
   :description "Describe alpaca here"
   :author "mikel evins <mevins@me.com>"
   :serial t
-  :depends-on (:singleton-classes :fset)
+  :depends-on (:singleton-classes :folio2)
   :components ((:module "src"
                         :serial t
-                        :components ((:file "package")
-                                     (:module "bard" :serial t
-                                              :components ((:file "utils")
+                        :components ((:module "bard" :serial t
+                                              :components ((:file "package")
                                                            (:file "globals")
-                                                           (:file "procedures")
                                                            (:file "named-literals")
-                                                           (:file "prims")
-                                                           (:file "compiler")
-                                                           (:file "types")
-                                                           (:file "macros")
-                                                           (:file "quasiquote")
-                                                           (:file "env")
-                                                           (:file "printer")
-                                                           (:file "assembler")
-                                                           (:file "optimize")
-                                                           (:file "vm")
                                                            (:file "reader")
-                                                           (:file "bard")))
+                                                           (:file "compiler")
+                                                           (:file "structures")
+                                                           ;;(:file "bard")
+                                                           ))
+                                     (:file "package")
                                      (:file "alpaca")))))
 
 ;;; (asdf:load-system :alpaca)
-
-
 

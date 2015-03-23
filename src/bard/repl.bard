@@ -1,0 +1,8 @@
+
+(define (bard-top-level)
+    (begin (define (bard)
+             (newline)
+             (display "bard> ")
+             (display ((compiler (read))))
+             (bard))
+           (bard)))

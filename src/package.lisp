@@ -8,9 +8,5 @@
 ;;;;
 ;;;; ***********************************************************************
 
-(defpackage #:bard
-  (:use #:cl)
-  (:shadow #:compile #:debug #:function #:make-method #:method #:optimize #:symbol))
-
 (defpackage #:alpaca
   (:use #:cl))

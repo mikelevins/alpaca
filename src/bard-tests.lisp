@@ -83,13 +83,32 @@
 ;;; should leave 1 and 2 on the stack:
 ;;; (vmrun $vm)
 
-;;; tests of function calls (SAVE, RETURN, CALLJ, ARGS, ARGS.)
+;;; tests of function calls (METHOD, SAVE, RETURN, CALLJ, ARGS, ARGS.)
 ;;; ---------------------------------------------------------------------
 
+(defparameter $call-test
+  (make-method
+   ;; the called method is in local var 0 0
+   :env (list (vector (make-method :env nil
+                                   :code (list '(CONST 2) '(CONST 3) '(*) '(RETURN)))))
+   ;; save the state and call the method; after it returns, then halt; stack should be 6
+   :code (vector '(SAVE 3) '(LVAR 0 0) '(CALLJ 0) '(HALT))))
+
+;;; (defparameter $vm (make-instance 'bardvm :method $call-test))
+;;; should leave 6 on the stack:
+;;; (vmrun $vm)
 
 ;;; tests of METHOD and FUNCTION (creating method and function objects)
 ;;; ---------------------------------------------------------------------
 
+(defparameter $method-test
+  (make-method
+   :env nil
+   :code (vector `(METHOD ,$call-test) '(HALT))))
+
+;;; (defparameter $vm (make-instance 'bardvm :method $method-test))
+;;; should leave a new method with the code from $call-test on the stack:
+;;; (vmrun $vm)
 
 ;;; tests of continuations (CC, SETCC)
 ;;; ---------------------------------------------------------------------

@@ -10,39 +10,22 @@
 
 (in-package #:bard)
 
+
+;;; ---------------------------------------------------------------------
+;;; auxiliary utilities
+;;; ---------------------------------------------------------------------
+
+(defun rest2 (ls)(cddr ls))
+
+;;; ---------------------------------------------------------------------
+;;; built-in data structures
+;;; ---------------------------------------------------------------------
+
 (defclass undefined ()
   ()
   (:metaclass org.tfeb.hax.singleton-classes:singleton-class))
 
 (defun undefined ()(make-instance 'undefined))
-
-(defun make-stack () nil)
-(defun empty-env () nil)
-
-(defclass method ()
-  ((code :accessor method-code :initform nil :initarg :code)
-   (env :accessor method-env :initform nil :initarg :env)))
-
-(defmethod method? (x) nil)
-(defmethod method? ((x method)) t)
-
-(defun make-method (&key code env)
-  (make-instance 'method :code code :env env))
-
-(defclass return-record ()
-  ((method :accessor return-method :initform nil :initarg :method)
-   (pc :accessor return-pc :initform nil :initarg :pc)
-   (env :accessor return-env :initform nil :initarg :env)))
-
-(defun make-return-record (&key method pc env)
-  (make-instance 'return-record :method method :pc pc :env env))
-
-(defun label? (x) (atom x))
-(defun opcode (instr) (if (label? instr) :label (first instr)))
-(defun args (instr) (if (listp instr) (rest instr)))
-(defun arg1 (instr) (if (listp instr) (second instr)))
-(defun arg2 (instr) (if (listp instr) (third instr)))
-(defun arg3 (instr) (if (listp instr) (fourth instr)))
 
 (defmethod true? (x) t)
 (defmethod true? ((x null)) nil)
@@ -50,7 +33,21 @@
 (defmethod false? (x) nil)
 (defmethod false? ((x null)) t)
 
-(defun top (stack) (first stack))
+;;; ---------------------------------------------------------------------
+;;; representation of bard methods
+;;; ---------------------------------------------------------------------
+
+(defclass method ()
+  ((name :accessor method-name :initform nil :initarg :name)
+   (args :accessor method-args :initform nil :initarg :args)
+   (code :accessor method-code :initform nil :initarg :code)
+   (env :accessor method-env :initform nil :initarg :env)))
+
+(defmethod method? (x) nil)
+(defmethod method? ((x method)) t)
+
+(defun make-method (&key args code env)
+  (make-instance 'method :args args :code code :env env))
 
 (defun show-method (method  &optional (stream *standard-output*) (indent 2))
   (if (not (method? method))
@@ -67,6 +64,54 @@
                     (show-method arg stream (+ indent 8)))
                   (fresh-line))))))))
 
+
+;;; ---------------------------------------------------------------------
+;;; instruction utilities
+;;; ---------------------------------------------------------------------
+
+(defun label? (x) (atom x))
+(defun opcode (instr) (if (label? instr) :label (first instr)))
+(defun args (instr) (if (listp instr) (rest instr)))
+(defun arg1 (instr) (if (listp instr) (second instr)))
+(defun arg2 (instr) (if (listp instr) (third instr)))
+(defun arg3 (instr) (if (listp instr) (fourth instr)))
+
+;;; ---------------------------------------------------------------------
+;;; machine register structures
+;;; ---------------------------------------------------------------------
+
+(defun make-stack () nil)
+(defun empty-env () nil)
+
+;;; ---------------------------------------------------------------------
+;;; vm return records
+;;; ---------------------------------------------------------------------
+
+(defclass return-record ()
+  ((method :accessor return-method :initform nil :initarg :method)
+   (pc :accessor return-pc :initform nil :initarg :pc)
+   (env :accessor return-env :initform nil :initarg :env)))
+
+(defun make-return-record (&key method pc env)
+  (make-instance 'return-record :method method :pc pc :env env))
+
+;;; ---------------------------------------------------------------------
+;;; vm accessors
+;;; ---------------------------------------------------------------------
+
+(defun top (stack) (first stack))
+
+(defmethod gref ((vm bardvm)(vname symbol))
+  (gethash vname (globals vm) (undefined)))
+
+(defmethod gset! ((vm bardvm)(vname symbol) val)
+  (setf (gethash vname (globals vm))
+        val))
+
+;;; ---------------------------------------------------------------------
+;;; the vm
+;;; ---------------------------------------------------------------------
+
 (defclass bardvm ()
   ((method :accessor method :initform nil :initarg :method)
    (code :accessor code :initform nil :initarg :code)
@@ -77,12 +122,9 @@
    (nargs :accessor nargs  :initform nil :initarg :nargs)
    (instruction :accessor instruction  :initform nil :initarg :instruction)))
 
-(defmethod gref ((vm bardvm)(vname symbol))
-  (gethash vname (globals vm) (undefined)))
-
-(defmethod gset! ((vm bardvm)(vname symbol) val)
-  (setf (gethash vname (globals vm))
-        val))
+;;; ---------------------------------------------------------------------
+;;; executing an instruction
+;;; ---------------------------------------------------------------------
 
 (defun vmexec! (vm)
   (case (opcode (instruction vm))
@@ -155,7 +197,7 @@
     (METHOD     (push (make-method :code (method-code (arg1 (instruction vm)))
                                    :env (env vm))
                       (stack vm)))
-    (PRIM   (push (apply-prim (arg1 (instruction vm))
+    (PRIM   (push (apply (arg1 (instruction vm))
                               (loop with args = nil repeat (nargs vm)
                                  do (push (pop (stack vm)) args)
                                  finally (return args)))
@@ -206,6 +248,11 @@
      (push (opcode (instruction vm)) (stack vm)))
     
     (otherwise (error "Unknown opcode: ~a" (instruction vm)))))
+
+
+;;; ---------------------------------------------------------------------
+;;; running the vm
+;;; ---------------------------------------------------------------------
 
 (defun vmrun (vm)
   (catch 'exit-bard

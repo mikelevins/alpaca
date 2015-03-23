@@ -12,8 +12,8 @@
 
 (defpackage #:bard
   (:use #:cl)
-  (:shadow #:debug #:display #:function #:make-method #:method #:optimize #:symbol))
+  (:shadow #:debug #:display #:function #:make-method #:method #:optimize))
 
 (defpackage #:alpaca
-  (:use #:cl #:capi #:bard))
+  (:use #:cl #:capi))
 

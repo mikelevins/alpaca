@@ -14,15 +14,11 @@
   :description "Describe alpaca here"
   :author "mikel evins <mevins@me.com>"
   :serial t
-  :depends-on (:singleton-classes :fset :com.informatimago.common-lisp.lisp-reader)
+  :depends-on (:singleton-classes)
   :components ((:module "src"
                         :serial t
                         :components ((:file "package")
-                                     (:file "bard-auxfns")
-                                     (:file "bard-interp1")
-                                     (:file "bard-compile1")
-                                     (:file "bard-compile2")
-                                     (:file "bard-compile3")
+                                     (:file "bard")
                                      (:file "alpaca")))))
 
 ;;; (asdf:load-system :alpaca)

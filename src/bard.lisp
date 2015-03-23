@@ -36,6 +36,12 @@
 (defun arg2 (instr) (if (listp instr) (third instr)))
 (defun arg3 (instr) (if (listp instr) (fourth instr)))
 
+(defmethod true? (x) t)
+(defmethod true? ((x null)) nil)
+
+(defmethod false? (x) nil)
+(defmethod false? ((x null)) t)
+
 (defun top (stack) (first stack))
 
 (defmethod show-method ((method method) &optional (stream *standard-output*) (indent 2))
@@ -43,8 +49,8 @@
       (format stream "~8a" method)
       (progn
         (fresh-line)
-        (dotimes (i (length (method-code fn)))
-          (let ((instr (elt (method-code fn) i)))
+        (dotimes (i (length (method-code method)))
+          (let ((instr (elt (method-code method) i)))
             (if (label? instr)
                 (format stream "~a:" instr)
                 (progn
@@ -91,20 +97,20 @@
     
     ;; Branching instructions:
     (JUMP   (setf (pc vm) (arg1 (instruction vm))))
-    (FJUMP  (if (null (pop (stack vm)))
+    (FJUMP  (if (false? (pop (stack vm)))
                 (setf (pc vm)
                       (arg1 (instruction vm)))))
-    (TJUMP  (if (pop (stack vm))
+    (TJUMP  (if (true? (pop (stack vm)))
                 (setf (pc vm)
                       (arg1 (instruction vm)))))
     
     ;; Function call/return instructions:
     (SAVE   (push (make-ret-addr :pc (arg1 (instruction vm))
-                                 :fn (method vm) :env (env vm))
+                                 :method (method vm) :env (env vm))
                   (stack vm)))
 
     (RETURN ;; return value is top of stack; ret-addr is second
-      (setf (method vm) (ret-addr-fn (second (stack vm)))
+      (setf (method vm) (ret-addr-method (second (stack vm)))
             (code vm) (method-code (method vm))
             (env vm) (ret-addr-env (second (stack vm)))
             (pc vm) (ret-addr-pc (second (stack vm))))
@@ -132,48 +138,57 @@
                  (push (pop (stack vm)) (elt (first (env vm)) (arg1 (instruction vm)))))
             (loop for i from (- (arg1 (instruction vm)) 1) downto 0 do
                  (setf (elt (first (env vm)) i) (pop (stack vm)))))
-    (FN     (push (make-method :code (method-code (arg1 (instruction vm)))
-                           :env (env vm)) (stack vm)))
-    (PRIM   (push (apply (arg1 (instruction vm))
-                         (loop with args = nil repeat (nargs vm)
-                            do (push (pop (stack vm)) args)
-                            finally (return args)))
+    (METHOD     (push (make-method :code (method-code (arg1 (instruction vm)))
+                                   :env (env vm)) (stack vm)))
+    (PRIM   (push (apply-prim (arg1 (instruction vm))
+                              (loop with args = nil repeat (nargs vm)
+                                 do (push (pop (stack vm)) args)
+                                 finally (return args)))
                   (stack vm)))
     
     ;; Continuation instructions:
-    (SET-CC (setf (stack vm) (top (stack vm))))
+    (SETCC (setf (stack vm) (top (stack vm))))
     (CC     (push (make-method
                    :env (list (vector (stack vm)))
-                   :code '((ARGS 1) (LVAR 1 0 ";" (stack vm)) (SET-CC)
+                   :code '((ARGS 1) (LVAR 1 0 ";" (stack vm)) (SETCC)
                            (LVAR 0 0) (RETURN)))
                   (stack vm)))
     
-    ;; Nullary operations:
+    ;; ========================
+    ;; built-in ops
+    ;; ========================
+    
+    ;; zero args
+    ;; -----------------------
+    ((HALT) (throw 'exit-bard (top (stack vm))))
+
     ((SCHEME-READ NEWLINE)
      (push (funcall (opcode (instruction vm))) (stack vm)))
     
-    ;; Unary operations:
+    ;; 1 arg
+    ;; -----------------------
     ((CAR CDR CADR NOT LIST1 COMPILER DISPLAY WRITE RANDOM) 
      (push (funcall (opcode (instruction vm)) (pop (stack vm))) (stack vm)))
     
-    ;; Binary operations:
+    ;; 2 args
+    ;; -----------------------
     ((+ - * / < > <= >= /= = CONS LIST2 NAME! EQ EQUAL EQL)
      (setf (stack vm) (cons (funcall (opcode (instruction vm)) (second (stack vm))
-                                (first (stack vm)))
-                       (rest2 (stack vm)))))
+                                     (first (stack vm)))
+                            (rest2 (stack vm)))))
     
-    ;; Ternary operations:
+    ;; 3 args
+    ;; -----------------------
     (LIST3
      (setf (stack vm) (cons (funcall (opcode (instruction vm)) (third (stack vm))
-                               (second (stack vm)) (first (stack vm)))
-                       (rest3 (stack vm)))))
+                                     (second (stack vm)) (first (stack vm)))
+                            (rest3 (stack vm)))))
     
     ;; Constants:
+    ;; -----------------------
     ((T NIL -1 0 1 2)
      (push (opcode (instruction vm)) (stack vm)))
     
-    ;; Other:
-    ((HALT) (throw 'exit-bard (top (stack vm))))
     (otherwise (error "Unknown opcode: ~a" (instruction vm)))))
 
 (defun vmrun (vm)

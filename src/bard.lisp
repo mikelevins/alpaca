@@ -123,31 +123,38 @@
             (env vm) (return-env (second (stack vm)))
             (pc vm) (return-pc (second (stack vm))))
       ;; Get rid of the return-record, but keep the value
-      (setf (stack vm) (cons (first (stack vm)) (rest2 (stack vm)))))
-    (CALLJ  (pop (env vm))                 ; discard the top frame
-            (setf (method vm)  (pop (stack vm))
-                  (code vm) (method-code (method vm))
-                  (env vm) (method-env (method vm))
+      (setf (stack vm)
+            (cons (first (stack vm))
+                  (rest2 (stack vm)))))
+    (CALLJ  (pop (env vm)) ; discard the top frame
+            (setf (method vm)(pop (stack vm))
+                  (code vm)(method-code (method vm))
+                  (env vm)(method-env (method vm))
                   (pc vm) 0
-                  (nargs vm) (arg1 (instruction vm))))
+                  (nargs vm)(arg1 (instruction vm))))
     (ARGS   (assert (= (nargs vm) (arg1 (instruction vm))) ()
-                    "Wrong number of arguments:~
-                         ~d expected, ~d supplied"
+                    "Wrong number of arguments: ~d expected, ~d supplied"
                     (arg1 (instruction vm)) (nargs vm))
-            (push (make-array (arg1 (instruction vm))) (env vm))
+            (push (make-array (arg1 (instruction vm)))
+                  (env vm))
             (loop for i from (- (nargs vm) 1) downto 0 do
-                 (setf (elt (first (env vm)) i) (pop (stack vm)))))
+                 (setf (elt (first (env vm)) i)
+                       (pop (stack vm)))))
     (ARGS.  (assert (>= (nargs vm) (arg1 (instruction vm))) ()
-                    "Wrong number of arguments:~
-                         ~d or more expected, ~d supplied"
+                    "Wrong number of arguments: ~d or more expected, ~d supplied"
                     (arg1 (instruction vm)) (nargs vm))
-            (push (make-array (+ 1 (arg1 (instruction vm)))) (env vm))
+            (push (make-array (+ 1 (arg1 (instruction vm))))
+                  (env vm))
             (loop repeat (- (nargs vm) (arg1 (instruction vm))) do
-                 (push (pop (stack vm)) (elt (first (env vm)) (arg1 (instruction vm)))))
+                 (push (pop (stack vm))
+                       (elt (first (env vm))
+                            (arg1 (instruction vm)))))
             (loop for i from (- (arg1 (instruction vm)) 1) downto 0 do
-                 (setf (elt (first (env vm)) i) (pop (stack vm)))))
+                 (setf (elt (first (env vm)) i)
+                       (pop (stack vm)))))
     (METHOD     (push (make-method :code (method-code (arg1 (instruction vm)))
-                                   :env (env vm)) (stack vm)))
+                                   :env (env vm))
+                      (stack vm)))
     (PRIM   (push (apply-prim (arg1 (instruction vm))
                               (loop with args = nil repeat (nargs vm)
                                  do (push (pop (stack vm)) args)
@@ -155,12 +162,13 @@
                   (stack vm)))
     
     ;; Continuation instructions:
-    (SETCC (setf (stack vm) (top (stack vm))))
-    (CC     (push (make-method
-                   :env (list (vector (stack vm)))
-                   :code '((ARGS 1) (LVAR 1 0 ";" (stack vm)) (SETCC)
-                           (LVAR 0 0) (RETURN)))
-                  (stack vm)))
+    (SETCC (setf (stack vm)
+                 (top (stack vm))))
+    (CC (push (make-method
+               :env (list (vector (stack vm)))
+               :code '((ARGS 1) (LVAR 1 0 ";" (stack vm)) (SETCC)
+                       (LVAR 0 0) (RETURN)))
+              (stack vm)))
     
     ;; ========================
     ;; built-in ops

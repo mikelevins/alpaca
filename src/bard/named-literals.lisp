@@ -18,25 +18,13 @@
 (defclass undefined ()()
   (:metaclass org.tfeb.hax.singleton-classes:singleton-class))
 
-(defparameter *undefined* (make-instance 'undefined))
-
-(defun undefined () *undefined*)
-
-(defmethod undefined? (x)(declare (ignore x)) nil)
-(defmethod undefined? ((x undefined)) t)
-(defun defined? (x)(not (undefined? x)))
+(defun undefined () (make-instance 'undefined))
 
 ;;; ---------------------------------------------------------------------
 ;;; nothing
 ;;; ---------------------------------------------------------------------
 
-(defparameter *nothing* nil)
-
-(defun nothing () *nothing*)
-
-(defmethod nothing? (x)(declare (ignore x)) nil)
-(defmethod nothing? ((x null)) t)
-(defun something? (x)(not (nothing? x)))
+(defun nothing () nil)
 
 ;;; ---------------------------------------------------------------------
 ;;; true
@@ -45,11 +33,7 @@
 (defclass true ()()
   (:metaclass org.tfeb.hax.singleton-classes:singleton-class))
 
-(defparameter *true* (make-instance 'true))
-
-(defun true () *true*)
-
-(defmethod true? (x)(declare (ignore x)) t)
+(defun true () (make-instance 'true))
 
 ;;; ---------------------------------------------------------------------
 ;;; false
@@ -58,14 +42,7 @@
 (defclass false ()()
   (:metaclass org.tfeb.hax.singleton-classes:singleton-class))
 
-(defparameter *false* (make-instance 'false))
-
-(defun false () *false*)
-
-(defmethod false? (x)(declare (ignore x)) nil)
-(defmethod false? ((x false))(declare (ignore x)) t)
-(defmethod false? ((x undefined))(declare (ignore x)) t)
-(defmethod false? ((x null))(declare (ignore x)) t)
+(defun false () (make-instance 'false))
 
 ;;; ---------------------------------------------------------------------
 ;;; end
@@ -74,10 +51,36 @@
 (defclass end ()()
   (:metaclass org.tfeb.hax.singleton-classes:singleton-class))
 
-(defparameter *end* (make-instance 'end))
+(defun end () (make-instance 'end))
 
-(defun end () *end*)
+;;; ---------------------------------------------------------------------
+;;; predicates
+;;; ---------------------------------------------------------------------
+
+(defmethod undefined? (x)(declare (ignore x)) nil)
+(defmethod undefined? ((x undefined))(declare (ignore x)) (true))
+
+(defmethod defined? (x)(declare (ignore x)) (true))
+(defmethod defined? ((x undefined))(declare (ignore x)) nil)
+
+(defmethod nothing? (x)(declare (ignore x)) nil)
+(defmethod nothing? ((x null))(declare (ignore x)) (true))
+(defmethod nothing? ((x undefined))(declare (ignore x)) (undefined))
+
+(defmethod something? (x)(declare (ignore x)) (true))
+(defmethod something? ((x null))(declare (ignore x)) nil)
+(defmethod something? ((x undefined))(declare (ignore x)) (undefined))
 
 (defmethod end? (x)(declare (ignore x)) nil)
-(defmethod end? ((x end)) t)
+(defmethod end? ((x end)) (true))
+(defmethod end? ((x undefined))(declare (ignore x)) (undefined))
 
+(defmethod true? (x)(declare (ignore x)) (true))
+(defmethod true? ((x false))(declare (ignore x)) nil)
+(defmethod true? ((x null))(declare (ignore x)) nil)
+(defmethod true? ((x undefined))(declare (ignore x)) (undefined))
+
+(defmethod false? (x)(declare (ignore x)) nil)
+(defmethod false? ((x false))(declare (ignore x)) (true))
+(defmethod false? ((x null))(declare (ignore x)) (true))
+(defmethod false? ((x undefined))(declare (ignore x)) (undefined))

@@ -29,6 +29,14 @@
 (defun make-method (&key code env)
   (make-instance 'method :code code :env env))
 
+(defclass return-record ()
+  ((method :accessor return-method :initform nil :initarg :method)
+   (pc :accessor return-pc :initform nil :initarg :pc)
+   (env :accessor return-env :initform nil :initarg :env)))
+
+(defun make-return-record (&key method pc env)
+  (make-instance 'return-record :method method :pc pc :env env))
+
 (defun label? (x) (atom x))
 (defun opcode (instr) (if (label? instr) :label (first instr)))
 (defun args (instr) (if (listp instr) (rest instr)))
@@ -44,7 +52,7 @@
 
 (defun top (stack) (first stack))
 
-(defmethod show-method ((method method) &optional (stream *standard-output*) (indent 2))
+(defun show-method (method  &optional (stream *standard-output*) (indent 2))
   (if (not (method? method))
       (format stream "~8a" method)
       (progn
@@ -105,16 +113,16 @@
                       (arg1 (instruction vm)))))
     
     ;; Function call/return instructions:
-    (SAVE   (push (make-ret-addr :pc (arg1 (instruction vm))
-                                 :method (method vm) :env (env vm))
+    (SAVE   (push (make-return-record :pc (arg1 (instruction vm))
+                                      :method (method vm) :env (env vm))
                   (stack vm)))
 
-    (RETURN ;; return value is top of stack; ret-addr is second
-      (setf (method vm) (ret-addr-method (second (stack vm)))
+    (RETURN ;; return value is top of stack; return-record is second
+      (setf (method vm) (return-method (second (stack vm)))
             (code vm) (method-code (method vm))
-            (env vm) (ret-addr-env (second (stack vm)))
-            (pc vm) (ret-addr-pc (second (stack vm))))
-      ;; Get rid of the ret-addr, but keep the value
+            (env vm) (return-env (second (stack vm)))
+            (pc vm) (return-pc (second (stack vm))))
+      ;; Get rid of the return-record, but keep the value
       (setf (stack vm) (cons (first (stack vm)) (rest2 (stack vm)))))
     (CALLJ  (pop (env vm))                 ; discard the top frame
             (setf (method vm)  (pop (stack vm))

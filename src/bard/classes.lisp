@@ -72,3 +72,6 @@
 (defparameter |String| (%construct-class 'bard::|String| (list |Vector|)))
 (defparameter |Integer| (%construct-class 'bard::|Integer| (list |Rational|)))
 (defparameter |Byte| (%construct-class 'bard::|Byte| (list |Integer|)))
+
+;;; fix up the previously-defined |class| to be a subtype of |Type|
+

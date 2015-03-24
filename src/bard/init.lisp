@@ -54,6 +54,8 @@
   (global-set! 'bard::|Integer| |Integer|)
   (global-set! 'bard::|Byte| |Byte|)
   ;; built-in functions
+  (global-set! 'bard::|first| (%construct-function |List|))
+  (add-method! (global-ref 'bard::|first|) (list |string|) #'(lambda (s)(elt s 0)))
   ;; built-in methods
   (global-set! 'bard::|exit| #'(lambda ()(throw 'exit-bard :ok)))
   ;; named literals

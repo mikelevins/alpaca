@@ -78,6 +78,7 @@
 ;;; class
 ;;; ---------------------------------------------------------------------
 
+
 (defun %construct-class (cname direct-superclasses &key (constructor nil))
   (make-instance 'bard-class
                  :name cname
@@ -151,6 +152,19 @@
 ;;; function
 ;;; ---------------------------------------------------------------------
 
+(defclass bard-function ()
+  ((input-classes :accessor input-classes :initform nil :initarg :input-classes)
+   (methods :accessor methods :initform nil :initarg :methods)))
+
+(defun %construct-function (input-classes &optional methods)
+  (make-instance 'bard-function :input-classes input-classes :methods methods))
+
+(defparameter |function|
+  (make-instance 'structure
+                 :name 'bard::|function|
+                 :constructor #'%construct-function))
+
+
 ;;; ---------------------------------------------------------------------
 ;;; generator
 ;;; ---------------------------------------------------------------------
@@ -203,8 +217,17 @@
    (required-parameters :accessor required-parameters :initform nil :initarg :required-parameters)
    (rest-parameter :accessor rest-parameter :initform nil :initarg :rest-parameter)
    (call-environment :accessor call-environment :initform nil :initarg :call-environment)
+   (expression :accessor method-expression :initform nil :initarg :expression)
    (body :accessor method-body :initform nil :initarg :body))
   (:metaclass clos:funcallable-standard-class))
+
+(defmethod bard-print ((obj bard-method) &optional (out cl:*standard-output*))
+  (if (method-expression obj)
+      (format out "~a" (method-expression obj))
+      (format out "#<~a>"
+              (if (name obj)
+                  (format nil "method ~a" (name obj))
+                  (format nil "an anonymous method")))))
 
 (defun %parse-method-params (params)
   (let* ((ampersand-pos (position-if (lambda (p)(equal "&" (symbol-name p)))
@@ -239,65 +262,67 @@
 ;;;    whew!
 
 (defun %construct-method (params body env &key (name nil))
-  ;; parse the params
-  (multiple-value-bind (required-params rest-param)(%parse-method-params params)
-    ;; build the dummy bindings
-    (let* ((param-bindings (if rest-param
-                               (mapcar (lambda (par)(cons par nil))
-                                       (append required-params (list rest-param)))
-                               (mapcar (lambda (par)(cons par nil))
-                                       required-params)))
-           ;; assemble the call environment
-           (call-env (add-bindings env param-bindings))
-           ;; compile the body in the call environment
-           (meth-body (compile-begin body call-env))
-           ;; construct the method object
-           (meth (make-instance 'bard-method
-                                :required-parameters required-params
-                                :rest-parameter rest-param
-                                :call-environment call-env
-                                :body meth-body)))
-      ;; create the method proc and stuff it into the funcallable instance
-      (clos:set-funcallable-instance-function
-       meth
-       (lambda (&rest args)
-         ;; the code in the body of this lambda runs when the method is called
-         ;; collect the formal parameters and the passed args
-         (let* ((required-params (required-parameters meth))
-                (required-count (length required-params))
-                (rest-param (rest-parameter meth))
-                (arg-count (length args)))
-           ;; check for argument errors
-           (if (< arg-count required-count)
-               (error "Too few arguments to method ~s; ~a expected" meth required-count))
-           (unless rest-param
-             (when (> arg-count required-count)
-               (error "Too many arguments to method ~s; ~a expected" meth required-count)))
-           ;; replace the dummy values in the call environment with the actual
-           ;; arguments passed to the emthod
-           (let* ((required-args (folio2:take required-count args))
-                  (restargs (folio2:drop required-count args))
-                  (call-env (call-environment meth)))
-             (dotimes (i required-count)
-               (let ((val (elt required-args i))
-                     (binding (elt call-env i)))
-                 (set-binding-value! binding val)))
-             ;; if there's a rest param, stick any leftover args in its binding
-             (when rest-param
-               (env-set! callenv rest-param restargs))
-             ;; execute the compiled method body and capture any values it returns
-             (let ((vals (multiple-value-list ($ (method-body meth)))))
-               ;; now that we have the results, stuff nil into all the call-env bindings
-               ;; so the environment doesn't hold onto values it shouldn't
+  (let ((expression `(bard::^ ,params ,@(copy-tree body))))
+    ;; parse the params
+    (multiple-value-bind (required-params rest-param)(%parse-method-params params)
+      ;; build the dummy bindings
+      (let* ((param-bindings (if rest-param
+                                 (mapcar (lambda (par)(cons par nil))
+                                         (append required-params (list rest-param)))
+                                 (mapcar (lambda (par)(cons par nil))
+                                         required-params)))
+             ;; assemble the call environment
+             (call-env (add-bindings env param-bindings))
+             ;; compile the body in the call environment
+             (meth-body (compile-begin body call-env))
+             ;; construct the method object
+             (meth (make-instance 'bard-method
+                                  :required-parameters required-params
+                                  :rest-parameter rest-param
+                                  :call-environment call-env
+                                  :expression expression
+                                  :body meth-body)))
+        ;; create the method proc and stuff it into the funcallable instance
+        (clos:set-funcallable-instance-function
+         meth
+         (lambda (&rest args)
+           ;; the code in the body of this lambda runs when the method is called
+           ;; collect the formal parameters and the passed args
+           (let* ((required-params (required-parameters meth))
+                  (required-count (length required-params))
+                  (rest-param (rest-parameter meth))
+                  (arg-count (length args)))
+             ;; check for argument errors
+             (if (< arg-count required-count)
+                 (error "Too few arguments to method ~s; ~a expected" meth required-count))
+             (unless rest-param
+               (when (> arg-count required-count)
+                 (error "Too many arguments to method ~s; ~a expected" meth required-count)))
+             ;; replace the dummy values in the call environment with the actual
+             ;; arguments passed to the emthod
+             (let* ((required-args (folio2:take required-count args))
+                    (restargs (folio2:drop required-count args))
+                    (call-env (call-environment meth)))
                (dotimes (i required-count)
-                 (let ((binding (elt call-env i)))
-                   (set-binding-value! binding nil)))
-               ;; if there's a rest param, make sure it's nil as well
+                 (let ((val (elt required-args i))
+                       (binding (elt call-env i)))
+                   (set-binding-value! binding val)))
+               ;; if there's a rest param, stick any leftover args in its binding
                (when rest-param
                  (env-set! callenv rest-param restargs))
-               ;; now we can return the vals
-               (apply #'cl:values vals))))))
-      meth)))
+               ;; execute the compiled method body and capture any values it returns
+               (let ((vals (multiple-value-list ($ (method-body meth)))))
+                 ;; now that we have the results, stuff nil into all the call-env bindings
+                 ;; so the environment doesn't hold onto values it shouldn't
+                 (dotimes (i required-count)
+                   (let ((binding (elt call-env i)))
+                     (set-binding-value! binding nil)))
+                 ;; if there's a rest param, make sure it's nil as well
+                 (when rest-param
+                   (env-set! callenv rest-param restargs))
+                 ;; now we can return the vals
+                 (apply #'cl:values vals))))))
+        meth))))
 
 
 (defparameter |method|

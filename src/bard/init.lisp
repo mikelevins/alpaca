@@ -11,7 +11,7 @@
 (in-package :bard-internal)
 
 (defun init-bard-globals ()
-  ;; structures
+  ;; built-in structures
   (global-set! 'bard::|character| |character|)
   (global-set! 'bard::|class| |class|)
   (global-set! 'bard::|complex-number| |complex-number|)
@@ -26,7 +26,7 @@
   (global-set! 'bard::|treelist| |treelist|)
   (global-set! 'bard::|tree-map| |tree-map|)
   (global-set! 'bard::|uri| |uri|)
-  ;; classes
+  ;; built-in classes
   (global-set! 'bard::|Anything| |Anything|)
   (global-set! 'bard::|Stream| |Stream|)
   (global-set! 'bard::|Collection| |Collection|)
@@ -52,6 +52,7 @@
   (global-set! 'bard::|String| |String|)
   (global-set! 'bard::|Integer| |Integer|)
   (global-set! 'bard::|Byte| |Byte|)
-  ;; methods
-  )
+  ;; built-in functions
+  ;; built-in methods
+  (global-set! 'bard::|exit| #'(lambda ()(throw 'exit-bard :ok))))
 

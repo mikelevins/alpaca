@@ -53,12 +53,3 @@
 
 (defmethod bard-print ((obj structure) &optional (out cl:*standard-output*))
   (format out "~a" (or (name obj) "#<an anonymous structure>")))
-
-(defmethod bard-print ((obj bard-method) &optional (out cl:*standard-output*))
-  (format out "#<~a>"
-          (if (name obj)
-              (format nil "method ~a" (name obj))
-              (format nil "an anonymous method"))))
-
-(defmethod bard-print ((obj bard-class) &optional (out cl:*standard-output*))
-  (format out "~a" (name obj)))

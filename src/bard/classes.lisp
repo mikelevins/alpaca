@@ -26,6 +26,9 @@
 (defmethod print-object ((cls bard-class)(out stream))
   (princ (name cls) out))
 
+(defmethod bard-print ((obj bard-class) &optional (out cl:*standard-output*))
+  (format out "~a" (name obj)))
+
 (defparameter |Anything| (%construct-class 'bard::|Anything| nil))
 (defparameter |Stream| (%construct-class 'bard::|Stream| (list |Anything|)))
 (defparameter |Collection| (%construct-class 'bard::|Collection| (list |Anything|)))

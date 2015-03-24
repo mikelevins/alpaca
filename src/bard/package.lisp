@@ -10,8 +10,8 @@
 
 (defpackage #:bard-internal
   (:use #:cl)
-  (:shadow #:compile #:function #:make-method #:method #:structure)
-  (:import-from :NET.BARDCODE.FOLIO2.FUNCTIONS #:$))
+  (:shadow #:compile #:function #:make-method #:method #:no-applicable-method #:structure)
+  (:import-from :NET.BARDCODE.FOLIO2.FUNCTIONS #:$ #:^))
 
 (defpackage #:bard
   (:use #:cl)

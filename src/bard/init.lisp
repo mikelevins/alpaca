@@ -17,6 +17,7 @@
   (global-set! 'bard::|complex-number| |complex-number|)
   (global-set! 'bard::|cons| |cons|)
   (global-set! 'bard::|float| |float|)
+  (global-set! 'bard::|function| |function|)
   (global-set! 'bard::|hash-table| |hash-table|)
   (global-set! 'bard::|integer| |integer|)
   (global-set! 'bard::|method| |method|)
@@ -24,7 +25,7 @@
   (global-set! 'bard::|string| |string|)
   (global-set! 'bard::|symbol| |symbol|)
   (global-set! 'bard::|treelist| |treelist|)
-  (global-set! 'bard::|tree-map| |tree-map|)
+  (global-set! 'bard::|treemap| |treemap|)
   (global-set! 'bard::|uri| |uri|)
   ;; built-in classes
   (global-set! 'bard::|Anything| |Anything|)
@@ -54,5 +55,11 @@
   (global-set! 'bard::|Byte| |Byte|)
   ;; built-in functions
   ;; built-in methods
-  (global-set! 'bard::|exit| #'(lambda ()(throw 'exit-bard :ok))))
+  (global-set! 'bard::|exit| #'(lambda ()(throw 'exit-bard :ok)))
+  ;; named literals
+  (register-type (the-type-graph) (undefined) (list |Unique|))
+  (register-type (the-type-graph) (end) (list |Unique|))
+  (register-type (the-type-graph) (nothing) (list |Unique|))
+  (register-type (the-type-graph) (true) (list |Boolean|))
+  (register-type (the-type-graph) (false) (list |Boolean|)))
 

@@ -53,3 +53,6 @@
 
 (defmethod bard-print ((obj structure) &optional (out cl:*standard-output*))
   (format out "~a" (or (name obj) "#<an anonymous structure>")))
+
+(defmethod print-object ((obj structure)(out stream))
+  (format out "~a" (or (name obj) "#<an anonymous structure>")))

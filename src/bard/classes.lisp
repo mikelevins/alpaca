@@ -17,11 +17,24 @@
 ;;; role in protocols, and subtype/supertype relations with other
 ;;; types
 
+;;; ---------------------------------------------------------------------
+;;; bard-class
+;;; ---------------------------------------------------------------------
+
 ;;; bard-class is the class used to represent
 ;;; bard classes. the bard structure 'class' constructs these.
 (defclass bard-class (structure)
-  ((direct-superclasses :accessor direct-superclasses :initarg :direct-superclasses))
+  ()
   (:metaclass clos:funcallable-standard-class))
+
+(defmethod initialize-instance :after ((class bard-class) &rest initargs &key &allow-other-keys)
+  (let ((directs (getf initargs :direct-supers nil)))
+    (register-type (the-type-graph)
+                   class
+                   (remove-duplicates directs))))
+
+(defmethod class? (x) nil)
+(defmethod class? ((x bard-class)) t)
 
 (defmethod print-object ((cls bard-class)(out stream))
   (princ (name cls) out))
@@ -29,7 +42,12 @@
 (defmethod bard-print ((obj bard-class) &optional (out cl:*standard-output*))
   (format out "~a" (name obj)))
 
+;;; ---------------------------------------------------------------------
+;;; built-in classes
+;;; ---------------------------------------------------------------------
+
 (defparameter |Anything| (%construct-class 'bard::|Anything| nil))
+(defparameter |Mutable| (%construct-class 'bard::|Mutable| (list |Anything|)))
 (defparameter |Stream| (%construct-class 'bard::|Stream| (list |Anything|)))
 (defparameter |Collection| (%construct-class 'bard::|Collection| (list |Anything|)))
 (defparameter |Atom| (%construct-class 'bard::|Atom| (list |Anything|)))

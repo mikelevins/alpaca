@@ -23,8 +23,12 @@
    (constructor :accessor constructor :initform nil :initarg :constructor))
   (:metaclass clos:funcallable-standard-class))
 
-(defmethod initialize-instance :after ((struct structure) &key &allow-other-keys)
+(defmethod initialize-instance :after ((struct structure) &rest initargs &key &allow-other-keys)
   (with-slots (constructor) struct
+    (let ((directs (getf initargs :direct-supers nil)))
+      (register-type (the-type-graph)
+                     struct
+                     (remove-duplicates directs)))
     (clos:set-funcallable-instance-function
      struct
      (or constructor
@@ -72,23 +76,25 @@
   (make-instance 'primitive-structure
                  :name 'bard::|character|
                  :constructor #'%construct-character
-                 :native-type 'cl:character))
+                 :native-type 'cl:character
+                 :direct-supers (list |Character|)))
 
 ;;; ---------------------------------------------------------------------
 ;;; class
 ;;; ---------------------------------------------------------------------
 
 
-(defun %construct-class (cname direct-superclasses &key (constructor nil))
+(defun %construct-class (cname direct-supers &key (constructor nil))
   (make-instance 'bard-class
                  :name cname
                  :constructor constructor
-                 :direct-superclasses direct-superclasses))
+                 :direct-supers direct-supers))
 
 (defparameter |class|
   (make-instance 'structure
                  :name 'bard::|class|
-                 :constructor #'%construct-class))
+                 :constructor #'%construct-class
+                 :direct-supers (list |Type|)))
 
 ;;; ---------------------------------------------------------------------
 ;;; complex-number
@@ -100,7 +106,8 @@
   (make-instance 'primitive-structure
                  :name 'bard::|complex-number|
                  :constructor #'%construct-complex-number
-                 :native-type 'cl:complex))
+                 :native-type 'cl:complex
+                 :direct-supers (list |Complex|)))
 
 ;;; ---------------------------------------------------------------------
 ;;; cons
@@ -112,7 +119,8 @@
   (make-instance 'primitive-structure
                  :name 'bard::|cons|
                  :constructor #'%construct-cons
-                 :native-type 'cl:cons))
+                 :native-type 'cl:cons
+                 :direct-supers (list |Pair| |Mutable|)))
 
 ;;; ---------------------------------------------------------------------
 ;;; error
@@ -146,7 +154,8 @@
   (make-instance 'primitive-structure
                  :name 'bard::|float|
                  :constructor #'%construct-float
-                 :native-type 'cl:float))
+                 :native-type 'cl:float
+                 :direct-supers (list |Float|)))
 
 ;;; ---------------------------------------------------------------------
 ;;; function
@@ -154,15 +163,38 @@
 
 (defclass bard-function ()
   ((input-classes :accessor input-classes :initform nil :initarg :input-classes)
-   (methods :accessor methods :initform nil :initarg :methods)))
+   (method-tree :accessor method-tree :initform (make-method-tree) :initarg :method-tree)
+   (name :accessor name :initform nil :initarg :name))
+  (:metaclass clos:funcallable-standard-class))
 
-(defun %construct-function (input-classes &optional methods)
-  (make-instance 'bard-function :input-classes input-classes :methods methods))
+(defmethod print-object ((fn bard-function)(out stream))
+  (format out "(-> ~{~a~^ ~})" (input-classes fn)))
+
+(defmethod bard-print ((obj bard-function) &optional (out cl:*standard-output*))
+  (format out "(-> ~{~a~^ ~})" (input-classes obj)))
+
+(defmethod no-applicable-method (fn args)
+  (error "No applicable method of function ~S for arguments ~S"
+         fn args))
+
+(defmethod initialize-instance :after ((fn bard-function) &key &allow-other-keys)
+  (with-slots (method-tree) fn
+    (clos:set-funcallable-instance-function
+     fn #'(lambda (&rest args)
+            (let ((best-method (%most-specific-applicable-method method-tree (signature args))))
+              (if best-method
+                  (cl:apply best-method args)
+                  (no-applicable-method fn args)))))))
+
+(defun %construct-function (&rest input-classes)
+  (assert (every #'class? input-classes)() "All arguments to function must be defined classes")
+  (make-instance 'bard-function :input-classes input-classes :method-tree (make-method-tree)))
 
 (defparameter |function|
   (make-instance 'structure
                  :name 'bard::|function|
-                 :constructor #'%construct-function))
+                 :constructor #'%construct-function
+                 :direct-supers (list |Procedure| |Mutable|)))
 
 
 ;;; ---------------------------------------------------------------------
@@ -184,7 +216,8 @@
   (make-instance 'primitive-structure
                  :name 'bard::|hash-table|
                  :constructor #'%construct-hash-table
-                 :native-type 'cl:hash-table))
+                 :native-type 'cl:hash-table
+                 :direct-supers (list |Map| |Mutable|)))
 
 ;;; ---------------------------------------------------------------------
 ;;; integer
@@ -202,7 +235,8 @@
   (make-instance 'primitive-structure
                  :name 'bard::|integer|
                  :constructor #'%construct-integer
-                 :native-type 'cl:integer))
+                 :native-type 'cl:integer
+                 :direct-supers (list |Integer|)))
 
 ;;; ---------------------------------------------------------------------
 ;;; key-event
@@ -328,7 +362,8 @@
 (defparameter |method|
   (make-instance 'structure
                  :name 'bard::|method|
-                 :constructor #'%construct-method))
+                 :constructor #'%construct-method
+                 :direct-supers (list |Procedure|)))
 
 ;;; ---------------------------------------------------------------------
 ;;; mouse-event
@@ -382,7 +417,8 @@
   (make-instance 'primitive-structure
                  :name 'bard::|ratio|
                  :constructor #'%construct-ratio
-                 :native-type 'cl:ratio))
+                 :native-type 'cl:ratio
+                 :direct-supers (list |Rational|)))
 
 ;;; ---------------------------------------------------------------------
 ;;; read-table
@@ -432,7 +468,8 @@
   (make-instance 'primitive-structure
                  :name 'bard::|string|
                  :constructor #'%construct-string
-                 :native-type 'cl:string))
+                 :native-type 'cl:string
+                 :direct-supers (list |String|)))
 
 
 ;;; ---------------------------------------------------------------------
@@ -450,7 +487,8 @@
   (make-instance 'primitive-structure
                  :name 'bard::|symbol|
                  :constructor #'%construct-symbol
-                 :native-type 'cl:symbol))
+                 :native-type 'cl:symbol
+                 :direct-supers (list |Name|)))
 
 ;;; ---------------------------------------------------------------------
 ;;; synonym
@@ -471,7 +509,8 @@
   (make-instance 'primitive-structure
                  :name 'bard::|treelist|
                  :constructor #'%construct-treelist
-                 :native-type 'fset:wb-seq))
+                 :native-type 'fset:wb-seq
+                 :direct-supers (list |List|)))
 
 ;;; ---------------------------------------------------------------------
 ;;; tree-map
@@ -483,11 +522,12 @@
                                 (second kvs)))))
     (fset:convert 'fset:wb-map pairs)))
 
-(defparameter |tree-map|
+(defparameter |treemap|
   (make-instance 'primitive-structure
-                 :name 'bard::|tree-map|
+                 :name 'bard::|treemap|
                  :constructor #'%construct-tree-map
-                 :native-type 'fset:wb-map))
+                 :native-type 'fset:wb-map
+                 :direct-supers (list |Map|)))
 
 ;;; ---------------------------------------------------------------------
 ;;; touch-event
@@ -508,7 +548,8 @@
   (make-instance 'primitive-structure
                  :name 'bard::|uri|
                  :constructor #'%construct-uri
-                 :native-type 'quri.uri:uri))
+                 :native-type 'quri.uri:uri
+                 :direct-supers (list |Name|)))
 
 ;;; ---------------------------------------------------------------------
 ;;; warning

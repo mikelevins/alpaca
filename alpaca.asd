@@ -29,9 +29,10 @@
                                                            (:file "environments")
                                                            (:file "macros")
                                                            (:file "compiler")
+                                                           (:file "type-graph")
                                                            (:file "structures")
-                                                           (:file "types")
                                                            (:file "classes")
+                                                           (:file "types")
                                                            (:file "printer")
                                                            (:file "init")
                                                            (:file "bard")
@@ -40,3 +41,4 @@
                                      (:file "alpaca")))))
 
 ;;; (asdf:load-system :alpaca)
+;;; (bard-internal::init-bard-globals)

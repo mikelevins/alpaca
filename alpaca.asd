@@ -40,7 +40,13 @@
                                                            (:file "bard")
                                                            ))
                                      (:file "package")
+                                     (:file "bard-listener")
                                      (:file "alpaca")))))
 
-;;; (asdf:load-system :alpaca)
-;;; (bard-internal::init-bard-globals)
+(defun load-alpaca ()
+  (asdf:load-system :alpaca)
+  (funcall (intern "INIT-BARD-GLOBALS" (find-package :bard-internal))))
+
+;;; (load-alpaca)
+;;; (bard-internal::repl)
+

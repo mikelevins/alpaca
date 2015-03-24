@@ -99,7 +99,6 @@
               t
               (error "Malformed parameter list in method expression: ~S" params))))))
 
-;;; (^ (arg1 arg2 ...) exp1 exp2 ...)
 (defun compile-method (x env)
   (let* ((params (first x))
          (body (rest x))
@@ -138,6 +137,9 @@
       (compile (bard-macroexpand x))
       (case (first x)
         (bard::|quote|
+               (check-quote-args x)
+               (compile-constant (second x)))
+        (bard::|QUOTE|
                (check-quote-args x)
                (compile-constant (second x)))
         (bard::|begin|

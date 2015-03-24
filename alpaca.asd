@@ -32,6 +32,7 @@
                                                            (:file "structures")
                                                            (:file "types")
                                                            (:file "classes")
+                                                           (:file "printer")
                                                            (:file "init")
                                                            (:file "bard")
                                                            ))

@@ -15,16 +15,13 @@
 (defun display-bard-prompt ()
   (format t "bard> "))
 
-(defun bard-print (obj)
-  )
-
 (defun repl ()
-  (format t "~%~a" $bard-banner)
+  (format t "~%~a~%" $bard-banner)
   (init-bard-globals)
   (catch 'exit-bard
     (loop
        (display-bard-prompt)
        (let* ((input (bard-read))
               (thunk (compile input (empty-environment))))
-         (bard-print thunk)
+         (bard-print ($ thunk))
          (terpri)))))

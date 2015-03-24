@@ -199,7 +199,8 @@
 ;;; ---------------------------------------------------------------------
 
 (defclass bard-method ()
-  ((required-parameters :accessor required-parameters :initform nil :initarg :required-parameters)
+  ((name :accessor name :initform nil :initarg :name)
+   (required-parameters :accessor required-parameters :initform nil :initarg :required-parameters)
    (rest-parameter :accessor rest-parameter :initform nil :initarg :rest-parameter)
    (call-environment :accessor call-environment :initform nil :initarg :call-environment)
    (body :accessor method-body :initform nil :initarg :body))

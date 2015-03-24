@@ -23,7 +23,7 @@
 (defmethod input->bard-value ((x (eql 'bard::|true|)))(true))
 (defmethod input->bard-value ((x (eql 'bard::|false|)))(false))
 
-(defun bard-read (&optional (stream *standard-input)(eof-error-p t) eof-value recursive-p)
+(defun bard-read (&optional (stream cl:*standard-input*)(eof-error-p t) eof-value recursive-p)
   (let* ((*readtable* *bard-readtable*)
          (*package* (find-package :bard))
          (input (read stream eof-error-p eof-value recursive-p)))

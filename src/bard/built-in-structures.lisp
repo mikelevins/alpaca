@@ -460,6 +460,42 @@
 ;;; ---------------------------------------------------------------------
 
 ;;; ---------------------------------------------------------------------
+;;; text
+;;; ---------------------------------------------------------------------
+;;; the text structure uses FSet's wb-seq support for strings
+;;; to provide efficient representation of large texts for editing
+
+(defclass text ()
+  ((data :accessor text-data :initform "" :initarg :data)))
+
+(defmethod print-object ((obj text)(out stream))
+  (format out "#text \"~a\"" (fset:convert 'cl:string (text-data obj))))
+
+(defmethod bard-print ((obj text) &optional (out cl:*standard-output*))
+  (format out "#text \"~a\"" (fset:convert 'cl:string (text-data obj))))
+
+(defmethod %construct-text (data)
+  (error "Can't construct a text instance from data ~S" data))
+
+(defmethod %construct-text ((data fset:wb-seq))
+  (make-instance 'text :data data))
+
+(defmethod %construct-text ((data string))
+  (make-instance 'text :data (fset:convert 'fset:wb-seq data)))
+
+(defmethod %construct-text ((data cons))
+  (assert (every #'characterp data)()
+          "Can't construct a text instance from data ~S" data)
+  (make-instance 'text :data (fset:convert 'fset:wb-seq data)))
+
+(defparameter |text|
+  (make-instance 'structure
+                 :name 'bard::|text|
+                 :constructor #'%construct-text
+                 :direct-supers (list |Text|)))
+
+
+;;; ---------------------------------------------------------------------
 ;;; treelist
 ;;; ---------------------------------------------------------------------
 

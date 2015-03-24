@@ -65,13 +65,12 @@
 (defparameter |Event| (%construct-class 'bard::|Event| (list |Condition|)))
 (defparameter |Real| (%construct-class 'bard::|Real| (list |Number|)))
 (defparameter |Complex| (%construct-class 'bard::|Complex| (list |Number|)))
-(defparameter |Vector| (%construct-class 'bard::|Vector| (list |Array|)))
+(defparameter |Vector| (%construct-class 'bard::|Vector| (list |Array| |List|)))
+(defparameter |Text| (%construct-class 'bard::|Text| (list |Vector|)))
 (defparameter |Boolean| (%construct-class 'bard::|Boolean| (list |Unique|)))
 (defparameter |Rational| (%construct-class 'bard::|Rational| (list |Real|)))
 (defparameter |Float| (%construct-class 'bard::|Float| (list |Real|)))
 (defparameter |String| (%construct-class 'bard::|String| (list |Vector|)))
 (defparameter |Integer| (%construct-class 'bard::|Integer| (list |Rational|)))
 (defparameter |Byte| (%construct-class 'bard::|Byte| (list |Integer|)))
-
-;;; fix up the previously-defined |class| to be a subtype of |Type|
 

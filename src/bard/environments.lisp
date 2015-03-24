@@ -15,6 +15,9 @@
 (defun find-binding (env varname)
   (assoc varname env :test #'eq))
 
+(defun set-binding-value! (binding val)
+  (setf (cdr binding) val))
+
 (defun env-ref (env varname)
   (let ((binding (find-binding env varname)))
     (if binding
@@ -28,7 +31,8 @@
         (error "No such variable ~S in environment" varname))))
 
 (defun add-binding (env varname val)
-  (cons (cons varname val)))
+  (cons (cons varname val)
+        env))
 
 (defun add-bindings (env var/val-alist)
   (append var/val-alist env))

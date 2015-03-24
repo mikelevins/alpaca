@@ -51,7 +51,7 @@
 ;;; ($ (compile '(bard::|set!| x 1001) nil))
 ;;; (global-ref 'x)
 
-(defun compile-begin (x env)
+(defun  compile-begin (x env)
   (let ((vals (mapcar (lambda (e)(compile e env))
                       x)))
     (lambda ()
@@ -63,6 +63,8 @@
 ;;; (global-set! 'x 0)
 ;;; ($ (compile '(bard::|begin| (bard::|set!| x 1) x) nil))
 ;;; (global-ref 'x)
+;;; (defparameter $env (add-binding (empty-environment) 'z 0))
+;;; ($ (compile '(bard::|begin| (bard::|set!| z 101) z) $env))
 
 ;;; (if test then else)
 (defun check-if-args (x)
@@ -97,8 +99,18 @@
               t
               (error "Malformed parameter list in method expression: ~S" params))))))
 
+;;; (^ (arg1 arg2 ...) exp1 exp2 ...)
 (defun compile-method (x env)
-  )
+  (let* ((params (first x))
+         (body (rest x))
+         (meth (%construct-method params body env)))
+    (lambda () meth)))
+
+;;; (defparameter $m ($ (compile '(bard::^ () 3) nil)))
+;;; ($ $m)
+;;; (defparameter $m ($ (compile '(bard::^ (x y) y) nil)))
+;;; ($ $m 10 20)
+;;; ($ $m 101 202)
 
 (defun compile-funcall (x env)
   (let ((op ($ (compile (first x) env)))
@@ -138,7 +150,7 @@
                (compile-if (rest x) env))
         (bard::|^|
                (check-method-args x)
-               (compile-method x env))
+               (compile-method (rest x) env))
         (t (compile-funcall x env)))))
 
 (defun compiler (x)

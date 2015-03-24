@@ -12,10 +12,18 @@
 
 
 ;;; ---------------------------------------------------------------------
+;;; unique-instance
+;;; ---------------------------------------------------------------------
+;;; the common superclass of unique values
+
+(defclass unique-instance ()()
+  (:metaclass org.tfeb.hax.singleton-classes:singleton-class))
+
+;;; ---------------------------------------------------------------------
 ;;; undefined
 ;;; ---------------------------------------------------------------------
 
-(defclass undefined ()()
+(defclass undefined (unique-instance)()
   (:metaclass org.tfeb.hax.singleton-classes:singleton-class))
 
 (defun undefined () (make-instance 'undefined))
@@ -31,7 +39,7 @@
 ;;; true
 ;;; ---------------------------------------------------------------------
 
-(defclass true ()()
+(defclass true (unique-instance)()
   (:metaclass org.tfeb.hax.singleton-classes:singleton-class))
 
 (defun true () (make-instance 'true))
@@ -40,7 +48,7 @@
 ;;; false
 ;;; ---------------------------------------------------------------------
 
-(defclass false ()()
+(defclass false (unique-instance)()
   (:metaclass org.tfeb.hax.singleton-classes:singleton-class))
 
 (defun false () (make-instance 'false))
@@ -49,7 +57,7 @@
 ;;; end
 ;;; ---------------------------------------------------------------------
 
-(defclass end ()()
+(defclass end (unique-instance)()
   (:metaclass org.tfeb.hax.singleton-classes:singleton-class))
 
 (defun end () (make-instance 'end))

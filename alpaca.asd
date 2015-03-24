@@ -17,7 +17,7 @@
   :description "Describe alpaca here"
   :author "mikel evins <mevins@me.com>"
   :serial t
-  :depends-on (:singleton-classes :folio2)
+  :depends-on (:singleton-classes :quri :folio2)
   :components ((:module "src"
                         :serial t
                         :components ((:module "bard" :serial t
@@ -27,6 +27,7 @@
                                                            (:file "reader")
                                                            (:file "compiler")
                                                            (:file "structures")
+                                                           (:file "classes")
                                                            ;;(:file "bard")
                                                            ))
                                      (:file "package")

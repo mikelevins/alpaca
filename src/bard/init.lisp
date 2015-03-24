@@ -10,8 +10,11 @@
 
 (in-package :bard-internal)
 
-(defun init-bard-globals ()
-  ;; built-in structures
+;;; ---------------------------------------------------------------------
+;;; init the built-in structures
+;;; ---------------------------------------------------------------------
+
+(defun init-bard-structures ()
   (global-set! 'bard::|character| |character|)
   (global-set! 'bard::|class| |class|)
   (global-set! 'bard::|complex-number| |complex-number|)
@@ -26,8 +29,13 @@
   (global-set! 'bard::|symbol| |symbol|)
   (global-set! 'bard::|treelist| |treelist|)
   (global-set! 'bard::|treemap| |treemap|)
-  (global-set! 'bard::|uri| |uri|)
-  ;; built-in classes
+  (global-set! 'bard::|uri| |uri|))
+
+;;; ---------------------------------------------------------------------
+;;; init the built-in classes
+;;; ---------------------------------------------------------------------
+
+(defun init-bard-classes ()
   (global-set! 'bard::|Anything| |Anything|)
   (global-set! 'bard::|Stream| |Stream|)
   (global-set! 'bard::|Collection| |Collection|)
@@ -52,16 +60,53 @@
   (global-set! 'bard::|Float| |Float|)
   (global-set! 'bard::|String| |String|)
   (global-set! 'bard::|Integer| |Integer|)
-  (global-set! 'bard::|Byte| |Byte|)
-  ;; built-in functions
+  (global-set! 'bard::|Byte| |Byte|))
+
+;;; ---------------------------------------------------------------------
+;;; init the built-in protocol functions
+;;; ---------------------------------------------------------------------
+
+(defun |cons-first| (x)(car x))
+(defun |string-first| (x)(elt x 0))
+(defun |treelist-first| (x)(fset:@ x 0))
+
+(defun init-bard-functions ()
+  ;; List protocol
   (global-set! 'bard::|first| (%construct-function |List|))
-  (add-method! (global-ref 'bard::|first|) (list |string|) #'(lambda (s)(elt s 0)))
-  ;; built-in methods
-  (global-set! 'bard::|exit| #'(lambda ()(throw 'exit-bard :ok)))
-  ;; named literals
+  (add-method! (global-ref 'bard::|first|)(list |cons|) #'|cons-first|)
+  (add-method! (global-ref 'bard::|first|)(list |string|) #'|string-first|)
+  (add-method! (global-ref 'bard::|first|)(list |treelist|) #'|treelist-first|)
+  )
+
+;;; ---------------------------------------------------------------------
+;;; init the built-in protocol methods
+;;; ---------------------------------------------------------------------
+
+(defun |exit| ()(throw 'exit-bard :ok))
+
+(defun init-bard-methods ()
+  (global-set! 'bard::|exit| #'|exit|)
+  )
+
+;;; ---------------------------------------------------------------------
+;;; init the named literals
+;;; ---------------------------------------------------------------------
+
+(defun init-named-literals ()
   (register-type (the-type-graph) (undefined) (list |Unique|))
   (register-type (the-type-graph) (end) (list |Unique|))
   (register-type (the-type-graph) (nothing) (list |Unique|))
   (register-type (the-type-graph) (true) (list |Boolean|))
   (register-type (the-type-graph) (false) (list |Boolean|)))
+
+;;; ---------------------------------------------------------------------
+;;; init the global bard environment
+;;; ---------------------------------------------------------------------
+
+(defun init-bard-globals ()
+  (init-bard-structures)
+  (init-bard-classes)
+  (init-bard-functions)
+  (init-bard-methods)
+  (init-named-literals))
 

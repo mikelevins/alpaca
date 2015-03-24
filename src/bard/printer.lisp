@@ -47,6 +47,11 @@
                     (string-downcase (package-name pkg))
                     sname)))))
 
+
+
+(defmethod bard-print ((obj cl:function) &optional (out cl:*standard-output*))
+  (format out "#<primitive-method ~a>" (sys::function-name obj)))
+
 ;;; ---------------------------------------------------------------------
 ;;; structures
 ;;; ---------------------------------------------------------------------

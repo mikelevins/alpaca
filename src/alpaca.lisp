@@ -18,3 +18,6 @@
   ())
 
 (defun alpaca ()(make-instance 'alpaca))
+
+;;; (alpaca)
+;;; (describe (alpaca::get-bard (alpaca::alpaca)))

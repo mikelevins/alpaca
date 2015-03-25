@@ -20,7 +20,8 @@
   (:metaclass org.tfeb.hax.singleton-classes:singleton-class))
 
 (defmethod initialize-instance :after ((obj bard) &rest initargs &key &allow-other-keys)
-  (init-bard-globals obj))
+  (init-bard-globals obj)
+  (setf (initialized? obj) t))
 
 (defun bard ()(make-instance 'bard))
 
@@ -144,8 +145,8 @@
 
 (defparameter $bard-banner (format nil "bard ~a" *bard-version-number*))
 
-(defun display-bard-prompt ()
-  (format t "bard> "))
+(defun display-bard-prompt (&optional (stream *standard-output*))
+  (format stream "bard> "))
 
 (defun repl ()
   (format t "~%~a~%" $bard-banner)

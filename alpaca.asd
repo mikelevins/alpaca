@@ -39,6 +39,7 @@
                                                            ))
                                      (:file "package")
                                      (:file "alpaca")
+                                     (:file "util-editor")
                                      (:file "bard-listener")
                                      (:file "app")
                                      ))))

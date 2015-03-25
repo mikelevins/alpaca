@@ -1,0 +1,10 @@
+(in-package :alpaca)
+
+(defmethod htmlcolor ((color string))
+  (let* ((rstr (subseq color 0 2))
+         (gstr (subseq color 2 4))
+         (bstr (subseq color 4 6))
+         (r (/ (read-from-string (concatenate 'string "#x" rstr)) 255.0))
+         (g (/ (read-from-string (concatenate 'string "#x" gstr)) 255.0))
+         (b (/ (read-from-string (concatenate 'string "#x" bstr)) 255.0)))
+    (color:make-rgb r g b)))

@@ -104,6 +104,10 @@
 (defun |string-add-last| (c x)(concatenate 'string c (cl:string x)))
 (defun |treelist-add-last| (c x)(fset:insert c (fset:size c) x))
 
+(defun |cons-any| (ls)(elt ls (random (length ls))))
+(defun |string-any| (ls)(elt ls (random (length ls))))
+(defun |treelist-any| (ls)(fset:@ ls (random (fset:size ls))))
+
 (defun |cons-first| (x)(car x))
 (defun |string-first| (x)(elt x 0))
 (defun |treelist-first| (x)(fset:@ x 0))
@@ -132,6 +136,11 @@
   (add-method! (global-ref bard 'bard::|add-last|)(list |cons| |Anything|) #'|cons-add-last|)
   (add-method! (global-ref bard 'bard::|add-last|)(list |string| |Character|) #'|string-add-last|)
   (add-method! (global-ref bard 'bard::|add-last|)(list |treelist| |Anything|) #'|treelist-add-last|)
+
+  (global-set! bard 'bard::|any| (%construct-function |List|))
+  (add-method! (global-ref bard 'bard::|any|)(list |cons|) #'|cons-any|)
+  (add-method! (global-ref bard 'bard::|any|)(list |string|) #'|string-any|)
+  (add-method! (global-ref bard 'bard::|any|)(list |treelist|) #'|treelist-any|)
 
   (global-set! bard 'bard::|first| (%construct-function |List|))
   (add-method! (global-ref bard 'bard::|first|)(list |cons|) #'|cons-first|)
@@ -177,9 +186,14 @@
 ;;; ---------------------------------------------------------------------
 
 (defun |exit| ()(throw 'exit-bard :ok))
+(defun |list| (&rest elts) elts)
 (defun |pair| (left right)(cons left right))
 
 (defmethod init-bard-methods ((bard bard))
+
+  ;; List protocol
+  ;; ----------------------------------------
+  (global-set! bard 'bard::|list| #'|list|)
 
   ;; Pair protocol
   ;; ----------------------------------------

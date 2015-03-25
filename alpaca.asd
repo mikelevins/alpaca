@@ -23,7 +23,6 @@
                         :components ((:module "bard" :serial t
                                               :components ((:file "package")
                                                            (:file "version")
-                                                           (:file "globals")
                                                            (:file "named-literals")
                                                            (:file "reader")
                                                            (:file "environments")
@@ -36,17 +35,16 @@
                                                            (:file "types")
                                                            (:file "functions")
                                                            (:file "printer")
-                                                           (:file "init")
                                                            (:file "bard")
                                                            ))
                                      (:file "package")
+                                     (:file "alpaca")
                                      (:file "bard-listener")
-                                     (:file "alpaca")))))
+                                     (:file "app")
+                                     ))))
 
 (defun load-alpaca ()
-  (asdf:load-system :alpaca)
-  (funcall (intern "INIT-BARD-GLOBALS" (find-package :bard-internal))))
+  (asdf:load-system :alpaca))
 
 ;;; (load-alpaca)
 ;;; (bard-internal::repl)
-

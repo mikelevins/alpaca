@@ -14,9 +14,9 @@
 (defun compile-variable-reference (varname env)
   (if (find-binding env varname)
       (lambda ()(env-ref env varname))
-      (lambda ()(global-ref varname))))
+      (lambda ()(global-ref (bard) varname))))
 
-;;; (global-set! 'x 101)
+;;; (global-set! (bard) 'x 101)
 ;;; ($ (compile 'x nil))
 
 (defun check-quote-args (x)
@@ -45,11 +45,11 @@
          (valexp (compile (second args) env)))
     (if (find-binding env varname)
         (lambda ()(env-set! env varname ($ valexp)))
-        (lambda ()(global-set! varname ($ valexp))))))
+        (lambda ()(global-set! (bard) varname ($ valexp))))))
 
-;;; (global-set! 'x 0)
+;;; (global-set! (bard) 'x 0)
 ;;; ($ (compile '(bard::|set!| x 1001) nil))
-;;; (global-ref 'x)
+;;; (global-ref (bard) 'x)
 
 (defun  compile-begin (x env)
   (let ((vals (mapcar (lambda (e)(compile e env))
@@ -60,9 +60,9 @@
           (setq result (funcall val)))
         result))))
 
-;;; (global-set! 'x 0)
+;;; (global-set! (bard) 'x 0)
 ;;; ($ (compile '(bard::|begin| (bard::|set!| x 1) x) nil))
-;;; (global-ref 'x)
+;;; (global-ref (bard) 'x)
 ;;; (defparameter $env (add-binding (empty-environment) 'z 0))
 ;;; ($ (compile '(bard::|begin| (bard::|set!| z 101) z) $env))
 
@@ -117,9 +117,9 @@
                       (rest x))))
     (lambda () (apply op args))))
 
-;;; (global-set! 'plus #'+)
+;;; (global-set! (bard) 'plus #'+)
 ;;; ($ (compile '(plus 2 3) nil))
-;;; (global-set! 'times #'*)
+;;; (global-set! (bard) 'times #'*)
 ;;; ($ (compile '(times 2 3 4) nil))
 
 (defmethod compile (x env)

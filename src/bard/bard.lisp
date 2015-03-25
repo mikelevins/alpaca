@@ -95,11 +95,17 @@
 ;;; init built-in protocol functions
 ;;; ---------------------------------------------------------------------
 
+;;; List protocol
 (defun |cons-first| (x)(car x))
 (defun |string-first| (x)(elt x 0))
 (defun |treelist-first| (x)(fset:@ x 0))
+
+;;; Pair protocol
 (defun |cons-set-left!| (x val)(setf (car x) val))
 (defun |cons-set-right!| (x val)(setf (cdr x) val))
+
+;;; Math protocol
+(defun |bard+| (x y)(+ x y))
 
 (defmethod init-bard-functions ((bard bard))
   
@@ -127,6 +133,11 @@
 
   (global-set! bard 'bard::|set-right!| (%construct-function |Pair| |Anything|))
   (add-method! (global-ref bard 'bard::|set-right!|)(list |cons| |Anything|) #'|cons-set-right!|)
+  
+  ;; Math protocol
+  ;; ----------------------------------------
+  (global-set! bard 'bard::|+| (%construct-function |Number| |Number|))
+  (add-method! (global-ref bard 'bard::|+|)(list |Number| |Number|) #'|bard+|)
   )
 
 ;;; ---------------------------------------------------------------------

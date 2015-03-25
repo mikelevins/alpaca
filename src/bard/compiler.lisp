@@ -65,8 +65,8 @@
 
 (defun compile-define (args env)
   (let* ((varname (first args))
-         (valexp (compile (second args) env)))
-    (lambda ()(global-set! (bard) varname ($ valexp)))))
+         (val ($ (compile (second args) env))))
+    (lambda ()(global-set! (bard) varname val))))
 
 (defun  compile-begin (x env)
   (let ((vals (mapcar (lambda (e)(compile e env))
@@ -82,6 +82,10 @@
 ;;; (global-ref (bard) 'x)
 ;;; (defparameter $env (add-binding (empty-environment) 'z 0))
 ;;; ($ (compile '(bard::|begin| (bard::|set!| z 101) z) $env))
+;;; (defparameter $env (add-binding (empty-environment) 'z 0))
+;;; (defparameter $m (compile '(bard::|begin| z) $env))
+;;; (env-set! $env 'z 101)
+;;; ($ $m)
 
 ;;; (if test then else)
 (defun check-if-args (x)
@@ -127,12 +131,14 @@
 ;;; (defparameter $m ($ (compile '(bard::^ (x y) y) nil)))
 ;;; ($ $m 10 20)
 ;;; ($ $m 101 202)
+;;; (defparameter $m ($ (compile '(bard::^ (x y) (bard::+ x y)) nil)))
+;;; ($ $m 10 20)
 
 (defun compile-funcall (x env)
-  (let ((op ($ (compile (first x) env)))
-        (args (mapcar (lambda (e)($ (compile e env)))
+  (let ((op (compile (first x) env))
+        (args (mapcar (lambda (e)(compile e env))
                       (rest x))))
-    (lambda () (apply op args))))
+    (lambda () (apply ($ op) (mapcar (^ (arg)(funcall arg)) args)))))
 
 ;;; (global-set! (bard) 'plus #'+)
 ;;; ($ (compile '(plus 2 3) nil))

@@ -288,8 +288,8 @@
                   (rest-param (rest-parameter meth))
                   (arg-count (length args)))
              ;; check for argument errors
-             (if (< arg-count required-count)
-                 (error "Too few arguments to method ~s; ~a expected" meth required-count))
+             (when (< arg-count required-count)
+               (error "Too few arguments to method ~s; ~a expected" meth required-count))
              (unless rest-param
                (when (> arg-count required-count)
                  (error "Too many arguments to method ~s; ~a expected" meth required-count)))

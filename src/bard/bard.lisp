@@ -100,11 +100,23 @@
 (defun |treelist-first| (x)(fset:@ x 0))
 
 (defmethod init-bard-functions ((bard bard))
+  
   ;; List protocol
+  ;; ----------------------------------------
   (global-set! bard 'bard::|first| (%construct-function |List|))
   (add-method! (global-ref bard 'bard::|first|)(list |cons|) #'|cons-first|)
   (add-method! (global-ref bard 'bard::|first|)(list |string|) #'|string-first|)
   (add-method! (global-ref bard 'bard::|first|)(list |treelist|) #'|treelist-first|)
+
+  ;; Pair protocol
+  ;; ----------------------------------------
+  (global-set! bard 'bard::|left| (%construct-function |Pair|))
+  (add-method! (global-ref bard 'bard::|left|)(list |cons|) #'cl:car)
+  (global-set! bard 'bard::|pair?| (%construct-function |Anything|))
+  (add-method! (global-ref bard 'bard::|pair?|)(list |Anything|) (cl:constantly (nothing)))
+  (add-method! (global-ref bard 'bard::|pair?|)(list |cons|) (cl:constantly (true)))
+  (global-set! bard 'bard::|right| (%construct-function |Pair|))
+  (add-method! (global-ref bard 'bard::|right|)(list |cons|) #'cl:cdr)
   )
 
 ;;; ---------------------------------------------------------------------
@@ -112,8 +124,16 @@
 ;;; ---------------------------------------------------------------------
 
 (defun |exit| ()(throw 'exit-bard :ok))
+(defun |pair| (left right)(cons left right))
 
 (defmethod init-bard-methods ((bard bard))
+
+  ;; Pair protocol
+  ;; ----------------------------------------
+  (global-set! bard 'bard::|pair| #'|pair|)
+
+  ;; System protocol
+  ;; ----------------------------------------
   (global-set! bard 'bard::|exit| #'|exit|)
   )
 

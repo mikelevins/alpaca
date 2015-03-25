@@ -49,3 +49,4 @@
 
 ;;; (load-alpaca)
 ;;; (bard-internal::repl)
+;;; (setf $win (capi:contain (make-instance 'alpaca::bard-listener)))

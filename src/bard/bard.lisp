@@ -100,6 +100,10 @@
 (defun |string-add-first| (x c)(concatenate 'string (cl:string x) c))
 (defun |treelist-add-first| (x c)(fset:insert c 0 x))
 
+(defun |cons-add-last| (c x)(append c (list x)))
+(defun |string-add-last| (c x)(concatenate 'string c (cl:string x)))
+(defun |treelist-add-last| (c x)(fset:insert c (fset:size c) x))
+
 (defun |cons-first| (x)(car x))
 (defun |string-first| (x)(elt x 0))
 (defun |treelist-first| (x)(fset:@ x 0))
@@ -123,6 +127,11 @@
   (add-method! (global-ref bard 'bard::|add-first|)(list |Anything| |cons|) #'|cons-add-first|)
   (add-method! (global-ref bard 'bard::|add-first|)(list |Character| |string|) #'|string-add-first|)
   (add-method! (global-ref bard 'bard::|add-first|)(list |Anything| |treelist|) #'|treelist-add-first|)
+
+  (global-set! bard 'bard::|add-last| (%construct-function |List|))
+  (add-method! (global-ref bard 'bard::|add-last|)(list |cons| |Anything|) #'|cons-add-last|)
+  (add-method! (global-ref bard 'bard::|add-last|)(list |string| |Character|) #'|string-add-last|)
+  (add-method! (global-ref bard 'bard::|add-last|)(list |treelist| |Anything|) #'|treelist-add-last|)
 
   (global-set! bard 'bard::|first| (%construct-function |List|))
   (add-method! (global-ref bard 'bard::|first|)(list |cons|) #'|cons-first|)

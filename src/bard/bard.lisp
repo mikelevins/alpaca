@@ -108,6 +108,11 @@
 (defun |string-any| (ls)(elt ls (random (length ls))))
 (defun |treelist-any| (ls)(fset:@ ls (random (fset:size ls))))
 
+(defmethod |binary-append| ((x cl:null)(y cl:null)) nil)
+(defmethod |binary-append| ((x cl:list)(y cl:list)) (cl:append x y))
+(defmethod |binary-append| ((x cl:string)(y cl:string)) (cl:concatenate 'cl:string x y))
+(defmethod |binary-append| ((x fset:wb-seq)(y fset:wb-seq))(fset:concat x y))
+
 (defun |cons-first| (x)(car x))
 (defun |string-first| (x)(elt x 0))
 (defun |treelist-first| (x)(fset:@ x 0))
@@ -147,6 +152,12 @@
   (add-method! (global-ref bard 'bard::|any|)(list |cons|) #'|cons-any|)
   (add-method! (global-ref bard 'bard::|any|)(list |string|) #'|string-any|)
   (add-method! (global-ref bard 'bard::|any|)(list |treelist|) #'|treelist-any|)
+
+  ;; append
+  (global-set! bard 'bard::|append| (%construct-function |List| |List|))
+  (add-method! (global-ref bard 'bard::|append|)(list |cons| |cons|) #'|binary-append|)
+  (add-method! (global-ref bard 'bard::|append|)(list |string| |string|) #'|binary-append|)
+  (add-method! (global-ref bard 'bard::|append|)(list |treelist| |treelist|) #'|binary-append|)
 
   ;; first
   (global-set! bard 'bard::|first| (%construct-function |List|))

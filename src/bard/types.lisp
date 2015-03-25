@@ -21,6 +21,8 @@
 (defmethod subtype? (t1 t2)
   (member t2 (hcl:class-precedence-list t1)))
 
+(defmethod subtype? ((t1 cl:null) t2) t)
+
 (defmethod subtype? (t1 (t2 (eql |Anything|))) t)
 
 (defmethod subtype? ((t1 bard-class) (t2 bard-class))
@@ -86,6 +88,17 @@
 
 (defmethod all-supertypes (x)
   (clos:compute-class-precedence-list (class-of x)))
+
+(defmethod all-supertypes ((x cl:null))
+  (let ((directs (direct-supertypes x)))
+    (if (null directs)
+        nil
+        (order-types
+         (remove-duplicates
+          (apply #'cl:append
+                 (list (nothing))
+                 directs
+                 (mapcar #'all-supertypes directs)))))))
 
 (defmethod all-supertypes ((x bard-class))
   (let ((directs (direct-supertypes x)))

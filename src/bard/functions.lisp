@@ -39,8 +39,15 @@
           :test #'equal :key #'car))
 
 (defun signature-subtypes? (candidate signature)
-  (every (^ (c s)(subtype? c s))
-         candidate signature))
+  (let* ((ampersand-pos (position (&) signature))
+         (candidate-types (if ampersand-pos
+                              (folio2:take ampersand-pos candidate)
+                              candidate))
+         (signature-types (if ampersand-pos
+                              (folio2:take ampersand-pos signature)
+                              signature)))
+    (every (^ (c s)(subtype? c s))
+           candidate-types signature-types)))
 
 (defun find-applicable-method-entries (method-tree signature)
   (folio2:filter (^ (e)(signature-subtypes? signature (car e)))

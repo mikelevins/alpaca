@@ -10,7 +10,6 @@
 
 (in-package :bard-internal)
 
-
 ;;; ---------------------------------------------------------------------
 ;;; unique-instance
 ;;; ---------------------------------------------------------------------
@@ -18,6 +17,17 @@
 
 (defclass unique-instance ()()
   (:metaclass org.tfeb.hax.singleton-classes:singleton-class))
+
+;;; ---------------------------------------------------------------------
+;;; rest sentinel
+;;; ---------------------------------------------------------------------
+
+(defclass & (unique-instance)()
+  (:metaclass org.tfeb.hax.singleton-classes:singleton-class))
+
+(defmethod name ((thing &)) "&")
+
+(defun & () (make-instance '&))
 
 ;;; ---------------------------------------------------------------------
 ;;; undefined

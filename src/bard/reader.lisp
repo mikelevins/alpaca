@@ -16,6 +16,7 @@
     table))
 
 (defmethod input->bard-value (x) x)
+(defmethod input->bard-value ((x (eql 'bard::|&|)))(&))
 (defmethod input->bard-value ((x (eql 'bard::|undefined|)))(undefined))
 (defmethod input->bard-value ((x null))(nothing))
 (defmethod input->bard-value ((x (eql 'bard::|nothing|)))(nothing))

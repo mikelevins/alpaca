@@ -1,4 +1,4 @@
-;;;; ***********************************************************************
+;;; ***********************************************************************
 ;;;;
 ;;;; Name:          bard.lisp
 ;;;; Project:       Bard
@@ -108,6 +108,9 @@
 (defun |string-any| (ls)(elt ls (random (length ls))))
 (defun |treelist-any| (ls)(fset:@ ls (random (fset:size ls))))
 
+(defun |cons-apportion| (ls &rest fns)
+  (cl:apply 'net.bardcode.folio2.sequences:apportion ls fns))
+
 (defmethod |binary-append| ((x cl:null)(y cl:null)) nil)
 (defmethod |binary-append| ((x cl:list)(y cl:list)) (cl:append x y))
 (defmethod |binary-append| ((x cl:string)(y cl:string)) (cl:concatenate 'cl:string x y))
@@ -129,6 +132,8 @@
 (defun |bard-| (x y)(- x y))
 (defun |bard*| (x y)(* x y))
 (defun |bard/| (x y)(/ x y))
+(defun |even?| (x)(and (cl:evenp x) (true)))
+(defun |odd?| (x)(and (cl:oddp x) (true)))
 
 (defmethod init-bard-functions ((bard bard))
   
@@ -158,6 +163,10 @@
   (add-method! (global-ref bard 'bard::|append|)(list |cons| |cons|) #'|binary-append|)
   (add-method! (global-ref bard 'bard::|append|)(list |string| |string|) #'|binary-append|)
   (add-method! (global-ref bard 'bard::|append|)(list |treelist| |treelist|) #'|binary-append|)
+
+  ;; apportion
+  (global-set! bard 'bard::|apportion| (%construct-function |List| (&)))
+  (add-method! (global-ref bard 'bard::|apportion|)(list |cons| (&)) #'|cons-apportion|)
 
   ;; first
   (global-set! bard 'bard::|first| (%construct-function |List|))
@@ -210,6 +219,12 @@
 
   (global-set! bard 'bard::|/| (%construct-function |Number| |Number|))
   (add-method! (global-ref bard 'bard::|/|)(list |Number| |Number|) #'|bard/|)
+
+  (global-set! bard 'bard::|even?| (%construct-function |Integer|))
+  (add-method! (global-ref bard 'bard::|even?|)(list |Integer|) #'|even?|)
+
+  (global-set! bard 'bard::|odd?| (%construct-function |Integer|))
+  (add-method! (global-ref bard 'bard::|odd?|)(list |Integer|) #'|odd?|)
 
   )
 
@@ -282,7 +297,10 @@
     (loop
        (display-bard-prompt)
        (let* ((input (bard-read))
-              (thunk (compile input (empty-environment))))
-         (bard-print ($ thunk))
+              (thunk (compile input (empty-environment)))
+              (vals (multiple-value-list ($ thunk))))
+         (dolist (val vals)
+           (terpri)
+           (bard-print val))
          (terpri)))))
 

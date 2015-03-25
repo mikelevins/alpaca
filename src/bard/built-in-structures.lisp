@@ -117,6 +117,7 @@
 (defclass bard-function ()
   ((input-classes :accessor input-classes :initform nil :initarg :input-classes)
    (method-tree :accessor method-tree :initform (make-method-tree) :initarg :method-tree)
+   (rest-parameter? :accessor rest-parameter? :initform nil :initarg :rest-parameter)
    (name :accessor name :initform nil :initarg :name))
   (:metaclass clos:funcallable-standard-class))
 
@@ -131,10 +132,14 @@
         (remove-method-entry (method-tree fn) signature)))
 
 (defmethod print-object ((fn bard-function)(out stream))
-  (format out "(-> ~{~a~^ ~})" (input-classes fn)))
+  (if (rest-parameter? fn)
+      (format out "(-> ~{~a~^ ~} &)" (input-classes fn))
+      (format out "(-> ~{~a~^ ~})" (input-classes fn))))
 
-(defmethod bard-print ((obj bard-function) &optional (out cl:*standard-output*))
-  (format out "(-> ~{~a~^ ~})" (input-classes obj)))
+(defmethod bard-print ((fn bard-function) &optional (out cl:*standard-output*))
+  (if (rest-parameter? fn)
+      (format out "(-> ~{~a~^ ~} &)" (input-classes fn))
+      (format out "(-> ~{~a~^ ~})" (input-classes fn))))
 
 (defmethod no-applicable-method (fn args)
   (error "No applicable method of function ~S for arguments ~S"
@@ -149,8 +154,14 @@
                 (no-applicable-method fn args))))))
 
 (defun %construct-function (&rest input-classes)
-  (assert (every #'class? input-classes)() "All arguments to function must be defined classes")
-  (make-instance 'bard-function :input-classes input-classes :method-tree (make-method-tree)))
+  (let* ((ampersand-pos (position-if (lambda (p)(equal "&" (name p)))
+                                     input-classes))
+         (required-inputs (if ampersand-pos
+                              (folio2:take ampersand-pos input-classes)
+                              input-classes)))
+    (assert (every #'class? required-inputs)() "All arguments to function must be defined classes")
+    (make-instance 'bard-function :input-classes required-inputs :rest-parameter (and ampersand-pos t)
+                   :method-tree (make-method-tree))))
 
 (defparameter |function|
   (make-instance 'structure

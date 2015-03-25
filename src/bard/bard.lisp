@@ -96,6 +96,10 @@
 ;;; ---------------------------------------------------------------------
 
 ;;; List protocol
+(defun |cons-add-first| (x c)(cons x c))
+(defun |string-add-first| (x c)(concatenate 'string (cl:string x) c))
+(defun |treelist-add-first| (x c)(fset:insert c 0 x))
+
 (defun |cons-first| (x)(car x))
 (defun |string-first| (x)(elt x 0))
 (defun |treelist-first| (x)(fset:@ x 0))
@@ -114,6 +118,12 @@
   
   ;; List protocol
   ;; ----------------------------------------
+
+  (global-set! bard 'bard::|add-first| (%construct-function |List|))
+  (add-method! (global-ref bard 'bard::|add-first|)(list |Anything| |cons|) #'|cons-add-first|)
+  (add-method! (global-ref bard 'bard::|add-first|)(list |Character| |string|) #'|string-add-first|)
+  (add-method! (global-ref bard 'bard::|add-first|)(list |Anything| |treelist|) #'|treelist-add-first|)
+
   (global-set! bard 'bard::|first| (%construct-function |List|))
   (add-method! (global-ref bard 'bard::|first|)(list |cons|) #'|cons-first|)
   (add-method! (global-ref bard 'bard::|first|)(list |string|) #'|string-first|)

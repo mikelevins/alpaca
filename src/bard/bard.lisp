@@ -106,6 +106,9 @@
 
 ;;; Math protocol
 (defun |bard+| (x y)(+ x y))
+(defun |bard-| (x y)(- x y))
+(defun |bard*| (x y)(* x y))
+(defun |bard/| (x y)(/ x y))
 
 (defmethod init-bard-functions ((bard bard))
   
@@ -138,6 +141,16 @@
   ;; ----------------------------------------
   (global-set! bard 'bard::|+| (%construct-function |Number| |Number|))
   (add-method! (global-ref bard 'bard::|+|)(list |Number| |Number|) #'|bard+|)
+
+  (global-set! bard 'bard::|-| (%construct-function |Number| |Number|))
+  (add-method! (global-ref bard 'bard::|-|)(list |Number| |Number|) #'|bard-|)
+
+  (global-set! bard 'bard::|*| (%construct-function |Number| |Number|))
+  (add-method! (global-ref bard 'bard::|*|)(list |Number| |Number|) #'|bard*|)
+
+  (global-set! bard 'bard::|/| (%construct-function |Number| |Number|))
+  (add-method! (global-ref bard 'bard::|/|)(list |Number| |Number|) #'|bard/|)
+
   )
 
 ;;; ---------------------------------------------------------------------

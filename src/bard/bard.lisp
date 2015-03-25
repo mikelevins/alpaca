@@ -2,7 +2,7 @@
 ;;;;
 ;;;; Name:          bard.lisp
 ;;;; Project:       Bard
-;;;; Purpose:       bard main entry point
+;;;; Purpose:       setting up and maintaining the bard runtime environment
 ;;;; Author:        mikel evins
 ;;;; Copyright:     2015 mikel evins
 ;;;;
@@ -113,6 +113,9 @@
 (defun |treelist-first| (x)(fset:@ x 0))
 
 ;;; Pair protocol
+(defun |cons-put-left| (x val)(cons val (cdr x)))
+(defun |cons-put-right| (x val)(cons (car x) val))
+
 (defun |cons-set-left!| (x val)(setf (car x) val))
 (defun |cons-set-right!| (x val)(setf (cdr x) val))
 
@@ -127,21 +130,25 @@
   ;; List protocol
   ;; ----------------------------------------
 
+  ;; add-first
   (global-set! bard 'bard::|add-first| (%construct-function |List|))
   (add-method! (global-ref bard 'bard::|add-first|)(list |Anything| |cons|) #'|cons-add-first|)
   (add-method! (global-ref bard 'bard::|add-first|)(list |Character| |string|) #'|string-add-first|)
   (add-method! (global-ref bard 'bard::|add-first|)(list |Anything| |treelist|) #'|treelist-add-first|)
 
+  ;; add-last
   (global-set! bard 'bard::|add-last| (%construct-function |List|))
   (add-method! (global-ref bard 'bard::|add-last|)(list |cons| |Anything|) #'|cons-add-last|)
   (add-method! (global-ref bard 'bard::|add-last|)(list |string| |Character|) #'|string-add-last|)
   (add-method! (global-ref bard 'bard::|add-last|)(list |treelist| |Anything|) #'|treelist-add-last|)
 
+  ;; any
   (global-set! bard 'bard::|any| (%construct-function |List|))
   (add-method! (global-ref bard 'bard::|any|)(list |cons|) #'|cons-any|)
   (add-method! (global-ref bard 'bard::|any|)(list |string|) #'|string-any|)
   (add-method! (global-ref bard 'bard::|any|)(list |treelist|) #'|treelist-any|)
 
+  ;; first
   (global-set! bard 'bard::|first| (%construct-function |List|))
   (add-method! (global-ref bard 'bard::|first|)(list |cons|) #'|cons-first|)
   (add-method! (global-ref bard 'bard::|first|)(list |string|) #'|string-first|)
@@ -149,19 +156,33 @@
 
   ;; Pair protocol
   ;; ----------------------------------------
+
+  ;; left
   (global-set! bard 'bard::|left| (%construct-function |Pair|))
   (add-method! (global-ref bard 'bard::|left|)(list |cons|) #'cl:car)
 
+  ;; pair?
   (global-set! bard 'bard::|pair?| (%construct-function |Anything|))
   (add-method! (global-ref bard 'bard::|pair?|)(list |Anything|) (cl:constantly (nothing)))
   (add-method! (global-ref bard 'bard::|pair?|)(list |cons|) (cl:constantly (true)))
 
+  ;; put-left
+  (global-set! bard 'bard::|put-left| (%construct-function |Pair| |Anything|))
+  (add-method! (global-ref bard 'bard::|put-left|)(list |Pair| |Anything|) #'|cons-put-left|)
+
+  ;; put-right
+  (global-set! bard 'bard::|put-right| (%construct-function |Pair| |Anything|))
+  (add-method! (global-ref bard 'bard::|put-right|)(list |Pair| |Anything|) #'|cons-put-right|)
+
+  ;; right
   (global-set! bard 'bard::|right| (%construct-function |Pair|))
   (add-method! (global-ref bard 'bard::|right|)(list |cons|) #'cl:cdr)
 
+  ;; set-left!
   (global-set! bard 'bard::|set-left!| (%construct-function |Pair| |Anything|))
   (add-method! (global-ref bard 'bard::|set-left!|)(list |cons| |Anything|) #'|cons-set-left!|)
 
+  ;; set-right!
   (global-set! bard 'bard::|set-right!| (%construct-function |Pair| |Anything|))
   (add-method! (global-ref bard 'bard::|set-right!|)(list |cons| |Anything|) #'|cons-set-right!|)
   

@@ -23,6 +23,10 @@
 (defmethod input->bard-value ((x (eql 'bard::|true|)))(true))
 (defmethod input->bard-value ((x (eql 'bard::|false|)))(false))
 
+(defmethod input->bard-value ((x cons))
+  (mapcar #'input->bard-value
+          x))
+
 (defun bard-read (&optional (stream cl:*standard-input*)(eof-error-p t) eof-value recursive-p)
   (let* ((*readtable* *bard-readtable*)
          (*package* (find-package :bard))

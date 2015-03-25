@@ -95,6 +95,13 @@
 ;;; init built-in protocol functions
 ;;; ---------------------------------------------------------------------
 
+;;; Character protocol
+(defun |character-alpha?| (c)(and (cl:alpha-char-p c) (true)))
+
+;;; Function protocol
+(defun |complement| (f)
+  (lambda (&rest args)(not (cl:apply f args))))
+
 ;;; List protocol
 (defun |cons-add-first| (x c)(cons x c))
 (defun |string-add-first| (x c)(concatenate 'string (cl:string x) c))
@@ -109,6 +116,10 @@
 (defun |treelist-any| (ls)(fset:@ ls (random (fset:size ls))))
 
 (defun |cons-apportion| (ls &rest fns)
+  (cl:apply 'net.bardcode.folio2.sequences:apportion ls fns))
+(defun |string-apportion| (ls &rest fns)
+  (cl:apply 'net.bardcode.folio2.sequences:apportion ls fns))
+(defun |treelist-apportion| (ls &rest fns)
   (cl:apply 'net.bardcode.folio2.sequences:apportion ls fns))
 
 (defmethod |binary-append| ((x cl:null)(y cl:null)) nil)
@@ -136,6 +147,20 @@
 (defun |odd?| (x)(and (cl:oddp x) (true)))
 
 (defmethod init-bard-functions ((bard bard))
+  
+  ;; Character protocol
+  ;; ----------------------------------------
+
+  ;; add-first
+  (global-set! bard 'bard::|alphanumeric?| (%construct-function |Character|))
+  (add-method! (global-ref bard 'bard::|alphanumeric?|)(list |Character|) #'|character-alpha?|)
+  
+  ;; Function protocol
+  ;; ----------------------------------------
+
+  ;; add-first
+  (global-set! bard 'bard::|complement| (%construct-function |Procedure|))
+  (add-method! (global-ref bard 'bard::|complement|)(list |Procedure|) #'|complement|)
   
   ;; List protocol
   ;; ----------------------------------------
@@ -167,6 +192,8 @@
   ;; apportion
   (global-set! bard 'bard::|apportion| (%construct-function |List| (&)))
   (add-method! (global-ref bard 'bard::|apportion|)(list |cons| (&)) #'|cons-apportion|)
+  (add-method! (global-ref bard 'bard::|apportion|)(list |string| (&)) #'|string-apportion|)
+  (add-method! (global-ref bard 'bard::|apportion|)(list |treelist| (&)) #'|treelist-apportion|)
 
   ;; first
   (global-set! bard 'bard::|first| (%construct-function |List|))

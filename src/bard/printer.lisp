@@ -36,6 +36,9 @@
 (defmethod bard-print (obj &optional (out cl:*standard-output*))
   (format out "~a" obj))
 
+(defmethod bard-print ((obj cl:string) &optional (out cl:*standard-output*))
+  (format out "~s" obj))
+
 (defmethod bard-print ((obj cl:symbol) &optional (out cl:*standard-output*))
   (if (keywordp obj)
       (format out ":~a" (symbol-name obj))

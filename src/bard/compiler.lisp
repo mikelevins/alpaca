@@ -51,6 +51,23 @@
 ;;; ($ (compile '(bard::|set!| x 1001) nil))
 ;;; (global-ref (bard) 'x)
 
+;;; TODO: add handling for (define (foo ...) ...)
+
+(defun check-define-args (x)
+  (let* ((args (cdr x))
+         (argcount (length args))
+         (place (car args)))
+    (cond
+      ((not (= argcount 2))(error "Wrong numbers of arguments to define; expected 2, found ~a" argcount))
+      ((not (symbolp place))(error "Invalid argument to define; first argument must be a symbol, not ~a"
+                                   place))
+      (t t))))
+
+(defun compile-define (args env)
+  (let* ((varname (first args))
+         (valexp (compile (second args) env)))
+    (lambda ()(global-set! (bard) varname ($ valexp)))))
+
 (defun  compile-begin (x env)
   (let ((vals (mapcar (lambda (e)(compile e env))
                       x)))
@@ -144,6 +161,9 @@
                (compile-constant (second x)))
         (bard::|begin|
                (compile-begin (rest x) env))
+        (bard::|define|
+               (check-define-args x)
+               (compile-define (rest x) env))
         (bard::|set!|
                (check-set!-args x)
                (compile-set! (rest x) env))

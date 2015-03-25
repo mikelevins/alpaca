@@ -98,6 +98,8 @@
 (defun |cons-first| (x)(car x))
 (defun |string-first| (x)(elt x 0))
 (defun |treelist-first| (x)(fset:@ x 0))
+(defun |cons-set-left!| (x val)(setf (car x) val))
+(defun |cons-set-right!| (x val)(setf (cdr x) val))
 
 (defmethod init-bard-functions ((bard bard))
   
@@ -112,11 +114,19 @@
   ;; ----------------------------------------
   (global-set! bard 'bard::|left| (%construct-function |Pair|))
   (add-method! (global-ref bard 'bard::|left|)(list |cons|) #'cl:car)
+
   (global-set! bard 'bard::|pair?| (%construct-function |Anything|))
   (add-method! (global-ref bard 'bard::|pair?|)(list |Anything|) (cl:constantly (nothing)))
   (add-method! (global-ref bard 'bard::|pair?|)(list |cons|) (cl:constantly (true)))
+
   (global-set! bard 'bard::|right| (%construct-function |Pair|))
   (add-method! (global-ref bard 'bard::|right|)(list |cons|) #'cl:cdr)
+
+  (global-set! bard 'bard::|set-left!| (%construct-function |Pair| |Anything|))
+  (add-method! (global-ref bard 'bard::|set-left!|)(list |cons| |Anything|) #'|cons-set-left!|)
+
+  (global-set! bard 'bard::|set-right!| (%construct-function |Pair| |Anything|))
+  (add-method! (global-ref bard 'bard::|set-right!|)(list |cons| |Anything|) #'|cons-set-right!|)
   )
 
 ;;; ---------------------------------------------------------------------
@@ -135,6 +145,13 @@
   ;; System protocol
   ;; ----------------------------------------
   (global-set! bard 'bard::|exit| #'|exit|)
+  )
+
+;;; ---------------------------------------------------------------------
+;;; init built-in protocol macros
+;;; ---------------------------------------------------------------------
+
+(defmethod init-bard-macros ((bard bard))
   )
 
 ;;; ---------------------------------------------------------------------
@@ -157,6 +174,7 @@
   (init-bard-classes bard)
   (init-bard-functions bard)
   (init-bard-methods bard)
+  (init-bard-macros bard)
   (init-named-literals))
 
 ;;; ---------------------------------------------------------------------

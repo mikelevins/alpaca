@@ -217,10 +217,20 @@
 (defun |string.filter| (pred ls)(folio2:filter (bard-predicate->lisp-predicate pred) ls))
 (defun |treelist.filter| (pred ls)(folio2:filter (bard-predicate->lisp-predicate pred) ls))
 
+;;; find-if
+(defun |cons.find-if| (pred ls)(folio2:find-if (bard-predicate->lisp-predicate pred) ls))
+(defun |string.find-if| (pred ls)(folio2:find-if (bard-predicate->lisp-predicate pred) ls))
+(defun |treelist.find-if| (pred ls)(folio2:find-if (bard-predicate->lisp-predicate pred) ls))
+
 ;;; first
 (defun |cons.first| (x)(car x))
 (defun |string.first| (x)(elt x 0))
 (defun |treelist.first| (x)(fset:@ x 0))
+
+;;; head
+(defun |cons.head| (x)(car x))
+(defun |string.head| (x)(elt x 0))
+(defun |treelist.head| (x)(fset:@ x 0))
 
 ;;; Pair protocol
 ;;; ----------------------------------------
@@ -364,12 +374,24 @@
   (add-method! (global-ref bard 'bard::|filter|)(list |Procedure| |cons|) #'|cons.filter|)
   (add-method! (global-ref bard 'bard::|filter|)(list |Procedure| |string|) #'|string.filter|)
   (add-method! (global-ref bard 'bard::|filter|)(list |Procedure| |treelist|) #'|treelist.filter|)
+
+  ;; find-if
+  (global-set! bard 'bard::|find-if| (%construct-function |Procedure| |List|))
+  (add-method! (global-ref bard 'bard::|find-if|)(list |Procedure| |cons|) #'|cons.find-if|)
+  (add-method! (global-ref bard 'bard::|find-if|)(list |Procedure| |string|) #'|string.find-if|)
+  (add-method! (global-ref bard 'bard::|find-if|)(list |Procedure| |treelist|) #'|treelist.find-if|)
   
   ;; first
   (global-set! bard 'bard::|first| (%construct-function |List|))
   (add-method! (global-ref bard 'bard::|first|)(list |cons|) #'|cons.first|)
   (add-method! (global-ref bard 'bard::|first|)(list |string|) #'|string.first|)
   (add-method! (global-ref bard 'bard::|first|)(list |treelist|) #'|treelist.first|)
+
+  ;; head
+  (global-set! bard 'bard::|head| (%construct-function |List|))
+  (add-method! (global-ref bard 'bard::|head|)(list |cons|) #'|cons.head|)
+  (add-method! (global-ref bard 'bard::|head|)(list |string|) #'|string.head|)
+  (add-method! (global-ref bard 'bard::|head|)(list |treelist|) #'|treelist.head|)
 
   ;; Pair protocol
   ;; ----------------------------------------

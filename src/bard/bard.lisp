@@ -192,6 +192,16 @@
 (defun |string.dispose| (x &rest fns)(cl:apply #'folio2:dispose x fns))
 (defun |treelist.dispose| (x &rest fns)(cl:apply #'folio2:dispose x fns))
 
+;;; drop
+(defun |cons.drop| (n x)($ #'folio2:drop n x))
+(defun |string.drop| (n x)($ #'folio2:drop n x))
+(defun |treelist.drop| (n x)($ #'folio2:drop n x))
+
+;;; drop-while
+(defun |cons.drop-while| (pred x)($ #'folio2:drop-while (bard-predicate->lisp-predicate pred) x))
+(defun |string.drop-while| (pred x)($ #'folio2:drop-while (bard-predicate->lisp-predicate pred) x))
+(defun |treelist.drop-while| (pred x)($ #'folio2:drop-while (bard-predicate->lisp-predicate pred) x))
+
 ;;; first
 (defun |cons.first| (x)(car x))
 (defun |string.first| (x)(elt x 0))
@@ -309,6 +319,18 @@
   (add-method! (global-ref bard 'bard::|dispose|)(list |cons| (&)) #'|cons.dispose|)
   (add-method! (global-ref bard 'bard::|dispose|)(list |string| (&)) #'|string.dispose|)
   (add-method! (global-ref bard 'bard::|dispose|)(list |treelist| (&)) #'|treelist.dispose|)
+
+  ;; drop
+  (global-set! bard 'bard::|drop| (%construct-function |Integer| |List|))
+  (add-method! (global-ref bard 'bard::|drop|)(list |Integer| |cons|) #'|cons.drop|)
+  (add-method! (global-ref bard 'bard::|drop|)(list |Integer| |string|) #'|string.drop|)
+  (add-method! (global-ref bard 'bard::|drop|)(list |Integer| |treelist|) #'|treelist.drop|)
+
+  ;; drop-while
+  (global-set! bard 'bard::|drop-while| (%construct-function |Procedure| |List|))
+  (add-method! (global-ref bard 'bard::|drop-while|)(list |Procedure| |cons|) #'|cons.drop-while|)
+  (add-method! (global-ref bard 'bard::|drop-while|)(list |Procedure| |string|) #'|string.drop-while|)
+  (add-method! (global-ref bard 'bard::|drop-while|)(list |Procedure| |treelist|) #'|treelist.drop-while|)
   
   ;; first
   (global-set! bard 'bard::|first| (%construct-function |List|))

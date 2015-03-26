@@ -40,6 +40,16 @@
         val))
 
 ;;; ---------------------------------------------------------------------
+;;; Lisp interop
+;;; ---------------------------------------------------------------------
+
+(defun bard-predicate->lisp-predicate (bfn)
+  (lambda (&rest args)
+    (let* ((vals (multiple-value-list (apply bfn args)))
+           (val (first vals)))
+      (true? val))))
+
+;;; ---------------------------------------------------------------------
 ;;; init built-in structures
 ;;; ---------------------------------------------------------------------
 
@@ -96,30 +106,33 @@
 ;;; ---------------------------------------------------------------------
 
 ;;; Character protocol
-(defun |character-alpha?| (c)(and (cl:alpha-char-p c) (true)))
+(defun |character.alphanumeric?| (c)(if (cl:alpha-char-p c) (true)(false)))
 
 ;;; Function protocol
-(defun |complement| (f)
+(defun |function.complement| (f)
   (lambda (&rest args)(not (cl:apply f args))))
 
 ;;; List protocol
-(defun |cons-add-first| (x c)(cons x c))
-(defun |string-add-first| (x c)(concatenate 'string (cl:string x) c))
-(defun |treelist-add-first| (x c)(fset:insert c 0 x))
+(defun |cons.add-first| (x c)(cons x c))
+(defun |string.add-first| (x c)(concatenate 'string (cl:string x) c))
+(defun |treelist.add-first| (x c)(fset:insert c 0 x))
 
-(defun |cons-add-last| (c x)(append c (list x)))
-(defun |string-add-last| (c x)(concatenate 'string c (cl:string x)))
-(defun |treelist-add-last| (c x)(fset:insert c (fset:size c) x))
+(defun |cons.add-last| (c x)(append c (list x)))
+(defun |string.add-last| (c x)(concatenate 'string c (cl:string x)))
+(defun |treelist.add-last| (c x)(fset:insert c (fset:size c) x))
 
-(defun |cons-any| (ls)(elt ls (random (length ls))))
-(defun |string-any| (ls)(elt ls (random (length ls))))
-(defun |treelist-any| (ls)(fset:@ ls (random (fset:size ls))))
+(defun |cons.any| (ls)(elt ls (random (length ls))))
+(defun |string.any| (ls)(elt ls (random (length ls))))
+(defun |treelist.any| (ls)(fset:@ ls (random (fset:size ls))))
 
-(defun |cons-apportion| (ls &rest fns)
+(defun |cons.apportion| (ls &rest fns)
+  (let ((fns* (mapcar #'bard-predicate->lisp-predicate fns)))
+    (cl:apply 'net.bardcode.folio2.sequences:apportion ls fns*)))
+
+(defun |string.apportion| (ls &rest fns)
   (cl:apply 'net.bardcode.folio2.sequences:apportion ls fns))
-(defun |string-apportion| (ls &rest fns)
-  (cl:apply 'net.bardcode.folio2.sequences:apportion ls fns))
-(defun |treelist-apportion| (ls &rest fns)
+
+(defun |treelist.apportion| (ls &rest fns)
   (cl:apply 'net.bardcode.folio2.sequences:apportion ls fns))
 
 (defmethod |binary-append| ((x cl:null)(y cl:null)) nil)
@@ -127,24 +140,30 @@
 (defmethod |binary-append| ((x cl:string)(y cl:string)) (cl:concatenate 'cl:string x y))
 (defmethod |binary-append| ((x fset:wb-seq)(y fset:wb-seq))(fset:concat x y))
 
-(defun |cons-first| (x)(car x))
-(defun |string-first| (x)(elt x 0))
-(defun |treelist-first| (x)(fset:@ x 0))
+(defun |cons.by| (n ls)(folio2:by n ls))
+
+(defun |cons.first| (x)(car x))
+(defun |string.first| (x)(elt x 0))
+(defun |treelist.first| (x)(fset:@ x 0))
 
 ;;; Pair protocol
-(defun |cons-put-left| (x val)(cons val (cdr x)))
-(defun |cons-put-right| (x val)(cons (car x) val))
+(defun |cons.left| (x)(cl:car x))
 
-(defun |cons-set-left!| (x val)(setf (car x) val))
-(defun |cons-set-right!| (x val)(setf (cdr x) val))
+(defun |cons.put-left| (x val)(cons val (cdr x)))
+(defun |cons.put-right| (x val)(cons (car x) val))
+
+(defun |cons.right| (x)(cl:cdr x))
+
+(defun |cons.set-left!| (x val)(setf (car x) val))
+(defun |cons.set-right!| (x val)(setf (cdr x) val))
 
 ;;; Math protocol
-(defun |bard+| (x y)(+ x y))
-(defun |bard-| (x y)(- x y))
-(defun |bard*| (x y)(* x y))
-(defun |bard/| (x y)(/ x y))
-(defun |even?| (x)(and (cl:evenp x) (true)))
-(defun |odd?| (x)(and (cl:oddp x) (true)))
+(defun |Math.+| (&rest nums)(cl:apply #'cl:+ nums))
+(defun |Math.-| (&rest nums)(cl:apply #'cl:- nums))
+(defun |Math.*| (&rest nums)(cl:apply #'cl:* nums))
+(defun |Math./| (&rest nums)(cl:apply #'cl:/ nums))
+(defun |Integer.even?| (x)(if (cl:evenp x) (true) (false)))
+(defun |Integer.odd?| (x)(if (cl:oddp x) (true) (false)))
 
 (defmethod init-bard-functions ((bard bard))
   
@@ -153,35 +172,35 @@
 
   ;; add-first
   (global-set! bard 'bard::|alphanumeric?| (%construct-function |Character|))
-  (add-method! (global-ref bard 'bard::|alphanumeric?|)(list |Character|) #'|character-alpha?|)
+  (add-method! (global-ref bard 'bard::|alphanumeric?|)(list |Character|) #'|character.alphanumeric?|)
   
   ;; Function protocol
   ;; ----------------------------------------
 
-  ;; add-first
+  ;; complement
   (global-set! bard 'bard::|complement| (%construct-function |Procedure|))
-  (add-method! (global-ref bard 'bard::|complement|)(list |Procedure|) #'|complement|)
+  (add-method! (global-ref bard 'bard::|complement|)(list |Procedure|) #'|function.complement|)
   
   ;; List protocol
   ;; ----------------------------------------
 
   ;; add-first
   (global-set! bard 'bard::|add-first| (%construct-function |List|))
-  (add-method! (global-ref bard 'bard::|add-first|)(list |Anything| |cons|) #'|cons-add-first|)
-  (add-method! (global-ref bard 'bard::|add-first|)(list |Character| |string|) #'|string-add-first|)
-  (add-method! (global-ref bard 'bard::|add-first|)(list |Anything| |treelist|) #'|treelist-add-first|)
+  (add-method! (global-ref bard 'bard::|add-first|)(list |Anything| |cons|) #'|cons.add-first|)
+  (add-method! (global-ref bard 'bard::|add-first|)(list |Character| |string|) #'|string.add-first|)
+  (add-method! (global-ref bard 'bard::|add-first|)(list |Anything| |treelist|) #'|treelist.add-first|)
 
   ;; add-last
   (global-set! bard 'bard::|add-last| (%construct-function |List|))
-  (add-method! (global-ref bard 'bard::|add-last|)(list |cons| |Anything|) #'|cons-add-last|)
-  (add-method! (global-ref bard 'bard::|add-last|)(list |string| |Character|) #'|string-add-last|)
-  (add-method! (global-ref bard 'bard::|add-last|)(list |treelist| |Anything|) #'|treelist-add-last|)
+  (add-method! (global-ref bard 'bard::|add-last|)(list |cons| |Anything|) #'|cons.add-last|)
+  (add-method! (global-ref bard 'bard::|add-last|)(list |string| |Character|) #'|string.add-last|)
+  (add-method! (global-ref bard 'bard::|add-last|)(list |treelist| |Anything|) #'|treelist.add-last|)
 
   ;; any
   (global-set! bard 'bard::|any| (%construct-function |List|))
-  (add-method! (global-ref bard 'bard::|any|)(list |cons|) #'|cons-any|)
-  (add-method! (global-ref bard 'bard::|any|)(list |string|) #'|string-any|)
-  (add-method! (global-ref bard 'bard::|any|)(list |treelist|) #'|treelist-any|)
+  (add-method! (global-ref bard 'bard::|any|)(list |cons|) #'|cons.any|)
+  (add-method! (global-ref bard 'bard::|any|)(list |string|) #'|string.any|)
+  (add-method! (global-ref bard 'bard::|any|)(list |treelist|) #'|treelist.any|)
 
   ;; append
   (global-set! bard 'bard::|append| (%construct-function |List| |List|))
@@ -191,67 +210,71 @@
 
   ;; apportion
   (global-set! bard 'bard::|apportion| (%construct-function |List| (&)))
-  (add-method! (global-ref bard 'bard::|apportion|)(list |cons| (&)) #'|cons-apportion|)
-  (add-method! (global-ref bard 'bard::|apportion|)(list |string| (&)) #'|string-apportion|)
-  (add-method! (global-ref bard 'bard::|apportion|)(list |treelist| (&)) #'|treelist-apportion|)
+  (add-method! (global-ref bard 'bard::|apportion|)(list |cons| (&)) #'|cons.apportion|)
+  (add-method! (global-ref bard 'bard::|apportion|)(list |string| (&)) #'|string.apportion|)
+  (add-method! (global-ref bard 'bard::|apportion|)(list |treelist| (&)) #'|treelist.apportion|)
+
+  ;; by
+  (global-set! bard 'bard::|by| (%construct-function |Integer| |List|))
+  (add-method! (global-ref bard 'bard::|by|)(list |Integer| |cons|) #'|cons.by|)
 
   ;; first
   (global-set! bard 'bard::|first| (%construct-function |List|))
-  (add-method! (global-ref bard 'bard::|first|)(list |cons|) #'|cons-first|)
-  (add-method! (global-ref bard 'bard::|first|)(list |string|) #'|string-first|)
-  (add-method! (global-ref bard 'bard::|first|)(list |treelist|) #'|treelist-first|)
+  (add-method! (global-ref bard 'bard::|first|)(list |cons|) #'|cons.first|)
+  (add-method! (global-ref bard 'bard::|first|)(list |string|) #'|string.first|)
+  (add-method! (global-ref bard 'bard::|first|)(list |treelist|) #'|treelist.first|)
 
   ;; Pair protocol
   ;; ----------------------------------------
 
   ;; left
   (global-set! bard 'bard::|left| (%construct-function |Pair|))
-  (add-method! (global-ref bard 'bard::|left|)(list |cons|) #'cl:car)
+  (add-method! (global-ref bard 'bard::|left|)(list |cons|) #'|cons.left|)
 
   ;; pair?
   (global-set! bard 'bard::|pair?| (%construct-function |Anything|))
-  (add-method! (global-ref bard 'bard::|pair?|)(list |Anything|) (cl:constantly (nothing)))
+  (add-method! (global-ref bard 'bard::|pair?|)(list |Anything|) (cl:constantly (false)))
   (add-method! (global-ref bard 'bard::|pair?|)(list |cons|) (cl:constantly (true)))
 
   ;; put-left
   (global-set! bard 'bard::|put-left| (%construct-function |Pair| |Anything|))
-  (add-method! (global-ref bard 'bard::|put-left|)(list |Pair| |Anything|) #'|cons-put-left|)
+  (add-method! (global-ref bard 'bard::|put-left|)(list |Pair| |Anything|) #'|cons.put-left|)
 
   ;; put-right
   (global-set! bard 'bard::|put-right| (%construct-function |Pair| |Anything|))
-  (add-method! (global-ref bard 'bard::|put-right|)(list |Pair| |Anything|) #'|cons-put-right|)
+  (add-method! (global-ref bard 'bard::|put-right|)(list |Pair| |Anything|) #'|cons.put-right|)
 
   ;; right
   (global-set! bard 'bard::|right| (%construct-function |Pair|))
-  (add-method! (global-ref bard 'bard::|right|)(list |cons|) #'cl:cdr)
+  (add-method! (global-ref bard 'bard::|right|)(list |cons|) #'|cons.right|)
 
   ;; set-left!
   (global-set! bard 'bard::|set-left!| (%construct-function |Pair| |Anything|))
-  (add-method! (global-ref bard 'bard::|set-left!|)(list |cons| |Anything|) #'|cons-set-left!|)
+  (add-method! (global-ref bard 'bard::|set-left!|)(list |cons| |Anything|) #'|cons.set-left!|)
 
   ;; set-right!
   (global-set! bard 'bard::|set-right!| (%construct-function |Pair| |Anything|))
-  (add-method! (global-ref bard 'bard::|set-right!|)(list |cons| |Anything|) #'|cons-set-right!|)
+  (add-method! (global-ref bard 'bard::|set-right!|)(list |cons| |Anything|) #'|cons.set-right!|)
   
   ;; Math protocol
   ;; ----------------------------------------
-  (global-set! bard 'bard::|+| (%construct-function |Number| |Number|))
-  (add-method! (global-ref bard 'bard::|+|)(list |Number| |Number|) #'|bard+|)
+  (global-set! bard 'bard::|+| (%construct-function |Number| (&)))
+  (add-method! (global-ref bard 'bard::|+|)(list |Number| (&)) #'|Math.+|)
 
-  (global-set! bard 'bard::|-| (%construct-function |Number| |Number|))
-  (add-method! (global-ref bard 'bard::|-|)(list |Number| |Number|) #'|bard-|)
+  (global-set! bard 'bard::|-| (%construct-function |Number| (&)))
+  (add-method! (global-ref bard 'bard::|-|)(list |Number| (&)) #'|Math.-|)
 
-  (global-set! bard 'bard::|*| (%construct-function |Number| |Number|))
-  (add-method! (global-ref bard 'bard::|*|)(list |Number| |Number|) #'|bard*|)
+  (global-set! bard 'bard::|*| (%construct-function |Number| (&)))
+  (add-method! (global-ref bard 'bard::|*|)(list |Number| |Number|) #'|Math.*|)
 
-  (global-set! bard 'bard::|/| (%construct-function |Number| |Number|))
-  (add-method! (global-ref bard 'bard::|/|)(list |Number| |Number|) #'|bard/|)
+  (global-set! bard 'bard::|/| (%construct-function |Number| (&)))
+  (add-method! (global-ref bard 'bard::|/|)(list |Number| |Number|) #'|Math./|)
 
   (global-set! bard 'bard::|even?| (%construct-function |Integer|))
-  (add-method! (global-ref bard 'bard::|even?|)(list |Integer|) #'|even?|)
+  (add-method! (global-ref bard 'bard::|even?|)(list |Integer|) #'|Integer.even?|)
 
   (global-set! bard 'bard::|odd?| (%construct-function |Integer|))
-  (add-method! (global-ref bard 'bard::|odd?|)(list |Integer|) #'|odd?|)
+  (add-method! (global-ref bard 'bard::|odd?|)(list |Integer|) #'|Integer.odd?|)
 
   )
 

@@ -85,3 +85,5 @@
 
 ;;; (setf $win (contain (make-instance 'bard-listener)))
 
+(defmethod capi:interface-keys-style ((intf bard-listener))
+  :emacs)

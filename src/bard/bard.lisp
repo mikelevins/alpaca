@@ -187,6 +187,11 @@
              1
              0)))
 
+;;; dispose
+(defun |cons.dispose| (x &rest fns)(cl:apply #'folio2:dispose x fns))
+(defun |string.dispose| (x &rest fns)(cl:apply #'folio2:dispose x fns))
+(defun |treelist.dispose| (x &rest fns)(cl:apply #'folio2:dispose x fns))
+
 ;;; first
 (defun |cons.first| (x)(car x))
 (defun |string.first| (x)(elt x 0))
@@ -298,6 +303,12 @@
   (add-method! (global-ref bard 'bard::|count-if|)(list |Procedure| |cons|) #'|cons.count-if|)
   (add-method! (global-ref bard 'bard::|count-if|)(list |Procedure| |string|) #'|string.count-if|)
   (add-method! (global-ref bard 'bard::|count-if|)(list |Procedure| |treelist|) #'|treelist.count-if|)
+
+  ;; dispose
+  (global-set! bard 'bard::|dispose| (%construct-function |List| (&)))
+  (add-method! (global-ref bard 'bard::|dispose|)(list |cons| (&)) #'|cons.dispose|)
+  (add-method! (global-ref bard 'bard::|dispose|)(list |string| (&)) #'|string.dispose|)
+  (add-method! (global-ref bard 'bard::|dispose|)(list |treelist| (&)) #'|treelist.dispose|)
   
   ;; first
   (global-set! bard 'bard::|first| (%construct-function |List|))

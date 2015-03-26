@@ -53,6 +53,17 @@
                     (string-downcase (package-name pkg))
                     sname)))))
 
+(defmethod bard-print ((obj cl:cons) &optional (out cl:*standard-output*))
+  (if (null (cdr obj))
+      (progn (format out "(")
+             (bard-print (car obj) out)
+             (format out ")"))
+      (progn (format out "(")
+             (bard-print (car obj) out)
+             (dolist (it (cdr obj))
+               (format out " ")
+               (bard-print it out))
+             (format out ")"))))
 
 
 (defmethod bard-print ((obj cl:function) &optional (out cl:*standard-output*))

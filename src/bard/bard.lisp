@@ -202,6 +202,21 @@
 (defun |string.drop-while| (pred x)($ #'folio2:drop-while (bard-predicate->lisp-predicate pred) x))
 (defun |treelist.drop-while| (pred x)($ #'folio2:drop-while (bard-predicate->lisp-predicate pred) x))
 
+;;; element
+(defun |cons.element| (ls i)(elt ls i))
+(defun |string.element| (ls i)(elt ls i))
+(defun |treelist.element| (ls i)(fset:@ ls i))
+
+;;; empty?
+(defun |cons.empty?| (ls)(folio2:empty? ls))
+(defun |string.empty?| (ls)(folio2:empty? ls))
+(defun |treelist.empty?| (ls)(folio2:empty? ls))
+
+;;; filter
+(defun |cons.filter| (pred ls)(folio2:filter (bard-predicate->lisp-predicate pred) ls))
+(defun |string.filter| (pred ls)(folio2:filter (bard-predicate->lisp-predicate pred) ls))
+(defun |treelist.filter| (pred ls)(folio2:filter (bard-predicate->lisp-predicate pred) ls))
+
 ;;; first
 (defun |cons.first| (x)(car x))
 (defun |string.first| (x)(elt x 0))
@@ -331,6 +346,24 @@
   (add-method! (global-ref bard 'bard::|drop-while|)(list |Procedure| |cons|) #'|cons.drop-while|)
   (add-method! (global-ref bard 'bard::|drop-while|)(list |Procedure| |string|) #'|string.drop-while|)
   (add-method! (global-ref bard 'bard::|drop-while|)(list |Procedure| |treelist|) #'|treelist.drop-while|)
+
+  ;; element
+  (global-set! bard 'bard::|element| (%construct-function |List| |Integer|))
+  (add-method! (global-ref bard 'bard::|element|)(list |cons| |Integer|) #'|cons.element|)
+  (add-method! (global-ref bard 'bard::|element|)(list |string| |Integer|) #'|string.element|)
+  (add-method! (global-ref bard 'bard::|element|)(list |treelist| |Integer|) #'|treelist.element|)
+
+  ;; empty?
+  (global-set! bard 'bard::|empty?| (%construct-function |List|))
+  (add-method! (global-ref bard 'bard::|empty?|)(list |cons|) #'|cons.empty?|)
+  (add-method! (global-ref bard 'bard::|empty?|)(list |string|) #'|string.empty?|)
+  (add-method! (global-ref bard 'bard::|empty?|)(list |treelist|) #'|treelist.empty?|)
+
+  ;; filter
+  (global-set! bard 'bard::|filter| (%construct-function |Procedure| |List|))
+  (add-method! (global-ref bard 'bard::|filter|)(list |Procedure| |cons|) #'|cons.filter|)
+  (add-method! (global-ref bard 'bard::|filter|)(list |Procedure| |string|) #'|string.filter|)
+  (add-method! (global-ref bard 'bard::|filter|)(list |Procedure| |treelist|) #'|treelist.filter|)
   
   ;; first
   (global-set! bard 'bard::|first| (%construct-function |List|))

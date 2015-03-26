@@ -65,6 +65,18 @@
                (bard-print it out))
              (format out ")"))))
 
+(defmethod bard-print ((obj cl:vector) &optional (out cl:*standard-output*))
+  (format out "#vector (")
+  (let ((len (cl:length obj)))
+    (cond
+      ((zerop len) nil)
+      ((= len 1)(bard-print (elt obj 0) out))
+      (t (progn (bard-print (elt obj 0) out)
+                (loop for i from 1 below len
+                   do (progn (format out " ")
+                             (bard-print (elt obj i) out)))))))
+  (format out ")"))
+
 
 (defmethod bard-print ((obj cl:function) &optional (out cl:*standard-output*))
   (format out "#<primitive-method ~a>" (sys::function-name obj)))

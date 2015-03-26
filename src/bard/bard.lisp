@@ -232,6 +232,11 @@
 (defun |string.head| (x)(elt x 0))
 (defun |treelist.head| (x)(fset:@ x 0))
 
+;;; image
+(defun |cons.image| (fn ls)(folio2:image fn ls))
+(defun |string.image| (fn ls)(folio2:image fn ls))
+(defun |treelist.image| (fn ls)(folio2:image fn ls))
+
 ;;; Pair protocol
 ;;; ----------------------------------------
 
@@ -392,6 +397,12 @@
   (add-method! (global-ref bard 'bard::|head|)(list |cons|) #'|cons.head|)
   (add-method! (global-ref bard 'bard::|head|)(list |string|) #'|string.head|)
   (add-method! (global-ref bard 'bard::|head|)(list |treelist|) #'|treelist.head|)
+
+  ;; image
+  (global-set! bard 'bard::|image| (%construct-function |Procedure| |List|))
+  (add-method! (global-ref bard 'bard::|image|)(list |Procedure| |cons|) #'|cons.image|)
+  (add-method! (global-ref bard 'bard::|image|)(list |Procedure| |string|) #'|string.image|)
+  (add-method! (global-ref bard 'bard::|image|)(list |Procedure| |treelist|) #'|treelist.image|)
 
   ;; Pair protocol
   ;; ----------------------------------------

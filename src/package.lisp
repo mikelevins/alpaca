@@ -9,4 +9,5 @@
 ;;;; ***********************************************************************
 
 (defpackage #:alpaca
-  (:use #:cl #:capi))
+  (:use #:cl #:capi)
+  (:import-from :NET.BARDCODE.FOLIO2.FUNCTIONS #:$ #:^))

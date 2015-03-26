@@ -370,6 +370,20 @@
 ;;; ---------------------------------------------------------------------
 
 ;;; ---------------------------------------------------------------------
+;;; primitive-method
+;;; ---------------------------------------------------------------------
+
+(defun %construct-primitive-method (&rest args)
+  (error "bard cannot construct a primitive method"))
+
+(defparameter |primitive-method|
+  (make-instance 'primitive-structure
+                 :name 'bard::|primitive-method|
+                 :constructor #'%construct-primitive-method
+                 :native-type 'cl:function
+                 :direct-supers (list |Procedure|)))
+
+;;; ---------------------------------------------------------------------
 ;;; random-state
 ;;; ---------------------------------------------------------------------
 

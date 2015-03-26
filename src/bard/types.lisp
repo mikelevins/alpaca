@@ -47,6 +47,9 @@
 (defmethod bard-type-of ((x cl:null))
   (nothing))
 
+(defmethod bard-type-of ((x cl:function))
+  |primitive-method|)
+
 (defmethod bard-type-of ((x true))
   (true))
 

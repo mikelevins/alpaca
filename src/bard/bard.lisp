@@ -110,9 +110,11 @@
 ;;; ---------------------------------------------------------------------
 
 ;;; Character protocol
+;;; ----------------------------------------
 (defun |character.alphanumeric?| (c)(if (cl:alpha-char-p c) (true)(false)))
 
 ;;; Function protocol
+;;; ----------------------------------------
 (defun |function.complement| (f)
   (lambda (&rest args)
     (let* ((vals (multiple-value-list (cl:apply f args)))
@@ -123,18 +125,24 @@
           (false)))))
 
 ;;; List protocol
+;;; ----------------------------------------
+
+;;; add-first
 (defun |cons.add-first| (x c)(cons x c))
 (defun |string.add-first| (x c)(concatenate 'string (cl:string x) c))
 (defun |treelist.add-first| (x c)(fset:insert c 0 x))
 
+;;; add-last
 (defun |cons.add-last| (c x)(append c (list x)))
 (defun |string.add-last| (c x)(concatenate 'string c (cl:string x)))
 (defun |treelist.add-last| (c x)(fset:insert c (fset:size c) x))
 
+;;; any
 (defun |cons.any| (ls)(elt ls (random (length ls))))
 (defun |string.any| (ls)(elt ls (random (length ls))))
 (defun |treelist.any| (ls)(fset:@ ls (random (fset:size ls))))
 
+;;; apportion
 (defun |cons.apportion| (ls &rest fns)
   (let ((fns* (mapcar #'bard-predicate->lisp-predicate fns)))
     (cl:apply 'net.bardcode.folio2.sequences:apportion ls fns*)))
@@ -147,36 +155,83 @@
   (cl:apply 'net.bardcode.folio2.sequences:apportion ls fns)(let ((fns* (mapcar #'bard-predicate->lisp-predicate fns)))
     (cl:apply 'net.bardcode.folio2.sequences:apportion ls fns*)))
 
+;;; append
 (defmethod |binary-append| ((x cl:null)(y cl:null)) nil)
 (defmethod |binary-append| ((x cl:list)(y cl:list)) (cl:append x y))
 (defmethod |binary-append| ((x cl:string)(y cl:string)) (cl:concatenate 'cl:string x y))
 (defmethod |binary-append| ((x fset:wb-seq)(y fset:wb-seq))(fset:concat x y))
 
+;;; by
 (defun |cons.by| (n ls)(folio2:by n ls))
 (defun |string.by| (n ls)(folio2:by n ls))
 (defun |treelist.by| (n ls)(folio2:by n ls))
 
+;;; count-if
+(defun |cons.count-if| (pred ls)
+  (if (null ls)
+      0
+      (if (atom ls)
+          (if (true? (funcall pred ls))
+              1
+              0)
+          (if (true? (funcall pred (car ls)))
+              (+ 1 (|cons.count-if| pred (cdr ls)))
+              (|cons.count-if| pred (cdr ls))))))
+
+(defun |string.count-if| (pred str)
+  (cl:count-if (bard-predicate->lisp-predicate pred) str))
+
+(defun |treelist.count-if| (pred tls)
+  (loop for i from 0 below (fset:size tls)
+     sum (if (true? (funcall pred (fset:@ tls i)))
+             1
+             0)))
+
+;;; first
 (defun |cons.first| (x)(car x))
 (defun |string.first| (x)(elt x 0))
 (defun |treelist.first| (x)(fset:@ x 0))
 
 ;;; Pair protocol
+;;; ----------------------------------------
+
+;;;  left
 (defun |cons.left| (x)(cl:car x))
 
+;;; put-left
 (defun |cons.put-left| (x val)(cons val (cdr x)))
+
+;;; put-right
 (defun |cons.put-right| (x val)(cons (car x) val))
 
+;;; right
 (defun |cons.right| (x)(cl:cdr x))
 
+;;; set-left!
 (defun |cons.set-left!| (x val)(setf (car x) val))
+
+;;; set-right!
 (defun |cons.set-right!| (x val)(setf (cdr x) val))
 
 ;;; Math protocol
+;;; ----------------------------------------
+
+;;; +
 (defun |Math.+| (&rest nums)(cl:apply #'cl:+ nums))
+
+;;; -
 (defun |Math.-| (&rest nums)(cl:apply #'cl:- nums))
+
+;;; *
 (defun |Math.*| (&rest nums)(cl:apply #'cl:* nums))
+
+;;; /
 (defun |Math./| (&rest nums)(cl:apply #'cl:/ nums))
+
+;;; even?
 (defun |Integer.even?| (x)(if (cl:evenp x) (true) (false)))
+
+;;; odd?
 (defun |Integer.odd?| (x)(if (cl:oddp x) (true) (false)))
 
 ;;; ---------------------------------------------------------------------
@@ -238,6 +293,12 @@
   (add-method! (global-ref bard 'bard::|by|)(list |Integer| |string|) #'|string.by|)
   (add-method! (global-ref bard 'bard::|by|)(list |Integer| |treelist|) #'|treelist.by|)
 
+  ;; count-if
+  (global-set! bard 'bard::|count-if| (%construct-function |Procedure| |List|))
+  (add-method! (global-ref bard 'bard::|count-if|)(list |Procedure| |cons|) #'|cons.count-if|)
+  (add-method! (global-ref bard 'bard::|count-if|)(list |Procedure| |string|) #'|string.count-if|)
+  (add-method! (global-ref bard 'bard::|count-if|)(list |Procedure| |treelist|) #'|treelist.count-if|)
+  
   ;; first
   (global-set! bard 'bard::|first| (%construct-function |List|))
   (add-method! (global-ref bard 'bard::|first|)(list |cons|) #'|cons.first|)
@@ -278,6 +339,7 @@
   
   ;; Math protocol
   ;; ----------------------------------------
+
   (global-set! bard 'bard::|+| (%construct-function |Number| (&)))
   (add-method! (global-ref bard 'bard::|+|)(list |Number| (&)) #'|Math.+|)
 

@@ -110,7 +110,14 @@
 
 ;;; Function protocol
 (defun |function.complement| (f)
-  (lambda (&rest args)(not (cl:apply f args))))
+  (lambda (&rest args)
+    (let* ((vals (multiple-value-list (cl:apply f args)))
+           (val (first vals)))
+      ;; reverse the results
+      (if (false? val)
+          (true)
+          (false)))))
+
 
 ;;; List protocol
 (defun |cons.add-first| (x c)(cons x c))
@@ -130,10 +137,12 @@
     (cl:apply 'net.bardcode.folio2.sequences:apportion ls fns*)))
 
 (defun |string.apportion| (ls &rest fns)
-  (cl:apply 'net.bardcode.folio2.sequences:apportion ls fns))
+  (let ((fns* (mapcar #'bard-predicate->lisp-predicate fns)))
+    (cl:apply 'net.bardcode.folio2.sequences:apportion ls fns*)))
 
 (defun |treelist.apportion| (ls &rest fns)
-  (cl:apply 'net.bardcode.folio2.sequences:apportion ls fns))
+  (cl:apply 'net.bardcode.folio2.sequences:apportion ls fns)(let ((fns* (mapcar #'bard-predicate->lisp-predicate fns)))
+    (cl:apply 'net.bardcode.folio2.sequences:apportion ls fns*)))
 
 (defmethod |binary-append| ((x cl:null)(y cl:null)) nil)
 (defmethod |binary-append| ((x cl:list)(y cl:list)) (cl:append x y))
@@ -141,6 +150,8 @@
 (defmethod |binary-append| ((x fset:wb-seq)(y fset:wb-seq))(fset:concat x y))
 
 (defun |cons.by| (n ls)(folio2:by n ls))
+(defun |string.by| (n ls)(folio2:by n ls))
+(defun |treelist.by| (n ls)(folio2:by n ls))
 
 (defun |cons.first| (x)(car x))
 (defun |string.first| (x)(elt x 0))
@@ -217,6 +228,8 @@
   ;; by
   (global-set! bard 'bard::|by| (%construct-function |Integer| |List|))
   (add-method! (global-ref bard 'bard::|by|)(list |Integer| |cons|) #'|cons.by|)
+  (add-method! (global-ref bard 'bard::|by|)(list |Integer| |string|) #'|string.by|)
+  (add-method! (global-ref bard 'bard::|by|)(list |Integer| |treelist|) #'|treelist.by|)
 
   ;; first
   (global-set! bard 'bard::|first| (%construct-function |List|))

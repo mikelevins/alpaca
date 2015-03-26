@@ -34,7 +34,7 @@
 ;;; ---------------------------------------------------------------------
 
 (defmethod bard-print (obj &optional (out cl:*standard-output*))
-  (format out "~a" obj))
+  (format out "~s" obj))
 
 (defmethod bard-print ((obj cl:character) &optional (out cl:*standard-output*))
   (format out "#\\~a" obj))

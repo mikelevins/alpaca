@@ -113,6 +113,14 @@
 ;;; ----------------------------------------
 (defun |character.alphanumeric?| (c)(if (cl:alpha-char-p c) (true)(false)))
 
+;;; Construction protocol
+;;; ----------------------------------------
+;;; the function `make`
+
+;;; Conversion protocol
+;;; ----------------------------------------
+;;; the function `as`
+
 ;;; Function protocol
 ;;; ----------------------------------------
 (defun |function.complement| (f)
@@ -237,6 +245,16 @@
 (defun |string.image| (fn ls)(folio2:image fn ls))
 (defun |treelist.image| (fn ls)(folio2:image fn ls))
 
+;;; indexes
+(defun |cons.indexes| (x)(folio2:indexes x))
+(defun |string.indexes| (x)(folio2:indexes x))
+(defun |treelist.indexes| (x)(folio2:indexes x))
+
+;;; interleave
+(defun |cons.interleave| (x y)(folio2:interleave x y))
+(defun |string.interleave| (x y)(folio2:interleave x y))
+(defun |treelist.interleave| (x y)(folio2:interleave x y))
+
 ;;; Pair protocol
 ;;; ----------------------------------------
 
@@ -291,6 +309,14 @@
   ;; add-first
   (global-set! bard 'bard::|alphanumeric?| (%construct-function |Character|))
   (add-method! (global-ref bard 'bard::|alphanumeric?|)(list |Character|) #'|character.alphanumeric?|)
+
+  ;; Construction protocol
+  ;; ----------------------------------------
+  ;; the function `make`
+
+  ;; Conversion protocol
+  ;; ----------------------------------------
+  ;; the function `as`
   
   ;; Function protocol
   ;; ----------------------------------------
@@ -403,6 +429,18 @@
   (add-method! (global-ref bard 'bard::|image|)(list |Procedure| |cons|) #'|cons.image|)
   (add-method! (global-ref bard 'bard::|image|)(list |Procedure| |string|) #'|string.image|)
   (add-method! (global-ref bard 'bard::|image|)(list |Procedure| |treelist|) #'|treelist.image|)
+  
+  ;; indexes
+  (global-set! bard 'bard::|indexes| (%construct-function |List|))
+  (add-method! (global-ref bard 'bard::|indexes|)(list |cons|) #'|cons.indexes|)
+  (add-method! (global-ref bard 'bard::|indexes|)(list |string|) #'|string.indexes|)
+  (add-method! (global-ref bard 'bard::|indexes|)(list |treelist|) #'|treelist.indexes|)
+  
+  ;; interleave
+  (global-set! bard 'bard::|interleave| (%construct-function |List| |List|))
+  (add-method! (global-ref bard 'bard::|interleave|)(list |cons| |cons|) #'|cons.interleave|)
+  (add-method! (global-ref bard 'bard::|interleave|)(list |string| |string|) #'|string.interleave|)
+  (add-method! (global-ref bard 'bard::|interleave|)(list |treelist| |treelist|) #'|treelist.interleave|)
 
   ;; Pair protocol
   ;; ----------------------------------------

@@ -131,3 +131,20 @@
 
 (defmethod bard-print ((obj text) &optional (out cl:*standard-output*))
   (format out "#<text> \"~a\"" (fset:convert 'cl:string (text-data obj))))
+
+(defmethod bard-print ((obj rectangular-extent) &optional (out cl:*standard-output*))
+  (format out "#<rectangular-extent> {:width ~A :height ~A}"
+          (extent-width obj)(extent-height obj)))
+
+(defmethod print-object ((obj rectangular-extent)(out stream))
+  (format out "#<rectangular-extent> {:width ~A :height ~A}"
+          (extent-width obj)(extent-height obj)))
+
+
+(defmethod bard-print ((obj rectangular-point) &optional (out cl:*standard-output*))
+  (format out "#<rectangular-point> {:x ~A :y ~A}"
+          (point-x obj)(point-y obj)))
+
+(defmethod print-object ((obj rectangular-point)(out stream))
+  (format out "#<rectangular-point> {:x ~A :y ~A}"
+          (point-x obj)(point-y obj)))

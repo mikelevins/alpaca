@@ -411,6 +411,40 @@
 ;;; ---------------------------------------------------------------------
 
 ;;; ---------------------------------------------------------------------
+;;; rectangular-extent
+;;; ---------------------------------------------------------------------
+
+(defclass rectangular-extent ()
+  ((width :accessor extent-width :initform 0 :initarg :width)
+   (height :accessor extent-height :initform 0 :initarg :height)))
+
+(defun %construct-rectangular-extent (width height)
+  (make-instance 'rectangular-extent :width width :height height))
+
+(defparameter |rectangular-extent|
+  (make-instance 'structure
+                 :name 'bard::|rectangular-extent|
+                 :constructor #'%construct-rectangular-extent
+                 :direct-supers (list |Extent|)))
+
+;;; ---------------------------------------------------------------------
+;;; rectangular-point
+;;; ---------------------------------------------------------------------
+
+(defclass rectangular-point ()
+  ((x :accessor point-x :initform 0 :initarg :x)
+   (y :accessor point-y :initform 0 :initarg :y)))
+
+(defun %construct-rectangular-point (x y)
+  (make-instance 'rectangular-Point :x x :y y))
+
+(defparameter |rectangular-point|
+  (make-instance 'structure
+                 :name 'bard::|rectangular-point|
+                 :constructor #'%construct-rectangular-point
+                 :direct-supers (list |Point|)))
+
+;;; ---------------------------------------------------------------------
 ;;; restart
 ;;; ---------------------------------------------------------------------
 

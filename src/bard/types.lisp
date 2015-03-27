@@ -106,6 +106,8 @@
 (defmethod bard-type-of ((x quri.uri:uri)) |uri|)
 (defmethod bard-type-of ((x text)) |text|)
 (defmethod bard-type-of ((obj bard-singleton)) |singleton|)
+(defmethod bard-type-of ((obj rectangular-extent)) |rectangular-extent|)
+(defmethod bard-type-of ((obj rectangular-point)) |rectangular-point|)
 
 
 (defun order-types (types)

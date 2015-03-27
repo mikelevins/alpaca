@@ -54,6 +54,8 @@
 ;;; =====================================================================
 
 (defmethod init-bard-structures ((bard bard))
+  (global-set! bard 'bard::|rectangular-extent| |rectangular-extent|)
+  (global-set! bard 'bard::|rectangular-point| |rectangular-point|)
   (global-set! bard 'bard::|character| |character|)
   (global-set! bard 'bard::|class| |class|)
   (global-set! bard 'bard::|complex-number| |complex-number|)
@@ -80,6 +82,7 @@
   (global-set! bard 'bard::|Stream| |Stream|)
   (global-set! bard 'bard::|Collection| |Collection|)
   (global-set! bard 'bard::|Atom| |Atom|)
+  (global-set! bard 'bard::|Geometry| |Geometry|)
   (global-set! bard 'bard::|List| |List|)
   (global-set! bard 'bard::|Type| |Type|)
   (global-set! bard 'bard::|Procedure| |Procedure|)
@@ -132,6 +135,14 @@
   (coerce y 'cl:string))
 
 (defun |as.treelist.cons|(x y) (fset:convert 'fset:wb-seq y))
+
+;;; Geometry protocol
+;;; ----------------------------------------
+
+(defun |rectangular-point.x| (p)(point-x p))
+(defun |rectangular-point.y| (p)(point-y p))
+(defun |rectangular-extent.width| (e)(extent-width e))
+(defun |rectangular-extent.height|(e)(extent-height e))
 
 ;;; Function protocol
 ;;; ----------------------------------------
@@ -372,6 +383,21 @@
   (add-method! (global-ref bard 'bard::|as|)(list ($ |singleton| |cons|) |treelist|) #'|as.cons.treelist|)
   (add-method! (global-ref bard 'bard::|as|)(list ($ |singleton| |string|) |cons|) #'|as.string.cons|)
   (add-method! (global-ref bard 'bard::|as|)(list ($ |singleton| |treelist|) |cons|) #'|as.treelist.cons|)
+  
+  ;; Geometry protocol
+  ;; ----------------------------------------
+
+  (global-set! bard 'bard::|point-x| (%construct-function |Point| :|name| 'bard::|point-x|))
+  (add-method! (global-ref bard 'bard::|point-x|)(list |rectangular-point|) #'|rectangular-point.x|)
+
+  (global-set! bard 'bard::|point-y| (%construct-function |Point| :|name| 'bard::|point-y|))
+  (add-method! (global-ref bard 'bard::|point-y|)(list |rectangular-point|) #'|rectangular-point.y|)
+
+  (global-set! bard 'bard::|extent-width| (%construct-function |Extent| :|name| 'bard::|rectangular-extent.width|))
+  (add-method! (global-ref bard 'bard::|extent-width|)(list |rectangular-extent|) #'|rectangular-extent.width|)
+
+  (global-set! bard 'bard::|extent-height| (%construct-function |Extent| :|name| 'bard::|rectangular-extent.height|))
+  (add-method! (global-ref bard 'bard::|extent-height|)(list |rectangular-extent|) #'|rectangular-extent.height|)
   
   ;; Function protocol
   ;; ----------------------------------------

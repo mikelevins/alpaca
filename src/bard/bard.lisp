@@ -312,7 +312,7 @@
   ;; ----------------------------------------
 
   ;; add-first
-  (global-set! bard 'bard::|alphanumeric?| (%construct-function |Character|))
+  (global-set! bard 'bard::|alphanumeric?| (%construct-function |Character| :|name| 'bard::|alphanumeric?|))
   (add-method! (global-ref bard 'bard::|alphanumeric?|)(list |Character|) #'|character.alphanumeric?|)
 
   ;; Construction protocol
@@ -327,134 +327,134 @@
   ;; ----------------------------------------
 
   ;; complement
-  (global-set! bard 'bard::|complement| (%construct-function |Procedure|))
+  (global-set! bard 'bard::|complement| (%construct-function |Procedure| :|name| 'bard::|complement|))
   (add-method! (global-ref bard 'bard::|complement|)(list |Procedure|) #'|function.complement|)
   
   ;; List protocol
   ;; ----------------------------------------
 
   ;; add-first
-  (global-set! bard 'bard::|add-first| (%construct-function |List|))
+  (global-set! bard 'bard::|add-first| (%construct-function |List| :|name| 'bard::|add-first|))
   (add-method! (global-ref bard 'bard::|add-first|)(list |Anything| |cons|) #'|cons.add-first|)
   (add-method! (global-ref bard 'bard::|add-first|)(list |Character| |string|) #'|string.add-first|)
   (add-method! (global-ref bard 'bard::|add-first|)(list |Anything| |treelist|) #'|treelist.add-first|)
 
   ;; add-last
-  (global-set! bard 'bard::|add-last| (%construct-function |List|))
+  (global-set! bard 'bard::|add-last| (%construct-function |List| :|name| 'bard::|add-last|))
   (add-method! (global-ref bard 'bard::|add-last|)(list |cons| |Anything|) #'|cons.add-last|)
   (add-method! (global-ref bard 'bard::|add-last|)(list |string| |Character|) #'|string.add-last|)
   (add-method! (global-ref bard 'bard::|add-last|)(list |treelist| |Anything|) #'|treelist.add-last|)
 
   ;; any
-  (global-set! bard 'bard::|any| (%construct-function |List|))
+  (global-set! bard 'bard::|any| (%construct-function |List| :|name| 'bard::|any|))
   (add-method! (global-ref bard 'bard::|any|)(list |cons|) #'|cons.any|)
   (add-method! (global-ref bard 'bard::|any|)(list |string|) #'|string.any|)
   (add-method! (global-ref bard 'bard::|any|)(list |treelist|) #'|treelist.any|)
 
   ;; append
-  (global-set! bard 'bard::|append| (%construct-function |List| |List|))
+  (global-set! bard 'bard::|append| (%construct-function |List| |List| :|name| 'bard::|append|))
   (add-method! (global-ref bard 'bard::|append|)(list |cons| |cons|) #'|binary-append|)
   (add-method! (global-ref bard 'bard::|append|)(list |string| |string|) #'|binary-append|)
   (add-method! (global-ref bard 'bard::|append|)(list |treelist| |treelist|) #'|binary-append|)
 
   ;; apportion
-  (global-set! bard 'bard::|apportion| (%construct-function |List| (&)))
+  (global-set! bard 'bard::|apportion| (%construct-function |List| (&) :|name| 'bard::|apportion|))
   (add-method! (global-ref bard 'bard::|apportion|)(list |cons| (&)) #'|cons.apportion|)
   (add-method! (global-ref bard 'bard::|apportion|)(list |string| (&)) #'|string.apportion|)
   (add-method! (global-ref bard 'bard::|apportion|)(list |treelist| (&)) #'|treelist.apportion|)
 
   ;; by
-  (global-set! bard 'bard::|by| (%construct-function |Integer| |List|))
+  (global-set! bard 'bard::|by| (%construct-function |Integer| |List| :|name| 'bard::|by|))
   (add-method! (global-ref bard 'bard::|by|)(list |Integer| |cons|) #'|cons.by|)
   (add-method! (global-ref bard 'bard::|by|)(list |Integer| |string|) #'|string.by|)
   (add-method! (global-ref bard 'bard::|by|)(list |Integer| |treelist|) #'|treelist.by|)
 
   ;; count-if
-  (global-set! bard 'bard::|count-if| (%construct-function |Procedure| |List|))
+  (global-set! bard 'bard::|count-if| (%construct-function |Procedure| |List| :|name| 'bard::|count-if|))
   (add-method! (global-ref bard 'bard::|count-if|)(list |Procedure| |cons|) #'|cons.count-if|)
   (add-method! (global-ref bard 'bard::|count-if|)(list |Procedure| |string|) #'|string.count-if|)
   (add-method! (global-ref bard 'bard::|count-if|)(list |Procedure| |treelist|) #'|treelist.count-if|)
 
   ;; dispose
-  (global-set! bard 'bard::|dispose| (%construct-function |List| (&)))
+  (global-set! bard 'bard::|dispose| (%construct-function |List| (&) :|name| 'bard::|dispose|))
   (add-method! (global-ref bard 'bard::|dispose|)(list |cons| (&)) #'|cons.dispose|)
   (add-method! (global-ref bard 'bard::|dispose|)(list |string| (&)) #'|string.dispose|)
   (add-method! (global-ref bard 'bard::|dispose|)(list |treelist| (&)) #'|treelist.dispose|)
 
   ;; drop
-  (global-set! bard 'bard::|drop| (%construct-function |Integer| |List|))
+  (global-set! bard 'bard::|drop| (%construct-function |Integer| |List| :|name| 'bard::|drop|))
   (add-method! (global-ref bard 'bard::|drop|)(list |Integer| |cons|) #'|cons.drop|)
   (add-method! (global-ref bard 'bard::|drop|)(list |Integer| |string|) #'|string.drop|)
   (add-method! (global-ref bard 'bard::|drop|)(list |Integer| |treelist|) #'|treelist.drop|)
 
   ;; drop-while
-  (global-set! bard 'bard::|drop-while| (%construct-function |Procedure| |List|))
+  (global-set! bard 'bard::|drop-while| (%construct-function |Procedure| |List| :|name| 'bard::|drop-while|))
   (add-method! (global-ref bard 'bard::|drop-while|)(list |Procedure| |cons|) #'|cons.drop-while|)
   (add-method! (global-ref bard 'bard::|drop-while|)(list |Procedure| |string|) #'|string.drop-while|)
   (add-method! (global-ref bard 'bard::|drop-while|)(list |Procedure| |treelist|) #'|treelist.drop-while|)
 
   ;; element
-  (global-set! bard 'bard::|element| (%construct-function |List| |Integer|))
+  (global-set! bard 'bard::|element| (%construct-function |List| |Integer| :|name| 'bard::|element|))
   (add-method! (global-ref bard 'bard::|element|)(list |cons| |Integer|) #'|cons.element|)
   (add-method! (global-ref bard 'bard::|element|)(list |string| |Integer|) #'|string.element|)
   (add-method! (global-ref bard 'bard::|element|)(list |treelist| |Integer|) #'|treelist.element|)
 
   ;; empty?
-  (global-set! bard 'bard::|empty?| (%construct-function |List|))
+  (global-set! bard 'bard::|empty?| (%construct-function |List| :|name| 'bard::|empty?|))
   (add-method! (global-ref bard 'bard::|empty?|)(list |cons|) #'|cons.empty?|)
   (add-method! (global-ref bard 'bard::|empty?|)(list |string|) #'|string.empty?|)
   (add-method! (global-ref bard 'bard::|empty?|)(list |treelist|) #'|treelist.empty?|)
 
   ;; filter
-  (global-set! bard 'bard::|filter| (%construct-function |Procedure| |List|))
+  (global-set! bard 'bard::|filter| (%construct-function |Procedure| |List| :|name| 'bard::|filter|))
   (add-method! (global-ref bard 'bard::|filter|)(list |Procedure| |cons|) #'|cons.filter|)
   (add-method! (global-ref bard 'bard::|filter|)(list |Procedure| |string|) #'|string.filter|)
   (add-method! (global-ref bard 'bard::|filter|)(list |Procedure| |treelist|) #'|treelist.filter|)
 
   ;; find-if
-  (global-set! bard 'bard::|find-if| (%construct-function |Procedure| |List|))
+  (global-set! bard 'bard::|find-if| (%construct-function |Procedure| |List| :|name| 'bard::|find-if|))
   (add-method! (global-ref bard 'bard::|find-if|)(list |Procedure| |cons|) #'|cons.find-if|)
   (add-method! (global-ref bard 'bard::|find-if|)(list |Procedure| |string|) #'|string.find-if|)
   (add-method! (global-ref bard 'bard::|find-if|)(list |Procedure| |treelist|) #'|treelist.find-if|)
   
   ;; first
-  (global-set! bard 'bard::|first| (%construct-function |List|))
+  (global-set! bard 'bard::|first| (%construct-function |List| :|name| 'bard::|first|))
   (add-method! (global-ref bard 'bard::|first|)(list |cons|) #'|cons.first|)
   (add-method! (global-ref bard 'bard::|first|)(list |string|) #'|string.first|)
   (add-method! (global-ref bard 'bard::|first|)(list |treelist|) #'|treelist.first|)
 
   ;; head
-  (global-set! bard 'bard::|head| (%construct-function |List|))
+  (global-set! bard 'bard::|head| (%construct-function |List| :|name| 'bard::|head|))
   (add-method! (global-ref bard 'bard::|head|)(list |cons|) #'|cons.head|)
   (add-method! (global-ref bard 'bard::|head|)(list |string|) #'|string.head|)
   (add-method! (global-ref bard 'bard::|head|)(list |treelist|) #'|treelist.head|)
 
   ;; image
-  (global-set! bard 'bard::|image| (%construct-function |Procedure| |List|))
+  (global-set! bard 'bard::|image| (%construct-function |Procedure| |List| :|name| 'bard::|image|))
   (add-method! (global-ref bard 'bard::|image|)(list |Procedure| |cons|) #'|cons.image|)
   (add-method! (global-ref bard 'bard::|image|)(list |Procedure| |string|) #'|string.image|)
   (add-method! (global-ref bard 'bard::|image|)(list |Procedure| |treelist|) #'|treelist.image|)
   
   ;; indexes
-  (global-set! bard 'bard::|indexes| (%construct-function |List|))
+  (global-set! bard 'bard::|indexes| (%construct-function |List| :|name| 'bard::|indexes|))
   (add-method! (global-ref bard 'bard::|indexes|)(list |cons|) #'|cons.indexes|)
   (add-method! (global-ref bard 'bard::|indexes|)(list |string|) #'|string.indexes|)
   (add-method! (global-ref bard 'bard::|indexes|)(list |treelist|) #'|treelist.indexes|)
 
   ;; interleave
-  (global-set! bard 'bard::|interleave| (%construct-function |List| |List|))
+  (global-set! bard 'bard::|interleave| (%construct-function |List| |List| :|name| 'bard::|interleave|))
   (add-method! (global-ref bard 'bard::|interleave|)(list |cons| |cons|) #'|cons.interleave|)
   (add-method! (global-ref bard 'bard::|interleave|)(list |string| |string|) #'|string.interleave|)
   (add-method! (global-ref bard 'bard::|interleave|)(list |treelist| |treelist|) #'|treelist.interleave|)
 
   ;; interpose
-  (global-set! bard 'bard::|interpose| (%construct-function |Anything| |List|))
+  (global-set! bard 'bard::|interpose| (%construct-function |Anything| |List| :|name| 'bard::|interpose|))
   (add-method! (global-ref bard 'bard::|interpose|)(list |Anything| |cons|) #'|cons.interpose|)
   (add-method! (global-ref bard 'bard::|interpose|)(list |Character| |string|) #'|string.interpose|)
   (add-method! (global-ref bard 'bard::|interpose|)(list |Anything| |treelist|) #'|treelist.interpose|)
 
   ;; list?
-  (global-set! bard 'bard::|list?| (%construct-function |Anything|))
+  (global-set! bard 'bard::|list?| (%construct-function |Anything| :|name| 'bard::|list?|))
   (add-method! (global-ref bard 'bard::|list?|)(list |Anything|) (constantly (false)))
   (add-method! (global-ref bard 'bard::|list?|)(list |cons|) (constantly (true)))
   (add-method! (global-ref bard 'bard::|list?|)(list |string|) (constantly (true)))
@@ -464,53 +464,53 @@
   ;; ----------------------------------------
 
   ;; left
-  (global-set! bard 'bard::|left| (%construct-function |Pair|))
+  (global-set! bard 'bard::|left| (%construct-function |Pair| :|name| 'bard::|left|))
   (add-method! (global-ref bard 'bard::|left|)(list |cons|) #'|cons.left|)
 
   ;; pair?
-  (global-set! bard 'bard::|pair?| (%construct-function |Anything|))
+  (global-set! bard 'bard::|pair?| (%construct-function |Anything| :|name| 'bard::|pair?|))
   (add-method! (global-ref bard 'bard::|pair?|)(list |Anything|) (cl:constantly (false)))
   (add-method! (global-ref bard 'bard::|pair?|)(list |cons|) (cl:constantly (true)))
 
   ;; put-left
-  (global-set! bard 'bard::|put-left| (%construct-function |Pair| |Anything|))
+  (global-set! bard 'bard::|put-left| (%construct-function |Pair| |Anything| :|name| 'bard::|put-left|))
   (add-method! (global-ref bard 'bard::|put-left|)(list |Pair| |Anything|) #'|cons.put-left|)
 
   ;; put-right
-  (global-set! bard 'bard::|put-right| (%construct-function |Pair| |Anything|))
+  (global-set! bard 'bard::|put-right| (%construct-function |Pair| |Anything| :|name| 'bard::|put-right|))
   (add-method! (global-ref bard 'bard::|put-right|)(list |Pair| |Anything|) #'|cons.put-right|)
 
   ;; right
-  (global-set! bard 'bard::|right| (%construct-function |Pair|))
+  (global-set! bard 'bard::|right| (%construct-function |Pair| :|name| 'bard::|right|))
   (add-method! (global-ref bard 'bard::|right|)(list |cons|) #'|cons.right|)
 
   ;; set-left!
-  (global-set! bard 'bard::|set-left!| (%construct-function |Pair| |Anything|))
+  (global-set! bard 'bard::|set-left!| (%construct-function |Pair| |Anything| :|name| 'bard::|set-left!|))
   (add-method! (global-ref bard 'bard::|set-left!|)(list |cons| |Anything|) #'|cons.set-left!|)
 
   ;; set-right!
-  (global-set! bard 'bard::|set-right!| (%construct-function |Pair| |Anything|))
+  (global-set! bard 'bard::|set-right!| (%construct-function |Pair| |Anything| :|name| 'bard::|set-right!|))
   (add-method! (global-ref bard 'bard::|set-right!|)(list |cons| |Anything|) #'|cons.set-right!|)
   
   ;; Math protocol
   ;; ----------------------------------------
 
-  (global-set! bard 'bard::|+| (%construct-function |Number| (&)))
+  (global-set! bard 'bard::|+| (%construct-function |Number| (&) :|name| 'bard::|+|))
   (add-method! (global-ref bard 'bard::|+|)(list |Number| (&)) #'|Math.+|)
 
-  (global-set! bard 'bard::|-| (%construct-function |Number| (&)))
+  (global-set! bard 'bard::|-| (%construct-function |Number| (&) :|name| 'bard::|-|))
   (add-method! (global-ref bard 'bard::|-|)(list |Number| (&)) #'|Math.-|)
 
-  (global-set! bard 'bard::|*| (%construct-function |Number| (&)))
+  (global-set! bard 'bard::|*| (%construct-function |Number| (&) :|name| 'bard::|*|))
   (add-method! (global-ref bard 'bard::|*|)(list |Number| |Number|) #'|Math.*|)
 
-  (global-set! bard 'bard::|/| (%construct-function |Number| (&)))
+  (global-set! bard 'bard::|/| (%construct-function |Number| (&) :|name| 'bard::|/|))
   (add-method! (global-ref bard 'bard::|/|)(list |Number| |Number|) #'|Math./|)
 
-  (global-set! bard 'bard::|even?| (%construct-function |Integer|))
+  (global-set! bard 'bard::|even?| (%construct-function |Integer| :|name| 'bard::|even?|))
   (add-method! (global-ref bard 'bard::|even?|)(list |Integer|) #'|Integer.even?|)
 
-  (global-set! bard 'bard::|odd?| (%construct-function |Integer|))
+  (global-set! bard 'bard::|odd?| (%construct-function |Integer| :|name| 'bard::|odd?|))
   (add-method! (global-ref bard 'bard::|odd?|)(list |Integer|) #'|Integer.odd?|)
 
   )

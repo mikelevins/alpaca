@@ -101,3 +101,27 @@
 
 (defmethod print-object ((obj structure)(out stream))
   (format out "~a" (or (name obj) "#<structure 'anonymous'>")))
+
+
+(defmethod print-object ((fn bard-function)(out stream))
+  (if (rest-parameter? fn)
+      (format out "(-> ~{~a~^ ~} &)" (input-classes fn))
+      (format out "(-> ~{~a~^ ~})" (input-classes fn))))
+
+(defmethod bard-print ((fn bard-function) &optional (out cl:*standard-output*))
+  (when (name fn)
+    (format out "#<function ~a> " (name fn)))
+  (if (rest-parameter? fn)
+      (format out "(-> ~{~a~^ ~} &)" (input-classes fn))
+      (format out "(-> ~{~a~^ ~})" (input-classes fn))))
+
+
+(defmethod bard-print ((obj bard-method) &optional (out cl:*standard-output*))
+  (when (name obj)
+    (format out "#<method ~a> " (name obj)))
+  (if (method-expression obj)
+      (format out "~a" (method-expression obj))
+      (format out "#<~a>"
+              (if (name obj)
+                  (format nil "method ~a" (name obj))
+                  (format nil "an anonymous method")))))

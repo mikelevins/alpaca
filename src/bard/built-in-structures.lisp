@@ -131,16 +131,6 @@
   (setf (method-tree fn)
         (remove-method-entry (method-tree fn) signature)))
 
-(defmethod print-object ((fn bard-function)(out stream))
-  (if (rest-parameter? fn)
-      (format out "(-> ~{~a~^ ~} &)" (input-classes fn))
-      (format out "(-> ~{~a~^ ~})" (input-classes fn))))
-
-(defmethod bard-print ((fn bard-function) &optional (out cl:*standard-output*))
-  (if (rest-parameter? fn)
-      (format out "(-> ~{~a~^ ~} &)" (input-classes fn))
-      (format out "(-> ~{~a~^ ~})" (input-classes fn))))
-
 (defmethod no-applicable-method (fn args)
   (error "No applicable method of function ~S for arguments ~S"
          fn args))
@@ -153,15 +143,28 @@
                 (cl:apply best-method args)
                 (no-applicable-method fn args))))))
 
-(defun %construct-function (&rest input-classes)
-  (let* ((ampersand-pos (position-if (lambda (p)(equal "&" (name p)))
-                                     input-classes))
-         (required-inputs (if ampersand-pos
-                              (folio2:take ampersand-pos input-classes)
-                              input-classes)))
+(defun %parse-function-parameters (inputs)
+  (let* ((input-count (length inputs))
+         (name-pos (position :|name| inputs))
+         (ampersand-pos (position-if (lambda (p)(equal "&" (name p)))
+                                     inputs)))
+    (when (and name-pos ampersand-pos
+               (< name-pos ampersand-pos))
+      (error "bard: malformed function inputs: :name before &"))
+    (let* ((args (if ampersand-pos
+                     (folio2:take ampersand-pos inputs)
+                     (if name-pos
+                         (folio2:take name-pos inputs)
+                         inputs)))
+           (ampersand? (and ampersand-pos t))
+           (name (and name-pos (elt inputs (1+ name-pos)))))
+      (values args ampersand? name))))
+
+(defun %construct-function (&rest inputs)
+  (multiple-value-bind (required-inputs ampersand? name)(%parse-function-parameters inputs)
     (assert (every #'class? required-inputs)() "All arguments to function must be defined classes")
-    (make-instance 'bard-function :input-classes required-inputs :rest-parameter (and ampersand-pos t)
-                   :method-tree (make-method-tree))))
+    (make-instance 'bard-function :input-classes required-inputs :rest-parameter ampersand?
+                   :method-tree (make-method-tree) :name name)))
 
 (defparameter |function|
   (make-instance 'structure
@@ -227,14 +230,6 @@
    (body :accessor method-body :initform nil :initarg :body))
   (:metaclass clos:funcallable-standard-class))
 
-(defmethod bard-print ((obj bard-method) &optional (out cl:*standard-output*))
-  (if (method-expression obj)
-      (format out "~a" (method-expression obj))
-      (format out "#<~a>"
-              (if (name obj)
-                  (format nil "method ~a" (name obj))
-                  (format nil "an anonymous method")))))
-
 (defun %parse-method-params (params)
   (let* ((ampersand-pos (position-if (lambda (p)(equal "&" (symbol-name p)))
                                      params))
@@ -287,7 +282,8 @@
                                   :rest-parameter rest-param
                                   :call-environment call-env
                                   :expression expression
-                                  :body meth-body)))
+                                  :body meth-body
+                                  :name name)))
         ;; create the method proc and stuff it into the funcallable instance
         (clos:set-funcallable-instance-function
          meth

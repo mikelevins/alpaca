@@ -41,6 +41,9 @@
   ((native-type :accessor native-type :initform nil :initarg :native-type))
   (:metaclass clos:funcallable-standard-class))
 
+(defmethod name ((x cl:symbol))
+  (symbol-name x))
+
 ;;; ---------------------------------------------------------------------
 ;;; class
 ;;; ---------------------------------------------------------------------

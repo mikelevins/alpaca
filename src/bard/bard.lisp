@@ -123,6 +123,7 @@
 ;;; the function `as`
 
 (defun |as.cons.cons|(x y) y)
+(defun |as.cons.string|(x y) (coerce y 'cl:list))
 
 (defun |as.string.cons|(x y)
   (assert (every #'characterp y)()
@@ -364,6 +365,7 @@
 
   (global-set! bard 'bard::|as| (%construct-function |Type| |Anything| :|name| 'bard::|as|))
   (add-method! (global-ref bard 'bard::|as|)(list ($ |singleton| |cons|) |cons|) #'|as.cons.cons|)
+  (add-method! (global-ref bard 'bard::|as|)(list ($ |singleton| |cons|) |string|) #'|as.cons.string|)
   (add-method! (global-ref bard 'bard::|as|)(list ($ |singleton| |string|) |cons|) #'|as.string.cons|)
   
   ;; Function protocol

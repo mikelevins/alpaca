@@ -21,11 +21,11 @@ Bard's abstract types
 | -
 |`    Anything`         | All values
 |`      Stream`         | Objects you can read from or write to
-|`      Collection`     | Objects that contain groups of other objects
-|`       Map `          | Collections of key/value pairs
+|`      Container`     | Objects that contain groups of other objects
+|`       Map `          | Containers of key/value pairs
 |`        List`         | Ordered, countable collections
 |`          Pair`       | Lists with two elements, a left one and a right one
-|`        Array`        | Collections of objects arranged in rows and columns
+|`        Array`        | Containers of objects arranged in rows and columns
 |`          Vector`     | Arrays with only rows (Vectors are also Lists)
 |`            String`   | Vectors of text characters
 |`              Text`   | Editable texts used in Alpaca documents

@@ -75,6 +75,25 @@
                  :native-type 'cl:cons
                  :direct-supers (list |Pair| |Mutable|)))
 
+
+;;; ---------------------------------------------------------------------
+;;; document-window
+;;; ---------------------------------------------------------------------
+
+(defun %construct-document-window (location extent)
+  (let ((left (point-x location))
+        (top (point-y location))
+        (width (extent-width extent))
+        (height (extent-height extent)))
+    (capi:contain (make-instance 'capi:interface :x left :y top :width width :height height))))
+
+(defparameter |document-window|
+  (make-instance 'primitive-structure
+                 :name 'bard::|document-window|
+                 :constructor #'%construct-document-window
+                 :native-type 'capi:interface
+                 :direct-supers (list |Window|)))
+
 ;;; ---------------------------------------------------------------------
 ;;; error
 ;;; ---------------------------------------------------------------------

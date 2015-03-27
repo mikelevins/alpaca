@@ -260,6 +260,16 @@
 (defun |string.interpose| (x y)(folio2:interpose x y))
 (defun |treelist.interpose| (x y)(folio2:interpose x y))
 
+;;; last
+(defun |cons.last| (x)(car (cl:last x)))
+(defun |string.last| (x)(elt x (1- (length x))))
+(defun |treelist.last| (x)(fset:@ x (1- (fset:size x))))
+
+;;; leave
+(defun |cons.leave| (n x)($ #'folio2:leave n x))
+(defun |string.leave| (n x)($ #'folio2:leave n x))
+(defun |treelist.leave| (n x)($ #'folio2:leave n x))
+
 ;;; Pair protocol
 ;;; ----------------------------------------
 
@@ -448,11 +458,23 @@
   (add-method! (global-ref bard 'bard::|interleave|)(list |treelist| |treelist|) #'|treelist.interleave|)
 
   ;; interpose
-  (global-set! bard 'bard::|interpose| (%construct-function |Anything| |List| :|name| 'bard::|interpose|))
+  (global-set! bard 'bard::|interpose| (%construct-function |Anything| |List|  :|name| 'bard::|interpose|))
   (add-method! (global-ref bard 'bard::|interpose|)(list |Anything| |cons|) #'|cons.interpose|)
-  (add-method! (global-ref bard 'bard::|interpose|)(list |Character| |string|) #'|string.interpose|)
-  (add-method! (global-ref bard 'bard::|interpose|)(list |Anything| |treelist|) #'|treelist.interpose|)
+  (add-method! (global-ref bard 'bard::|interpose|)(list |Character| |string| ) #'|string.interpose|)
+  (add-method! (global-ref bard 'bard::|interpose|)(list |Anything| |treelist| ) #'|treelist.interpose|)
 
+  ;; last
+  (global-set! bard 'bard::|last| (%construct-function |List| :|name| 'bard::|last|))
+  (add-method! (global-ref bard 'bard::|last|)(list |cons|) #'|cons.last|)
+  (add-method! (global-ref bard 'bard::|last|)(list |string|) #'|string.last|)
+  (add-method! (global-ref bard 'bard::|last|)(list |treelist|) #'|treelist.last|)
+
+  ;; leave
+  (global-set! bard 'bard::|leave| (%construct-function |Integer| |List| :|name| 'bard::|leave|))
+  (add-method! (global-ref bard 'bard::|leave|)(list |Integer| |cons|) #'|cons.leave|)
+  (add-method! (global-ref bard 'bard::|leave|)(list |Integer| |string|) #'|string.leave|)
+  (add-method! (global-ref bard 'bard::|leave|)(list |Integer| |treelist|) #'|treelist.leave|)
+  
   ;; list?
   (global-set! bard 'bard::|list?| (%construct-function |Anything| :|name| 'bard::|list?|))
   (add-method! (global-ref bard 'bard::|list?|)(list |Anything|) (constantly (false)))

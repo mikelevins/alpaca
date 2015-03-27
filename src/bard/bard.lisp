@@ -657,11 +657,14 @@
   (catch 'exit-bard
     (loop
        (display-bard-prompt)
-       (let* ((input (bard-read))
-              (thunk (compile input (empty-environment)))
-              (vals (multiple-value-list ($ thunk))))
-         (dolist (val vals)
-           (terpri)
-           (bard-print val))
-         (terpri)))))
+       (handler-case (let* ((input (bard-read))
+                            (thunk (compile input (empty-environment)))
+                            (vals (multiple-value-list ($ thunk))))
+                       (dolist (val vals)
+                         (terpri)
+                         (bard-print val))
+                       (terpri))
+         (condition (c)
+           (format t "~%bard signaled a condition: ~S~%" c)
+           nil)))))
 

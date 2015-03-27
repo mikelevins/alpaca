@@ -58,14 +58,18 @@
   (bard-internal::bard) ; make sure the bard runtime is initialized
   (loop
      (bard-internal::display-bard-prompt stream)
-     (let* ((in-line (read-line stream))
-            (input (bard-internal::bard-read-from-string in-line))
-            (thunk (bard-internal::compile input (bard-internal::empty-environment)))
-            (vals (multiple-value-list ($ thunk))))
-       (dolist (val vals)
-         (terpri stream)
-         (bard-internal::bard-print val stream))
-       (terpri stream))))
+     (handler-case (let* ((in-line (read-line stream))
+                          (input (bard-internal::bard-read-from-string in-line))
+                          (thunk (bard-internal::compile input (bard-internal::empty-environment)))
+                          (vals (multiple-value-list ($ thunk))))
+                     (dolist (val vals)
+                       (terpri stream)
+                       (bard-internal::bard-print val stream))
+                     (terpri stream))
+       (condition (c)
+         (format stream "~%bard signaled a condition: ~S~%" c)
+         nil))))
+
 
 (define-interface bard-listener (interface)
   ;; -- slots ---------------------------------------------

@@ -80,6 +80,7 @@
 (defmethod bard-type-of ((x fset:wb-seq)) |treelist|)
 (defmethod bard-type-of ((x fset:wb-map)) |treemap|)
 (defmethod bard-type-of ((x quri.uri:uri)) |uri|)
+(defmethod bard-type-of ((x text)) |text|)
 
 
 (defun order-types (types)

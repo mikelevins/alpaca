@@ -66,6 +66,7 @@
   (global-set! bard 'bard::|ratio| |ratio|)
   (global-set! bard 'bard::|string| |string|)
   (global-set! bard 'bard::|symbol| |symbol|)
+  (global-set! bard 'bard::|text| |text|)
   (global-set! bard 'bard::|treelist| |treelist|)
   (global-set! bard 'bard::|treemap| |treemap|)
   (global-set! bard 'bard::|uri| |uri|))
@@ -138,6 +139,7 @@
 ;;; add-first
 (defun |cons.add-first| (x c)(cons x c))
 (defun |string.add-first| (x c)(concatenate 'string (cl:string x) c))
+(defun |text.add-first| (x c)(%construct-text (fset:insert (text-data c) 0 x)))
 (defun |treelist.add-first| (x c)(fset:insert c 0 x))
 
 ;;; add-last
@@ -341,7 +343,7 @@
   ;; Character protocol
   ;; ----------------------------------------
 
-  ;; add-first
+  ;; alphanumeric?
   (global-set! bard 'bard::|alphanumeric?| (%construct-function |Character| :|name| 'bard::|alphanumeric?|))
   (add-method! (global-ref bard 'bard::|alphanumeric?|)(list |Character|) #'|character.alphanumeric?|)
 
@@ -364,9 +366,10 @@
   ;; ----------------------------------------
 
   ;; add-first
-  (global-set! bard 'bard::|add-first| (%construct-function |List| :|name| 'bard::|add-first|))
+  (global-set! bard 'bard::|add-first| (%construct-function |Anything| |List| :|name| 'bard::|add-first|))
   (add-method! (global-ref bard 'bard::|add-first|)(list |Anything| |cons|) #'|cons.add-first|)
   (add-method! (global-ref bard 'bard::|add-first|)(list |Character| |string|) #'|string.add-first|)
+  (add-method! (global-ref bard 'bard::|add-first|)(list |Character| |text|) #'|text.add-first|)
   (add-method! (global-ref bard 'bard::|add-first|)(list |Anything| |treelist|) #'|treelist.add-first|)
 
   ;; add-last

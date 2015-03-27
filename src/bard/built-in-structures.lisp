@@ -489,12 +489,6 @@
 (defclass text ()
   ((data :accessor text-data :initform "" :initarg :data)))
 
-(defmethod print-object ((obj text)(out stream))
-  (format out "#text \"~a\"" (fset:convert 'cl:string (text-data obj))))
-
-(defmethod bard-print ((obj text) &optional (out cl:*standard-output*))
-  (format out "#text \"~a\"" (fset:convert 'cl:string (text-data obj))))
-
 (defmethod %construct-text (data)
   (error "Can't construct a text instance from data ~S" data))
 

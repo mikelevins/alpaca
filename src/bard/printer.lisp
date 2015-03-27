@@ -125,3 +125,9 @@
               (if (name obj)
                   (format nil "method ~a" (name obj))
                   (format nil "an anonymous method")))))
+
+(defmethod print-object ((obj text)(out stream))
+  (format out "#<text> \"~a\"" (fset:convert 'cl:string (text-data obj))))
+
+(defmethod bard-print ((obj text) &optional (out cl:*standard-output*))
+  (format out "#<text> \"~a\"" (fset:convert 'cl:string (text-data obj))))

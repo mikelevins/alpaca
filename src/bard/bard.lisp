@@ -275,6 +275,21 @@
 (defun |string.length| (x)(cl:length x))
 (defun |treelist.length| (x)(fset:size x))
 
+;;; mismatch
+(defun |cons.mismatch| (x y)(folio2:mismatch x y :test #'cl:equal))
+(defun |string.mismatch| (x y)(folio2:mismatch x y :test #'cl:equal))
+(defun |treelist.mismatch| (x y)(folio2:mismatch x y :test #'cl:equal))
+
+;;; partition
+(defun |cons.partition| (pred ls)(folio2:partition (bard-predicate->lisp-predicate pred) ls))
+(defun |string.partition| (pred ls)(folio2:partition (bard-predicate->lisp-predicate pred) ls))
+(defun |treelist.partition| (pred ls)(folio2:partition (bard-predicate->lisp-predicate pred) ls))
+
+;;; penult
+(defun |cons.penult| (x)(folio2:penult x))
+(defun |string.penult| (x)(folio2:penult x))
+(defun |treelist.penult| (x)(folio2:penult x))
+
 ;;; Pair protocol
 ;;; ----------------------------------------
 
@@ -492,6 +507,24 @@
   (add-method! (global-ref bard 'bard::|list?|)(list |cons|) (constantly (true)))
   (add-method! (global-ref bard 'bard::|list?|)(list |string|) (constantly (true)))
   (add-method! (global-ref bard 'bard::|list?|)(list |treelist|) (constantly (true)))
+
+  ;; mismatch
+  (global-set! bard 'bard::|mismatch| (%construct-function |List| |List| :|name| 'bard::|mismatch|))
+  (add-method! (global-ref bard 'bard::|mismatch|)(list |cons| |cons|) #'|cons.mismatch|)
+  (add-method! (global-ref bard 'bard::|mismatch|)(list |string| |string|) #'|string.mismatch|)
+  (add-method! (global-ref bard 'bard::|mismatch|)(list |treelist| |treelist|) #'|treelist.mismatch|)
+
+  ;; partition
+  (global-set! bard 'bard::|partition| (%construct-function |Procedure| |List| :|name| 'bard::|partition|))
+  (add-method! (global-ref bard 'bard::|partition|)(list |Procedure| |cons|) #'|cons.partition|)
+  (add-method! (global-ref bard 'bard::|partition|)(list |Procedure| |string|) #'|string.partition|)
+  (add-method! (global-ref bard 'bard::|partition|)(list |Procedure| |treelist|) #'|treelist.partition|)
+
+  ;; penult
+  (global-set! bard 'bard::|penult| (%construct-function |List| :|name| 'bard::|penult|))
+  (add-method! (global-ref bard 'bard::|penult|)(list |cons|) #'|cons.penult|)
+  (add-method! (global-ref bard 'bard::|penult|)(list |string|) #'|string.penult|)
+  (add-method! (global-ref bard 'bard::|penult|)(list |treelist|) #'|treelist.penult|)
 
   ;; Pair protocol
   ;; ----------------------------------------

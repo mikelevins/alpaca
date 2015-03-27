@@ -436,11 +436,12 @@
   (add-method! (global-ref bard 'bard::|indexes|)(list |string|) #'|string.indexes|)
   (add-method! (global-ref bard 'bard::|indexes|)(list |treelist|) #'|treelist.indexes|)
   
-  ;; interleave
-  (global-set! bard 'bard::|interleave| (%construct-function |List| |List|))
-  (add-method! (global-ref bard 'bard::|interleave|)(list |cons| |cons|) #'|cons.interleave|)
-  (add-method! (global-ref bard 'bard::|interleave|)(list |string| |string|) #'|string.interleave|)
-  (add-method! (global-ref bard 'bard::|interleave|)(list |treelist| |treelist|) #'|treelist.interleave|)
+  ;; list?
+  (global-set! bard 'bard::|list?| (%construct-function |Anything|))
+  (add-method! (global-ref bard 'bard::|list?|)(list |Anything|) (constantly (false)))
+  (add-method! (global-ref bard 'bard::|list?|)(list |cons|) (constantly (true)))
+  (add-method! (global-ref bard 'bard::|list?|)(list |string|) (constantly (true)))
+  (add-method! (global-ref bard 'bard::|list?|)(list |treelist|) (constantly (true)))
 
   ;; Pair protocol
   ;; ----------------------------------------

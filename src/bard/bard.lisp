@@ -122,6 +122,13 @@
 ;;; ----------------------------------------
 ;;; the function `as`
 
+(defun |as.cons.cons|(x y) y)
+
+(defun |as.string.cons|(x y)
+  (assert (every #'characterp y)()
+          "Can't convert a cons to a string unless all elements are characters")
+  (coerce y 'cl:string))
+
 ;;; Function protocol
 ;;; ----------------------------------------
 (defun |function.complement| (f)
@@ -354,6 +361,10 @@
   ;; Conversion protocol
   ;; ----------------------------------------
   ;; the function `as`
+
+  (global-set! bard 'bard::|as| (%construct-function |Type| |Anything| :|name| 'bard::|as|))
+  (add-method! (global-ref bard 'bard::|as|)(list ($ |singleton| |cons|) |cons|) #'|as.cons.cons|)
+  (add-method! (global-ref bard 'bard::|as|)(list ($ |singleton| |string|) |cons|) #'|as.string.cons|)
   
   ;; Function protocol
   ;; ----------------------------------------
@@ -668,6 +679,8 @@
                          (bard-print val))
                        (terpri))
          (condition (c)
-           (format t "~%bard signaled a condition: ~S~%" c)
+           (format t "~%bard signaled a condition:~%")
+           (describe c t)
+           (terpri t)
            nil)))))
 

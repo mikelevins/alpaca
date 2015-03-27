@@ -67,7 +67,9 @@
                        (bard-internal::bard-print val stream))
                      (terpri stream))
        (condition (c)
-         (format stream "~%bard signaled a condition: ~S~%" c)
+         (format stream "~%bard signaled a condition:~%")
+         (describe c stream)
+         (terpri stream)
          nil))))
 
 

@@ -430,6 +430,23 @@
 ;;; singleton
 ;;; ---------------------------------------------------------------------
 
+(defclass bard-singleton ()
+  ((value :accessor singleton-value :initform nil :initarg :value)))
+
+(defun %construct-singleton (value)
+  (let ((the-singleton (find-singleton value)))
+    (unless the-singleton
+      (register-singleton (the-singleton-table)
+                          value
+                          (make-instance 'bard-singleton :value value)))
+    (find-singleton value)))
+
+(defparameter |singleton|
+  (make-instance 'structure
+                 :name 'bard::|singleton|
+                 :constructor #'%construct-singleton
+                 :direct-supers (list |Type|)))
+
 ;;; ---------------------------------------------------------------------
 ;;; string
 ;;; ---------------------------------------------------------------------

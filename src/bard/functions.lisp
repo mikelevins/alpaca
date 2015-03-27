@@ -49,8 +49,19 @@
     (every (^ (c s)(subtype? c s))
            candidate-types signature-types)))
 
-(defun find-applicable-method-entries (method-tree signature)
-  (folio2:filter (^ (e)(signature-subtypes? signature (car e)))
+(defun signature-match? (args signature)
+  (let* ((ampersand-pos (position (&) signature))
+         (candidate-args (if ampersand-pos
+                             (folio2:take ampersand-pos args)
+                             args))
+         (signature-types (if ampersand-pos
+                              (folio2:take ampersand-pos signature)
+                              signature)))
+    (every (^ (c s)(instance-of? c s))
+           candidate-args signature-types)))
+
+(defun find-applicable-method-entries (method-tree args)
+  (folio2:filter (^ (e)(signature-match? args (car e)))
                  method-tree))
 
 (defun signature (args)
@@ -63,7 +74,7 @@
 
 (defun most-specific-applicable-method (method-tree args)
   (let* ((signature (signature args))
-         (applicable-entries (find-applicable-method-entries method-tree signature))
+         (applicable-entries (find-applicable-method-entries method-tree args))
          (sorted-entries (sort applicable-entries
                                (lambda (e1 e2)
                                  (signature-subtypes? (car e1)

@@ -32,6 +32,7 @@
                                                            (:file "structures")
                                                            (:file "classes")
                                                            (:file "built-in-structures")
+                                                           (:file "singletons")
                                                            (:file "types")
                                                            (:file "functions")
                                                            (:file "printer")

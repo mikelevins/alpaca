@@ -17,6 +17,7 @@
 (defmethod type? ((obj unique-instance)) t)
 (defmethod type? ((obj structure)) t)
 (defmethod type? ((obj cl:class)) t)
+(defmethod type? ((obj bard-singleton)) t)
 
 (defmethod subtype? (t1 t2)
   (member t2 (hcl:class-precedence-list t1)))
@@ -30,6 +31,29 @@
 
 (defmethod subtype? ((t1 structure) t2)
   (member t2 (all-supertypes t1)))
+
+(defmethod subtype? ((t1 bard-singleton) t2)
+  (member t2 (all-supertypes (bard-type-of t1))))
+
+(defmethod subtype? (x (s bard-singleton))
+  (equal x (singleton-value s)))
+
+(defmethod subtype? ((t1 structure) (s bard-singleton))
+  (equal t1 (singleton-value s)))
+
+;;; =====================================================================
+;;; instance-of?
+;;; =====================================================================
+
+(defmethod instance-of? (obj tp)(member tp (all-supertypes (bard-type-of obj))))
+(defmethod instance-of? (obj (tp bard-singleton))(equal obj (singleton-value tp)))
+(defmethod instance-of? ((obj bard-singleton) tp)(member tp (all-supertypes (bard-type-of (singleton-value obj)))))
+(defmethod instance-of? (obj (tp (eql 'cl:t))) t)
+(defmethod instance-of? (obj (tp (eql (find-class 'cl:t)))) t)
+(defmethod instance-of? (obj (tp (eql 'cl:null))) nil)
+(defmethod instance-of? (obj (tp (eql (find-class 'cl:null)))) nil)
+(defmethod instance-of? ((obj cl:null) (tp (eql 'cl:null))) t)
+(defmethod instance-of? ((obj cl:null) (tp (eql (find-class 'cl:null)))) t)
 
 ;;; =====================================================================
 ;;; bard-type-of
@@ -81,6 +105,7 @@
 (defmethod bard-type-of ((x fset:wb-map)) |treemap|)
 (defmethod bard-type-of ((x quri.uri:uri)) |uri|)
 (defmethod bard-type-of ((x text)) |text|)
+(defmethod bard-type-of ((obj bard-singleton)) |singleton|)
 
 
 (defun order-types (types)
@@ -137,3 +162,6 @@
                  directs
                  (mapcar #'all-supertypes directs)))))))
 
+
+(defmethod all-supertypes ((x bard-singleton))
+  (all-supertypes (bard-type-of (singleton-value x))))

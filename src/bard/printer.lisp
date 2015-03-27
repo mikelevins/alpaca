@@ -54,19 +54,18 @@
                     sname)))))
 
 (defmethod bard-print ((obj cl:cons) &optional (out cl:*standard-output*))
+  (format out "#<cons> (")
   (if (null (cdr obj))
-      (progn (format out "(")
-             (bard-print (car obj) out)
+      (progn (bard-print (car obj) out)
              (format out ")"))
-      (progn (format out "(")
-             (bard-print (car obj) out)
+      (progn (bard-print (car obj) out)
              (dolist (it (cdr obj))
                (format out " ")
                (bard-print it out))
              (format out ")"))))
 
 (defmethod bard-print ((obj cl:vector) &optional (out cl:*standard-output*))
-  (format out "#vector (")
+  (format out "#<vector> (")
   (let ((len (cl:length obj)))
     (cond
       ((zerop len) nil)
@@ -75,6 +74,18 @@
                 (loop for i from 1 below len
                    do (progn (format out " ")
                              (bard-print (elt obj i) out)))))))
+  (format out ")"))
+
+(defmethod bard-print ((obj fset:wb-seq) &optional (out cl:*standard-output*))
+  (format out "#<treelist> (")
+  (let ((len (fset:size obj)))
+    (cond
+      ((zerop len) nil)
+      ((= len 1)(bard-print (fset:@ obj 0) out))
+      (t (progn (bard-print (fset:@ obj 0) out)
+                (loop for i from 1 below len
+                   do (progn (format out " ")
+                             (bard-print (fset:@ obj i) out)))))))
   (format out ")"))
 
 
@@ -86,7 +97,7 @@
 ;;; ---------------------------------------------------------------------
 
 (defmethod bard-print ((obj structure) &optional (out cl:*standard-output*))
-  (format out "~a" (or (name obj) "#<an anonymous structure>")))
+  (format out "~a" (or (name obj) "#<structure 'anonymous'>")))
 
 (defmethod print-object ((obj structure)(out stream))
-  (format out "~a" (or (name obj) "#<an anonymous structure>")))
+  (format out "~a" (or (name obj) "#<structure 'anonymous'>")))

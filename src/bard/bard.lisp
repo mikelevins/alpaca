@@ -255,6 +255,11 @@
 (defun |string.interleave| (x y)(folio2:interleave x y))
 (defun |treelist.interleave| (x y)(folio2:interleave x y))
 
+;;; interpose
+(defun |cons.interpose| (x y)(folio2:interpose x y))
+(defun |string.interpose| (x y)(folio2:interpose x y))
+(defun |treelist.interpose| (x y)(folio2:interpose x y))
+
 ;;; Pair protocol
 ;;; ----------------------------------------
 
@@ -435,7 +440,19 @@
   (add-method! (global-ref bard 'bard::|indexes|)(list |cons|) #'|cons.indexes|)
   (add-method! (global-ref bard 'bard::|indexes|)(list |string|) #'|string.indexes|)
   (add-method! (global-ref bard 'bard::|indexes|)(list |treelist|) #'|treelist.indexes|)
-  
+
+  ;; interleave
+  (global-set! bard 'bard::|interleave| (%construct-function |List| |List|))
+  (add-method! (global-ref bard 'bard::|interleave|)(list |cons| |cons|) #'|cons.interleave|)
+  (add-method! (global-ref bard 'bard::|interleave|)(list |string| |string|) #'|string.interleave|)
+  (add-method! (global-ref bard 'bard::|interleave|)(list |treelist| |treelist|) #'|treelist.interleave|)
+
+  ;; interpose
+  (global-set! bard 'bard::|interpose| (%construct-function |Anything| |List|))
+  (add-method! (global-ref bard 'bard::|interpose|)(list |Anything| |cons|) #'|cons.interpose|)
+  (add-method! (global-ref bard 'bard::|interpose|)(list |Character| |string|) #'|string.interpose|)
+  (add-method! (global-ref bard 'bard::|interpose|)(list |Anything| |treelist|) #'|treelist.interpose|)
+
   ;; list?
   (global-set! bard 'bard::|list?| (%construct-function |Anything|))
   (add-method! (global-ref bard 'bard::|list?|)(list |Anything|) (constantly (false)))

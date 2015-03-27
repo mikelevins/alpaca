@@ -270,6 +270,11 @@
 (defun |string.leave| (n x)($ #'folio2:leave n x))
 (defun |treelist.leave| (n x)($ #'folio2:leave n x))
 
+;;; length
+(defun |cons.length| (x)(cl:length x))
+(defun |string.length| (x)(cl:length x))
+(defun |treelist.length| (x)(fset:size x))
+
 ;;; Pair protocol
 ;;; ----------------------------------------
 
@@ -474,6 +479,12 @@
   (add-method! (global-ref bard 'bard::|leave|)(list |Integer| |cons|) #'|cons.leave|)
   (add-method! (global-ref bard 'bard::|leave|)(list |Integer| |string|) #'|string.leave|)
   (add-method! (global-ref bard 'bard::|leave|)(list |Integer| |treelist|) #'|treelist.leave|)
+
+  ;; length
+  (global-set! bard 'bard::|length| (%construct-function |List| :|name| 'bard::|length|))
+  (add-method! (global-ref bard 'bard::|length|)(list |cons|) #'|cons.length|)
+  (add-method! (global-ref bard 'bard::|length|)(list |string|) #'|string.length|)
+  (add-method! (global-ref bard 'bard::|length|)(list |treelist|) #'|treelist.length|)
   
   ;; list?
   (global-set! bard 'bard::|list?| (%construct-function |Anything| :|name| 'bard::|list?|))

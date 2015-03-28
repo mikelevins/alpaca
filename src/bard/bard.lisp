@@ -658,12 +658,19 @@
 (defun |exit| ()(throw 'exit-bard :ok))
 (defun |list| (&rest elts) elts)
 (defun |pair| (left right)(cons left right))
+(defun |range| (start end &optional (by 1))(folio2:range start end :by by))
 
 (defmethod init-bard-methods ((bard bard))
 
   ;; List protocol
   ;; ----------------------------------------
   (global-set! bard 'bard::|list| #'|list|)
+  ;; BUG:
+  ;; (range 0 -10 -2) causes an infinite loop
+  ;; it should be written
+  ;; (range 0 -10 2), but the other way should report an error,
+  ;; rather than looping forever
+  (global-set! bard 'bard::|range| #'|range|)
 
   ;; Pair protocol
   ;; ----------------------------------------

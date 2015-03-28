@@ -42,6 +42,7 @@
                                      (:file "alpaca")
                                      (:file "util-editor")
                                      (:file "bard-listener")
+                                     (:file "document-window")
                                      (:file "app")
                                      ))))
 

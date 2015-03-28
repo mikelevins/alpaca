@@ -1,4 +1,4 @@
- ;;;; ***********************************************************************
+;;;; ***********************************************************************
 ;;;;
 ;;;; Name:          bard-listener.lisp
 ;;;; Project:       Alpaca: a programmable editor
@@ -7,9 +7,6 @@
 ;;;; Copyright:     2015 by mikel evins
 ;;;;
 ;;;; ***********************************************************************
-
-;;; TODO: add condition-handling for errors that occur in the listener
-;;;       so that it doesn;t die
 
 (in-package #:alpaca)
 

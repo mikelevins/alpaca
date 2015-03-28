@@ -85,7 +85,9 @@
         (top (point-y location))
         (width (extent-width extent))
         (height (extent-height extent)))
-    (capi:contain (make-instance 'capi:interface :title "Alpaca" :x left :y top :width width :height height))))
+    (capi:contain (make-instance 'alpaca::document-window
+                                 :x left :y top
+                                 :width width :height height))))
 
 (defparameter |document-window|
   (make-instance 'primitive-structure

@@ -371,6 +371,60 @@
 (defun |string.second| (x)(folio2:second x))
 (defun |treelist.second| (x)(folio2:second x))
 
+;;; select
+(defun |cons.select|(ls indexes)(folio2:select ls indexes))
+(defun |string.select| (ls indexes)(folio2:select ls indexes))
+(defun |treelist.select| (ls indexes)(folio2:select ls indexes))
+
+;;; shuffle
+(defun |cons.shuffle| (x)(folio2:shuffle x))
+(defun |string.shuffle| (x)(folio2:shuffle x))
+(defun |treelist.shuffle| (x)(folio2:shuffle x))
+
+;;; some?
+(defun |cons.some?|(pred ls)(folio2:some? (bard-predicate->lisp-predicate pred) ls))
+(defun |string.some?| (pred ls)(folio2:some? (bard-predicate->lisp-predicate pred) ls))
+(defun |treelist.some?| (pred ls)(folio2:some? (bard-predicate->lisp-predicate pred) ls))
+
+;;; sort
+(defun |cons.sort|(pred ls)(folio2:sort ls (bard-predicate->lisp-predicate pred)))
+(defun |string.sort| (pred ls)(folio2:sort ls (bard-predicate->lisp-predicate pred)))
+(defun |treelist.sort| (pred ls)(folio2:sort ls (bard-predicate->lisp-predicate pred)))
+
+;;; Math protocol
+;;; ----------------------------------------
+
+;;; +
+(defun |Math.+| (&rest nums)(cl:apply #'cl:+ nums))
+
+;;; -
+(defun |Math.-| (&rest nums)(cl:apply #'cl:- nums))
+
+;;; *
+(defun |Math.*| (&rest nums)(cl:apply #'cl:* nums))
+
+;;; /
+(defun |Math./| (&rest nums)(cl:apply #'cl:/ nums))
+
+;;; <
+(defun |Math.<| (&rest nums)(cl:apply #'cl:< nums))
+
+;;; <=
+(defun |Math.<=| (&rest nums)(cl:apply #'cl:<= nums))
+
+;;; >
+(defun |Math.>| (&rest nums)(cl:apply #'cl:> nums))
+
+;;; >=
+(defun |Math.>=| (&rest nums)(cl:apply #'cl:>= nums))
+
+;;; even?
+(defun |Integer.even?| (x)(if (cl:evenp x) (true) (false)))
+
+;;; odd?
+(defun |Integer.odd?| (x)(if (cl:oddp x) (true) (false)))
+
+
 ;;; Pair protocol
 ;;; ----------------------------------------
 
@@ -391,27 +445,6 @@
 
 ;;; set-right!
 (defun |cons.set-right!| (x val)(setf (cdr x) val))
-
-;;; Math protocol
-;;; ----------------------------------------
-
-;;; +
-(defun |Math.+| (&rest nums)(cl:apply #'cl:+ nums))
-
-;;; -
-(defun |Math.-| (&rest nums)(cl:apply #'cl:- nums))
-
-;;; *
-(defun |Math.*| (&rest nums)(cl:apply #'cl:* nums))
-
-;;; /
-(defun |Math./| (&rest nums)(cl:apply #'cl:/ nums))
-
-;;; even?
-(defun |Integer.even?| (x)(if (cl:evenp x) (true) (false)))
-
-;;; odd?
-(defun |Integer.odd?| (x)(if (cl:oddp x) (true) (false)))
 
 ;;; ---------------------------------------------------------------------
 ;;; init bard functions
@@ -687,6 +720,63 @@
   (add-method! (global-ref bard 'bard::|second|)(list |string|) #'|string.second|)
   (add-method! (global-ref bard 'bard::|second|)(list |treelist|) #'|treelist.second|)
 
+  ;; select
+  (global-set! bard 'bard::|select| (%construct-function |List| |List| :|name| 'bard::|select|))
+  (add-method! (global-ref bard 'bard::|select|)(list |cons| |List|) #'|cons.select|)
+  (add-method! (global-ref bard 'bard::|select|)(list |string| |List|) #'|string.select|)
+  (add-method! (global-ref bard 'bard::|select|)(list |treelist| |List|) #'|treelist.select|)
+
+  ;;; shuffle
+  (global-set! bard 'bard::|shuffle| (%construct-function |List| :|name| 'bard::|shuffle|))
+  (add-method! (global-ref bard 'bard::|shuffle|)(list |cons|) #'|cons.shuffle|)
+  (add-method! (global-ref bard 'bard::|shuffle|)(list |string|) #'|string.shuffle|)
+  (add-method! (global-ref bard 'bard::|shuffle|)(list |treelist|) #'|treelist.shuffle|)
+
+  ;; some?
+  (global-set! bard 'bard::|some?| (%construct-function |Procedure| |List| :|name| 'bard::|some?|))
+  (add-method! (global-ref bard 'bard::|some?|)(list |Procedure| |cons|) #'|cons.some?|)
+  (add-method! (global-ref bard 'bard::|some?|)(list |Procedure| |string|) #'|string.some?|)
+  (add-method! (global-ref bard 'bard::|some?|)(list |Procedure| |treelist|) #'|treelist.some?|)
+
+  ;; sort
+  (global-set! bard 'bard::|sort| (%construct-function |Procedure| |List| :|name| 'bard::|sort|))
+  (add-method! (global-ref bard 'bard::|sort|)(list |Procedure| |cons|) #'|cons.sort|)
+  (add-method! (global-ref bard 'bard::|sort|)(list |Procedure| |string|) #'|string.sort|)
+  (add-method! (global-ref bard 'bard::|sort|)(list |Procedure| |treelist|) #'|treelist.sort|)
+  
+  ;; Math protocol
+  ;; ----------------------------------------
+
+  (global-set! bard 'bard::|+| (%construct-function |Number| (&) :|name| 'bard::|+|))
+  (add-method! (global-ref bard 'bard::|+|)(list |Number| (&)) #'|Math.+|)
+
+  (global-set! bard 'bard::|-| (%construct-function |Number| (&) :|name| 'bard::|-|))
+  (add-method! (global-ref bard 'bard::|-|)(list |Number| (&)) #'|Math.-|)
+
+  (global-set! bard 'bard::|*| (%construct-function |Number| (&) :|name| 'bard::|*|))
+  (add-method! (global-ref bard 'bard::|*|)(list |Number| |Number|) #'|Math.*|)
+
+  (global-set! bard 'bard::|/| (%construct-function |Number| (&) :|name| 'bard::|/|))
+  (add-method! (global-ref bard 'bard::|/|)(list |Number| |Number|) #'|Math./|)
+
+  (global-set! bard 'bard::|even?| (%construct-function |Integer| :|name| 'bard::|even?|))
+  (add-method! (global-ref bard 'bard::|even?|)(list |Integer|) #'|Integer.even?|)
+
+  (global-set! bard 'bard::|odd?| (%construct-function |Integer| :|name| 'bard::|odd?|))
+  (add-method! (global-ref bard 'bard::|odd?|)(list |Integer|) #'|Integer.odd?|)
+
+  (global-set! bard 'bard::|<| (%construct-function |Number| |Number| (&) :|name| 'bard::|<|))
+  (add-method! (global-ref bard 'bard::|<|)(list |Number| |Number| (&)) #'|Math.<|)
+
+  (global-set! bard 'bard::|<=| (%construct-function |Number| |Number| (&) :|name| 'bard::|<=|))
+  (add-method! (global-ref bard 'bard::|<=|)(list |Number| |Number| (&)) #'|Math.<=|)
+
+  (global-set! bard 'bard::|>| (%construct-function |Number| |Number| (&) :|name| 'bard::|>|))
+  (add-method! (global-ref bard 'bard::|>|)(list |Number| |Number| (&)) #'|Math.>|)
+
+  (global-set! bard 'bard::|>=| (%construct-function |Number| |Number| (&) :|name| 'bard::|>=|))
+  (add-method! (global-ref bard 'bard::|>=|)(list |Number| |Number| (&)) #'|Math.>=|)
+
   ;; Pair protocol
   ;; ----------------------------------------
 
@@ -718,27 +808,6 @@
   ;; set-right!
   (global-set! bard 'bard::|set-right!| (%construct-function |Pair| |Anything| :|name| 'bard::|set-right!|))
   (add-method! (global-ref bard 'bard::|set-right!|)(list |cons| |Anything|) #'|cons.set-right!|)
-  
-  ;; Math protocol
-  ;; ----------------------------------------
-
-  (global-set! bard 'bard::|+| (%construct-function |Number| (&) :|name| 'bard::|+|))
-  (add-method! (global-ref bard 'bard::|+|)(list |Number| (&)) #'|Math.+|)
-
-  (global-set! bard 'bard::|-| (%construct-function |Number| (&) :|name| 'bard::|-|))
-  (add-method! (global-ref bard 'bard::|-|)(list |Number| (&)) #'|Math.-|)
-
-  (global-set! bard 'bard::|*| (%construct-function |Number| (&) :|name| 'bard::|*|))
-  (add-method! (global-ref bard 'bard::|*|)(list |Number| |Number|) #'|Math.*|)
-
-  (global-set! bard 'bard::|/| (%construct-function |Number| (&) :|name| 'bard::|/|))
-  (add-method! (global-ref bard 'bard::|/|)(list |Number| |Number|) #'|Math./|)
-
-  (global-set! bard 'bard::|even?| (%construct-function |Integer| :|name| 'bard::|even?|))
-  (add-method! (global-ref bard 'bard::|even?|)(list |Integer|) #'|Integer.even?|)
-
-  (global-set! bard 'bard::|odd?| (%construct-function |Integer| :|name| 'bard::|odd?|))
-  (add-method! (global-ref bard 'bard::|odd?|)(list |Integer|) #'|Integer.odd?|)
 
   )
 

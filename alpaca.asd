@@ -53,3 +53,4 @@
 ;;; (setf $win (capi:contain (make-instance 'alpaca::bard-listener)))
 
 ;;; TODO: invent an apropos feature for the Bard subsystem
+;;; TODO: implement #<type> as a reader macro for (with-intended-type (type) ...)

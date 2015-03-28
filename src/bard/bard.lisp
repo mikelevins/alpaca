@@ -129,11 +129,17 @@
 (defun |as.cons.cons|(x y) y)
 (defun |as.cons.string|(x y) (coerce y 'cl:list))
 (defun |as.cons.treelist|(x y) (fset:convert 'cl:list y))
+(defun |as.cons.text|(x y) (fset:convert 'cl:list (text-data y)))
 
 (defun |as.string.cons|(x y)
   (assert (every #'characterp y)()
           "Can't convert a cons to a string unless all elements are characters")
   (coerce y 'cl:string))
+(defun |as.string.treelist|(x y)
+  (assert (fset::every #'characterp y)()
+          "Can't convert a treelist to a string unless all elements are characters")
+  (fset:convert 'cl:string y))
+(defun |as.string.text|(x y) (fset:convert 'cl:string (text-data y)))
 
 (defun |as.treelist.cons|(x y) (fset:convert 'fset:wb-seq y))
 
@@ -431,6 +437,9 @@
   (global-set! bard 'bard::|as| (%construct-function |Type| |Anything| :|name| 'bard::|as|))
   (add-method! (global-ref bard 'bard::|as|)(list ($ |singleton| |cons|) |cons|) #'|as.cons.cons|)
   (add-method! (global-ref bard 'bard::|as|)(list ($ |singleton| |cons|) |string|) #'|as.cons.string|)
+  (add-method! (global-ref bard 'bard::|as|)(list ($ |singleton| |cons|) |text|) #'|as.cons.text|)
+  (add-method! (global-ref bard 'bard::|as|)(list ($ |singleton| |string|) |treelist|) #'|as.string.treelist|)
+  (add-method! (global-ref bard 'bard::|as|)(list ($ |singleton| |string|) |text|) #'|as.string.text|)
   (add-method! (global-ref bard 'bard::|as|)(list ($ |singleton| |cons|) |treelist|) #'|as.cons.treelist|)
   (add-method! (global-ref bard 'bard::|as|)(list ($ |singleton| |string|) |cons|) #'|as.string.cons|)
   (add-method! (global-ref bard 'bard::|as|)(list ($ |singleton| |treelist|) |cons|) #'|as.treelist.cons|)

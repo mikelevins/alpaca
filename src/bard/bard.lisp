@@ -325,6 +325,16 @@
 (defun |string.prefix-match?| (pref ls)(if (folio2:prefix-match? pref ls)(true)(false)))
 (defun |treelist.prefix-match?| (pref ls)(if (folio2:prefix-match? pref ls)(true)(false)))
 
+;;; reduce
+(defun |cons.reduce| (fn init ls)
+  (folio2:reduce fn ls :initial-value init))
+
+(defun |string.reduce| (fn init ls)
+  (folio2:reduce fn ls :initial-value init))
+
+(defun |treelist.reduce| (fn init ls)
+  (folio2:reduce fn ls :initial-value init))
+
 ;;; Pair protocol
 ;;; ----------------------------------------
 
@@ -595,6 +605,12 @@
   (add-method! (global-ref bard 'bard::|prefix-match?|)(list |cons| |cons|) #'|cons.prefix-match?|)
   (add-method! (global-ref bard 'bard::|prefix-match?|)(list |string| |string|) #'|string.prefix-match?|)
   (add-method! (global-ref bard 'bard::|prefix-match?|)(list |treelist| |treelist|) #'|treelist.prefix-match?|)
+
+  ;;; reduce
+  (global-set! bard 'bard::|reduce| (%construct-function |Procedure| |Anything| |List| :|name| 'bard::|reduce|))
+  (add-method! (global-ref bard 'bard::|reduce|)(list |Procedure| |Anything| |cons|) #'|cons.reduce|)
+  (add-method! (global-ref bard 'bard::|reduce|)(list |Procedure| |Anything| |string|) #'|string.reduce|)
+  (add-method! (global-ref bard 'bard::|reduce|)(list |Procedure| |Anything| |treelist|) #'|treelist.reduce|)
 
   ;; Pair protocol
   ;; ----------------------------------------

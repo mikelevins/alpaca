@@ -345,6 +345,11 @@
 (defun |string.remove-duplicates|(ls)(folio2:remove-duplicates ls :test #'equal))
 (defun |treelist.remove-duplicates|(ls)(folio2:remove-duplicates ls :test #'equal))
 
+;;; rest
+(defun |cons.rest| (x)(folio2:rest x))
+(defun |string.rest| (x)(folio2:rest x))
+(defun |treelist.rest| (x)(folio2:rest x))
+
 ;;; Pair protocol
 ;;; ----------------------------------------
 
@@ -633,6 +638,13 @@
   (add-method! (global-ref bard 'bard::|remove-duplicates|)(list |cons|) #'|cons.remove-duplicates|)
   (add-method! (global-ref bard 'bard::|remove-duplicates|)(list |string|) #'|string.remove-duplicates|)
   (add-method! (global-ref bard 'bard::|remove-duplicates|)(list |treelist|) #'|treelist.remove-duplicates|)
+
+  ;;; rest
+  (global-set! bard 'bard::|rest| (%construct-function |List| :|name| 'bard::|rest|))
+  (add-method! (global-ref bard 'bard::|rest|)(list |cons|) #'|cons.rest|)
+  (add-method! (global-ref bard 'bard::|rest|)(list |string|) #'|string.rest|)
+  (add-method! (global-ref bard 'bard::|rest|)(list |treelist|) #'|treelist.rest|)
+
 
   ;; Pair protocol
   ;; ----------------------------------------

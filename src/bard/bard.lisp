@@ -350,6 +350,21 @@
 (defun |string.rest| (x)(folio2:rest x))
 (defun |treelist.rest| (x)(folio2:rest x))
 
+;;; reverse
+(defun |cons.reverse| (x)(folio2:reverse x))
+(defun |string.reverse| (x)(folio2:reverse x))
+(defun |treelist.reverse| (x)(folio2:reverse x))
+
+;;; search
+(defun |cons.search|(pref ls)(folio2:search pref ls :test #'equal))
+(defun |string.search| (pref ls)(folio2:search pref ls :test #'equal))
+(defun |treelist.search| (pref ls)(folio2:search pref ls :test #'equal))
+
+;;; second
+(defun |cons.second| (x)(folio2:second x))
+(defun |string.second| (x)(folio2:second x))
+(defun |treelist.second| (x)(folio2:second x))
+
 ;;; Pair protocol
 ;;; ----------------------------------------
 
@@ -645,6 +660,23 @@
   (add-method! (global-ref bard 'bard::|rest|)(list |string|) #'|string.rest|)
   (add-method! (global-ref bard 'bard::|rest|)(list |treelist|) #'|treelist.rest|)
 
+  ;; reverse
+  (global-set! bard 'bard::|reverse| (%construct-function |List| :|name| 'bard::|reverse|))
+  (add-method! (global-ref bard 'bard::|reverse|)(list |cons|) #'|cons.reverse|)
+  (add-method! (global-ref bard 'bard::|reverse|)(list |string|) #'|string.reverse|)
+  (add-method! (global-ref bard 'bard::|reverse|)(list |treelist|) #'|treelist.reverse|)
+
+  ;; search
+  (global-set! bard 'bard::|search| (%construct-function |List| |List| :|name| 'bard::|search|))
+  (add-method! (global-ref bard 'bard::|search|)(list |cons| |cons|) #'|cons.search|)
+  (add-method! (global-ref bard 'bard::|search|)(list |string| |string|) #'|string.search|)
+  (add-method! (global-ref bard 'bard::|search|)(list |treelist| |treelist|) #'|treelist.search|)
+
+  ;;; second
+  (global-set! bard 'bard::|second| (%construct-function |List| :|name| 'bard::|second|))
+  (add-method! (global-ref bard 'bard::|second|)(list |cons|) #'|cons.second|)
+  (add-method! (global-ref bard 'bard::|second|)(list |string|) #'|string.second|)
+  (add-method! (global-ref bard 'bard::|second|)(list |treelist|) #'|treelist.second|)
 
   ;; Pair protocol
   ;; ----------------------------------------

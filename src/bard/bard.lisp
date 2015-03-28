@@ -335,6 +335,16 @@
 (defun |treelist.reduce| (fn init ls)
   (folio2:reduce fn ls :initial-value init))
 
+;;; remove-if
+(defun |cons.remove-if|(pred ls)(folio2:remove-if (bard-predicate->lisp-predicate pred) ls))
+(defun |string.remove-if| (pred ls)(folio2:remove-if (bard-predicate->lisp-predicate pred) ls))
+(defun |treelist.remove-if| (pred ls)(folio2:remove-if (bard-predicate->lisp-predicate pred) ls))
+
+;;; remove-duplicates
+(defun |cons.remove-duplicates|(ls)(folio2:remove-duplicates ls :test #'equal))
+(defun |string.remove-duplicates|(ls)(folio2:remove-duplicates ls :test #'equal))
+(defun |treelist.remove-duplicates|(ls)(folio2:remove-duplicates ls :test #'equal))
+
 ;;; Pair protocol
 ;;; ----------------------------------------
 
@@ -600,17 +610,29 @@
   (add-method! (global-ref bard 'bard::|position-if|)(list |Procedure| |string|) #'|string.position-if|)
   (add-method! (global-ref bard 'bard::|position-if|)(list |Procedure| |treelist|) #'|treelist.position-if|)
 
-  ;;; prefix-match?
+  ;; prefix-match?
   (global-set! bard 'bard::|prefix-match?| (%construct-function |List| |List| :|name| 'bard::|prefix-match?|))
   (add-method! (global-ref bard 'bard::|prefix-match?|)(list |cons| |cons|) #'|cons.prefix-match?|)
   (add-method! (global-ref bard 'bard::|prefix-match?|)(list |string| |string|) #'|string.prefix-match?|)
   (add-method! (global-ref bard 'bard::|prefix-match?|)(list |treelist| |treelist|) #'|treelist.prefix-match?|)
 
-  ;;; reduce
+  ;; reduce
   (global-set! bard 'bard::|reduce| (%construct-function |Procedure| |Anything| |List| :|name| 'bard::|reduce|))
   (add-method! (global-ref bard 'bard::|reduce|)(list |Procedure| |Anything| |cons|) #'|cons.reduce|)
   (add-method! (global-ref bard 'bard::|reduce|)(list |Procedure| |Anything| |string|) #'|string.reduce|)
   (add-method! (global-ref bard 'bard::|reduce|)(list |Procedure| |Anything| |treelist|) #'|treelist.reduce|)
+
+  ;; remove-if
+  (global-set! bard 'bard::|remove-if| (%construct-function |Procedure| |List| :|name| 'bard::|remove-if|))
+  (add-method! (global-ref bard 'bard::|remove-if|)(list |Procedure| |cons|) #'|cons.remove-if|)
+  (add-method! (global-ref bard 'bard::|remove-if|)(list |Procedure| |string|) #'|string.remove-if|)
+  (add-method! (global-ref bard 'bard::|remove-if|)(list |Procedure| |treelist|) #'|treelist.remove-if|)
+
+  ;; remove-duplicates
+  (global-set! bard 'bard::|remove-duplicates| (%construct-function |List| :|name| 'bard::|remove-duplicates|))
+  (add-method! (global-ref bard 'bard::|remove-duplicates|)(list |cons|) #'|cons.remove-duplicates|)
+  (add-method! (global-ref bard 'bard::|remove-duplicates|)(list |string|) #'|string.remove-duplicates|)
+  (add-method! (global-ref bard 'bard::|remove-duplicates|)(list |treelist|) #'|treelist.remove-duplicates|)
 
   ;; Pair protocol
   ;; ----------------------------------------

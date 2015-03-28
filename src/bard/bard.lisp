@@ -315,6 +315,16 @@
 (defun |string.penult| (x)(folio2:penult x))
 (defun |treelist.penult| (x)(folio2:penult x))
 
+;;; position-if
+(defun |cons.position-if|(pred ls)(folio2:position-if (bard-predicate->lisp-predicate pred) ls))
+(defun |string.position-if| (pred ls)(folio2:position-if (bard-predicate->lisp-predicate pred) ls))
+(defun |treelist.position-if| (pred ls)(folio2:position-if (bard-predicate->lisp-predicate pred) ls))
+
+;;; prefix-match?
+(defun |cons.prefix-match?|(pref ls)(if (folio2:prefix-match? pref ls)(true)(false)))
+(defun |string.prefix-match?| (pref ls)(if (folio2:prefix-match? pref ls)(true)(false)))
+(defun |treelist.prefix-match?| (pref ls)(if (folio2:prefix-match? pref ls)(true)(false)))
+
 ;;; Pair protocol
 ;;; ----------------------------------------
 
@@ -573,6 +583,18 @@
   (add-method! (global-ref bard 'bard::|penult|)(list |cons|) #'|cons.penult|)
   (add-method! (global-ref bard 'bard::|penult|)(list |string|) #'|string.penult|)
   (add-method! (global-ref bard 'bard::|penult|)(list |treelist|) #'|treelist.penult|)
+
+  ;; position-if
+  (global-set! bard 'bard::|position-if| (%construct-function |Procedure| |List| :|name| 'bard::|position-if|))
+  (add-method! (global-ref bard 'bard::|position-if|)(list |Procedure| |cons|) #'|cons.position-if|)
+  (add-method! (global-ref bard 'bard::|position-if|)(list |Procedure| |string|) #'|string.position-if|)
+  (add-method! (global-ref bard 'bard::|position-if|)(list |Procedure| |treelist|) #'|treelist.position-if|)
+
+  ;;; prefix-match?
+  (global-set! bard 'bard::|prefix-match?| (%construct-function |List| |List| :|name| 'bard::|prefix-match?|))
+  (add-method! (global-ref bard 'bard::|prefix-match?|)(list |cons| |cons|) #'|cons.prefix-match?|)
+  (add-method! (global-ref bard 'bard::|prefix-match?|)(list |string| |string|) #'|string.prefix-match?|)
+  (add-method! (global-ref bard 'bard::|prefix-match?|)(list |treelist| |treelist|) #'|treelist.prefix-match?|)
 
   ;; Pair protocol
   ;; ----------------------------------------

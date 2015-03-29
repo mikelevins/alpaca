@@ -431,6 +431,11 @@
 (defun |string.take-by|(m n ls)(folio2:take-by m n ls))
 (defun |treelist.take-by|(m n ls)(folio2:take-by m n ls))
 
+;;; take-while
+(defun |cons.take-while|(pred ls)(folio2:take-while (bard-predicate->lisp-predicate pred) ls))
+(defun |string.take-while|(pred ls)(folio2:take-while (bard-predicate->lisp-predicate pred) ls))
+(defun |treelist.take-while|(pred ls)(folio2:take-while (bard-predicate->lisp-predicate pred) ls))
+
 ;;; Math protocol
 ;;; ----------------------------------------
 
@@ -831,6 +836,12 @@
   (add-method! (global-ref bard 'bard::|take-by|)(list |Integer| |Integer| |cons|) #'|cons.take-by|)
   (add-method! (global-ref bard 'bard::|take-by|)(list |Integer| |Integer| |string|) #'|string.take-by|)
   (add-method! (global-ref bard 'bard::|take-by|)(list |Integer| |Integer| |treelist|) #'|treelist.take-by|)
+
+  ;; take-while
+  (global-set! bard 'bard::|take-while| (%construct-function |Procedure| |List| :|name| 'bard::|take-while|))
+  (add-method! (global-ref bard 'bard::|take-while|)(list |Procedure| |cons|) #'|cons.take-while|)
+  (add-method! (global-ref bard 'bard::|take-while|)(list |Procedure| |string|) #'|string.take-while|)
+  (add-method! (global-ref bard 'bard::|take-while|)(list |Procedure| |treelist|) #'|treelist.take-while|)
 
   ;; Math protocol
   ;; ----------------------------------------

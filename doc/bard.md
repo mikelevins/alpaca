@@ -8,11 +8,11 @@ A reference for Alpaca's built-in Lisp
 
 Bard's special forms, reserved words, and lexical syntax
 
-| Name | Description |  
-| - |
-| `^` | Construct a method |
-| `->` | Construct a function |
-| `""` | Construct a string
+| Name  | Description |  
+| ----  | ----------- |  
+| `^`   | Construct a method |
+| `->`  | Construct a function |
+| `""`  | Construct a string
 | `[ ]` | Construct an immutable list
 | `{ }` | Construct an immutable map
 | `#<typename>` | Require Bard to return an object of the named type from the next expression
@@ -42,13 +42,13 @@ Bard's special forms, reserved words, and lexical syntax
 
 ## Named literals
 
-| Name | Description
-| -
-| `true` | the Boolean true value
-| `false` | the Boolean false value
-| `nothing` | an empty collection
-| `end` | the end of a stream
-| `undefined` | no useful value
+| Name | Description |  
+| ---- | ----------- |  
+| `true` | the Boolean true value |
+| `false` | the Boolean false value |
+| `nothing` | an empty collection |
+| `end` | the end of a stream |
+| `undefined` | no useful value |
 
 
 ## Classes

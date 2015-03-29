@@ -411,6 +411,16 @@
 (defun |string.suffix-match?| (ls suff)(if (folio2:suffix-match? ls suff)(true)(false)))
 (defun |treelist.suffix-match?| (ls suff)(if (folio2:suffix-match? ls suff)(true)(false)))
 
+;;; tail
+(defun |cons.tail| (x)(folio2:tail x))
+(defun |string.tail| (x)(folio2:tail x))
+(defun |treelist.tail| (x)(folio2:tail x))
+
+;;; tails
+(defun |cons.tails| (x)(folio2:tails x))
+(defun |string.tails| (x)(folio2:tails x))
+(defun |treelist.tails| (x)(folio2:tails x))
+
 ;;; Math protocol
 ;;; ----------------------------------------
 
@@ -787,6 +797,18 @@
   (add-method! (global-ref bard 'bard::|suffix-match?|)(list |cons| |cons|) #'|cons.suffix-match?|)
   (add-method! (global-ref bard 'bard::|suffix-match?|)(list |string| |string|) #'|string.suffix-match?|)
   (add-method! (global-ref bard 'bard::|suffix-match?|)(list |treelist| |treelist|) #'|treelist.suffix-match?|)
+
+  ;;; tail
+  (global-set! bard 'bard::|tail| (%construct-function |List| :|name| 'bard::|tail|))
+  (add-method! (global-ref bard 'bard::|tail|)(list |cons|) #'|cons.tail|)
+  (add-method! (global-ref bard 'bard::|tail|)(list |string|) #'|string.tail|)
+  (add-method! (global-ref bard 'bard::|tail|)(list |treelist|) #'|treelist.tail|)
+
+  ;;; tails
+  (global-set! bard 'bard::|tails| (%construct-function |List| :|name| 'bard::|tails|))
+  (add-method! (global-ref bard 'bard::|tails|)(list |cons|) #'|cons.tails|)
+  (add-method! (global-ref bard 'bard::|tails|)(list |string|) #'|string.tails|)
+  (add-method! (global-ref bard 'bard::|tails|)(list |treelist|) #'|treelist.tails|)
 
   ;; Math protocol
   ;; ----------------------------------------

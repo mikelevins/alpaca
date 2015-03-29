@@ -54,7 +54,7 @@
                     sname)))))
 
 (defmethod bard-print ((obj cl:cons) &optional (out cl:*standard-output*))
-  (format out "#<cons> (")
+  (format out "(")
   (if (null (cdr obj))
       (progn (bard-print (car obj) out)
              (format out ")"))
@@ -65,7 +65,7 @@
              (format out ")"))))
 
 (defmethod bard-print ((obj cl:vector) &optional (out cl:*standard-output*))
-  (format out "#<vector> (")
+  (format out "#(")
   (let ((len (cl:length obj)))
     (cond
       ((zerop len) nil)
@@ -77,7 +77,7 @@
   (format out ")"))
 
 (defmethod bard-print ((obj fset:wb-seq) &optional (out cl:*standard-output*))
-  (format out "#<treelist> (")
+  (format out "(")
   (let ((len (fset:size obj)))
     (cond
       ((zerop len) nil)

@@ -401,6 +401,16 @@
 (defun |string.sublist|(ls start end)(folio2:subsequence ls start end))
 (defun |treelist.sublist|(ls start end)(folio2:subsequence ls start end))
 
+;;; substitute-if
+(defun |cons.substitute-if|(new pred ls)(folio2:substitute-if new (bard-predicate->lisp-predicate pred) ls))
+(defun |string.substitute-if|(new pred ls)(folio2:substitute-if new (bard-predicate->lisp-predicate pred) ls))
+(defun |treelist.substitute-if|(new pred ls)(folio2:substitute-if new (bard-predicate->lisp-predicate pred) ls))
+
+;;; suffix-match?
+(defun |cons.suffix-match?|(ls suff)(if (folio2:suffix-match? ls suff)(true)(false)))
+(defun |string.suffix-match?| (ls suff)(if (folio2:suffix-match? ls suff)(true)(false)))
+(defun |treelist.suffix-match?| (ls suff)(if (folio2:suffix-match? ls suff)(true)(false)))
+
 ;;; Math protocol
 ;;; ----------------------------------------
 
@@ -765,6 +775,18 @@
   (add-method! (global-ref bard 'bard::|sublist|)(list |cons| |Integer| |Integer|) #'|cons.sublist|)
   (add-method! (global-ref bard 'bard::|sublist|)(list |string| |Integer| |Integer|) #'|string.sublist|)
   (add-method! (global-ref bard 'bard::|sublist|)(list |treelist| |Integer| |Integer|) #'|treelist.sublist|)
+
+  ;; substitute-if
+  (global-set! bard 'bard::|substitute-if| (%construct-function |Anything| |Procedure| |List| :|name| 'bard::|substitute-if|))
+  (add-method! (global-ref bard 'bard::|substitute-if|)(list |Anything| |Procedure| |cons|) #'|cons.substitute-if|)
+  (add-method! (global-ref bard 'bard::|substitute-if|)(list |Anything| |Procedure| |string|) #'|string.substitute-if|)
+  (add-method! (global-ref bard 'bard::|substitute-if|)(list |Anything| |Procedure| |treelist|) #'|treelist.substitute-if|)
+
+  ;; suffix-match?
+  (global-set! bard 'bard::|suffix-match?| (%construct-function |List| |List| :|name| 'bard::|suffix-match?|))
+  (add-method! (global-ref bard 'bard::|suffix-match?|)(list |cons| |cons|) #'|cons.suffix-match?|)
+  (add-method! (global-ref bard 'bard::|suffix-match?|)(list |string| |string|) #'|string.suffix-match?|)
+  (add-method! (global-ref bard 'bard::|suffix-match?|)(list |treelist| |treelist|) #'|treelist.suffix-match?|)
 
   ;; Math protocol
   ;; ----------------------------------------

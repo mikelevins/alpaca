@@ -54,8 +54,6 @@
 ;;; =====================================================================
 
 (defmethod init-bard-structures ((bard bard))
-  (global-set! bard 'bard::|rectangular-extent| |rectangular-extent|)
-  (global-set! bard 'bard::|rectangular-point| |rectangular-point|)
   (global-set! bard 'bard::|character| |character|)
   (global-set! bard 'bard::|class| |class|)
   (global-set! bard 'bard::|complex-number| |complex-number|)
@@ -67,6 +65,8 @@
   (global-set! bard 'bard::|integer| |integer|)
   (global-set! bard 'bard::|method| |method|)
   (global-set! bard 'bard::|ratio| |ratio|)
+  (global-set! bard 'bard::|rectangular-extent| |rectangular-extent|)
+  (global-set! bard 'bard::|rectangular-point| |rectangular-point|)
   (global-set! bard 'bard::|string| |string|)
   (global-set! bard 'bard::|symbol| |symbol|)
   (global-set! bard 'bard::|text| |text|)
@@ -80,31 +80,36 @@
 
 (defmethod init-bard-classes ((bard bard))
   (global-set! bard 'bard::|Anything| |Anything|)
-  (global-set! bard 'bard::|Stream| |Stream|)
-  (global-set! bard 'bard::|Container| |Container|)
+  (global-set! bard 'bard::|Array| |Array|) 
   (global-set! bard 'bard::|Atom| |Atom|)
-  (global-set! bard 'bard::|Geometry| |Geometry|)
-  (global-set! bard 'bard::|List| |List|)
-  (global-set! bard 'bard::|Type| |Type|)
-  (global-set! bard 'bard::|Procedure| |Procedure|)
-  (global-set! bard 'bard::|Name| |Name|)
+  (global-set! bard 'bard::|Boolean| |Boolean|)
+  (global-set! bard 'bard::|Byte| |Byte|)
   (global-set! bard 'bard::|Character| |Character|)
+  (global-set! bard 'bard::|Complex| |Complex|)
   (global-set! bard 'bard::|Condition| |Condition|)
+  (global-set! bard 'bard::|Container| |Container|)
+  (global-set! bard 'bard::|Event| |Event|)
+  (global-set! bard 'bard::|Extent| |Extent|)
+  (global-set! bard 'bard::|Float| |Float|)
+  (global-set! bard 'bard::|Geometry| |Geometry|)
+  (global-set! bard 'bard::|Integer| |Integer|)
+  (global-set! bard 'bard::|List| |List|)
+  (global-set! bard 'bard::|Map| |Map|)
+  (global-set! bard 'bard::|Mutable| |Mutable|)
+  (global-set! bard 'bard::|Name| |Name|)
   (global-set! bard 'bard::|Number| |Number|) 
   (global-set! bard 'bard::|Pair| |Pair|)
-  (global-set! bard 'bard::|Array| |Array|) 
-  (global-set! bard 'bard::|Map| |Map|)
-  (global-set! bard 'bard::|Unique| |Unique|)
-  (global-set! bard 'bard::|Event| |Event|)
-  (global-set! bard 'bard::|Real| |Real|)
-  (global-set! bard 'bard::|Complex| |Complex|)
-  (global-set! bard 'bard::|Vector| |Vector|)
-  (global-set! bard 'bard::|Boolean| |Boolean|)
+  (global-set! bard 'bard::|Presentation| |Presentation|)
+  (global-set! bard 'bard::|Procedure| |Procedure|)
   (global-set! bard 'bard::|Rational| |Rational|)
-  (global-set! bard 'bard::|Float| |Float|)
+  (global-set! bard 'bard::|Real| |Real|)
+  (global-set! bard 'bard::|Stream| |Stream|)
   (global-set! bard 'bard::|String| |String|)
-  (global-set! bard 'bard::|Integer| |Integer|)
-  (global-set! bard 'bard::|Byte| |Byte|))
+  (global-set! bard 'bard::|Text| |Text|)
+  (global-set! bard 'bard::|Type| |Type|)
+  (global-set! bard 'bard::|Unique| |Unique|)
+  (global-set! bard 'bard::|Vector| |Vector|)
+  (global-set! bard 'bard::|Window| |Window|))
 
 ;;; =====================================================================
 ;;; init built-in protocol functions
@@ -143,14 +148,6 @@
 
 (defun |as.treelist.cons|(x y) (fset:convert 'fset:wb-seq y))
 
-;;; Geometry protocol
-;;; ----------------------------------------
-
-(defun |rectangular-point.x| (p)(point-x p))
-(defun |rectangular-point.y| (p)(point-y p))
-(defun |rectangular-extent.width| (e)(extent-width e))
-(defun |rectangular-extent.height|(e)(extent-height e))
-
 ;;; Function protocol
 ;;; ----------------------------------------
 (defun |function.complement| (f)
@@ -161,6 +158,14 @@
       (if (false? val)
           (true)
           (false)))))
+
+;;; Geometry protocol
+;;; ----------------------------------------
+
+(defun |rectangular-point.x| (p)(point-x p))
+(defun |rectangular-point.y| (p)(point-y p))
+(defun |rectangular-extent.width| (e)(extent-width e))
+(defun |rectangular-extent.height|(e)(extent-height e))
 
 ;;; List protocol
 ;;; ----------------------------------------
@@ -549,6 +554,13 @@
   (add-method! (global-ref bard 'bard::|as|)(list ($ |singleton| |string|) |cons|) #'|as.string.cons|)
   (add-method! (global-ref bard 'bard::|as|)(list ($ |singleton| |treelist|) |cons|) #'|as.treelist.cons|)
   
+  ;; Function protocol
+  ;; ----------------------------------------
+
+  ;; complement
+  (global-set! bard 'bard::|complement| (%construct-function |Procedure| :|name| 'bard::|complement|))
+  (add-method! (global-ref bard 'bard::|complement|)(list |Procedure|) #'|function.complement|)
+  
   ;; Geometry protocol
   ;; ----------------------------------------
 
@@ -563,13 +575,6 @@
 
   (global-set! bard 'bard::|extent-height| (%construct-function |Extent| :|name| 'bard::|rectangular-extent.height|))
   (add-method! (global-ref bard 'bard::|extent-height|)(list |rectangular-extent|) #'|rectangular-extent.height|)
-  
-  ;; Function protocol
-  ;; ----------------------------------------
-
-  ;; complement
-  (global-set! bard 'bard::|complement| (%construct-function |Procedure| :|name| 'bard::|complement|))
-  (add-method! (global-ref bard 'bard::|complement|)(list |Procedure|) #'|function.complement|)
   
   ;; List protocol
   ;; ----------------------------------------

@@ -13,6 +13,22 @@
 (defparameter *bard-readtable*
   (let ((table (copy-readtable)))
     (setf (readtable-case table) :preserve)
+    ;; literal list reader macro
+    (set-macro-character #\[
+                         (lambda (stream char)
+                           (declare (ignore char))
+                           (let ((elts (read-delimited-list #\] stream t)))
+                             ` (bard::|treelist| ,@elts)))
+                         nil table)
+    (set-macro-character #\] (get-macro-character #\)) nil table)
+    ;; literal map reader macro
+    (set-macro-character #\{
+                         (lambda (stream char)
+                           (declare (ignore char))
+                           (let ((elts (read-delimited-list #\} stream t)))
+                             ` (bard::|treemap| ,@elts)))
+                         nil table)
+    (set-macro-character #\} (get-macro-character #\)) nil table)
     table))
 
 (defmethod input->bard-value (x) x)

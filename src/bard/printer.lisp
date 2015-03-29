@@ -92,6 +92,28 @@
   (format out ")"))
 
 
+(defmethod bard-print ((obj fset:wb-map) &optional (out cl:*standard-output*))
+  (format out "{")
+  (let* ((keys (folio2:keys obj))
+         (keycount (length keys)))
+    (cond
+      ((zerop keycount) nil)
+      ((= keycount 1)(let* ((key (elt keys 0))
+                            (val (fset:@ obj key)))
+                       (bard-print key out)
+                       (princ " " out)
+                       (bard-print val out)))
+      (t (loop for i from 0 below keycount
+            do (let* ((key (elt keys i))
+                      (val (fset:@ obj key)))
+                 (unless (zerop i)
+                   (princ " " out))
+                 (bard-print key out)
+                 (princ " " out)
+                 (bard-print val out))))))
+  (format out ")"))
+
+
 (defmethod bard-print ((obj cl:function) &optional (out cl:*standard-output*))
   (format out "#<primitive-method ~a>" (sys::function-name obj)))
 

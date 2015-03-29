@@ -436,6 +436,11 @@
 (defun |string.take-while|(pred ls)(folio2:take-while (bard-predicate->lisp-predicate pred) ls))
 (defun |treelist.take-while|(pred ls)(folio2:take-while (bard-predicate->lisp-predicate pred) ls))
 
+;;; zip
+(defun |cons.zip|(ls1 ls2)(folio2:zip  ls1 ls2))
+(defun |string.zip|(ls1 ls2)(folio2:zip ls1 ls2))
+(defun |treelist.zip|(ls1 ls2)(folio2:zip ls1 ls2))
+
 ;;; Math protocol
 ;;; ----------------------------------------
 
@@ -842,6 +847,12 @@
   (add-method! (global-ref bard 'bard::|take-while|)(list |Procedure| |cons|) #'|cons.take-while|)
   (add-method! (global-ref bard 'bard::|take-while|)(list |Procedure| |string|) #'|string.take-while|)
   (add-method! (global-ref bard 'bard::|take-while|)(list |Procedure| |treelist|) #'|treelist.take-while|)
+
+  ;;; zip
+  (global-set! bard 'bard::|zip| (%construct-function |List| |List| :|name| 'bard::|zip|))
+  (add-method! (global-ref bard 'bard::|zip|)(list |cons| |cons|) #'|cons.zip|)
+  (add-method! (global-ref bard 'bard::|zip|)(list |string| |string|) #'|string.zip|)
+  (add-method! (global-ref bard 'bard::|zip|)(list |treelist| |treelist|) #'|treelist.zip|)
 
   ;; Math protocol
   ;; ----------------------------------------

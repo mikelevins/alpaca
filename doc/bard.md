@@ -96,8 +96,8 @@ Bard's abstract types
 
 Bard's concrete types
 
-| Name | Description
-| -
+| Name | Description |  
+| ---- | ----------- |  
 |character          | Individual text characters
 |class              | Abstract types
 |complex-number     | Numbers with imaginary parts

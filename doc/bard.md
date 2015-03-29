@@ -57,8 +57,8 @@ Bard's abstract types
 
 ![Graph of Bard classes](bard-classes.jpg "Bard's classes")
 
-| Name | Description
-| -
+| Name | Description |  
+| ---- | ----------- |  
 |`Anything`         | All values
 |`Array`        | Containers of objects arranged in rows and columns
 |`Atom`           | Objects that are not collections

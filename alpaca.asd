@@ -20,7 +20,8 @@
   :depends-on (:singleton-classes :quri :folio2)
   :components ((:module "src"
                         :serial t
-                        :components ((:module "bard" :serial t
+                        :components ((:file "package")
+                                     (:module "bard" :serial t
                                               :components ((:file "package")
                                                            (:file "version")
                                                            (:file "named-literals")
@@ -38,7 +39,6 @@
                                                            (:file "printer")
                                                            (:file "bard")
                                                            ))
-                                     (:file "package")
                                      (:file "alpaca")
                                      (:file "util-editor")
                                      (:file "bard-listener")

@@ -391,6 +391,16 @@
 (defun |string.sort| (pred ls)(folio2:sort ls (bard-predicate->lisp-predicate pred)))
 (defun |treelist.sort| (pred ls)(folio2:sort ls (bard-predicate->lisp-predicate pred)))
 
+;;; split
+(defun |cons.split|(ls sentinel)(folio2:split ls sentinel :test #'equal))
+(defun |string.split| (ls sentinel)(folio2:split ls sentinel :test #'equal))
+(defun |treelist.split| (ls sentinel)(folio2:split ls sentinel :test #'equal))
+
+;;; sublist
+(defun |cons.sublist|(ls start end)(folio2:subsequence ls start end))
+(defun |string.sublist|(ls start end)(folio2:subsequence ls start end))
+(defun |treelist.sublist|(ls start end)(folio2:subsequence ls start end))
+
 ;;; Math protocol
 ;;; ----------------------------------------
 
@@ -743,7 +753,19 @@
   (add-method! (global-ref bard 'bard::|sort|)(list |Procedure| |cons|) #'|cons.sort|)
   (add-method! (global-ref bard 'bard::|sort|)(list |Procedure| |string|) #'|string.sort|)
   (add-method! (global-ref bard 'bard::|sort|)(list |Procedure| |treelist|) #'|treelist.sort|)
-  
+
+  ;;; split
+  (global-set! bard 'bard::|split| (%construct-function |List| |Anything| :|name| 'bard::|split|))
+  (add-method! (global-ref bard 'bard::|split|)(list |cons| |cons|) #'|cons.split|)
+  (add-method! (global-ref bard 'bard::|split|)(list |string| |string|) #'|string.split|)
+  (add-method! (global-ref bard 'bard::|split|)(list |treelist| |treelist|) #'|treelist.split|)
+
+  ;; sublist
+  (global-set! bard 'bard::|sublist| (%construct-function |List| |Integer| |Integer| :|name| 'bard::|sublist|))
+  (add-method! (global-ref bard 'bard::|sublist|)(list |cons| |Integer| |Integer|) #'|cons.sublist|)
+  (add-method! (global-ref bard 'bard::|sublist|)(list |string| |Integer| |Integer|) #'|string.sublist|)
+  (add-method! (global-ref bard 'bard::|sublist|)(list |treelist| |Integer| |Integer|) #'|treelist.sublist|)
+
   ;; Math protocol
   ;; ----------------------------------------
 

@@ -55,3 +55,9 @@
 
 ;;; TODO: invent an apropos feature for the Bard subsystem
 ;;; TODO: implement #<type> as a reader macro for (with-intended-type (type) ...)
+;;;       in the short run, with-intended-type can simply expand into (as type ...)
+;;;       which is just a conversion, but in the longer run, introducing
+;;;       the macro with-intended-type could enable the compiler to arrange
+;;;       for the intended type to be constructed from the start, without
+;;;       need for the conversion step in at least some cases
+

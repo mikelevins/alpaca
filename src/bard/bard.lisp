@@ -511,6 +511,13 @@
 ;;; set-right!
 (defun |cons.set-right!| (x val)(setf (cdr x) val))
 
+
+;;; Type protocol
+;;; ----------------------------------------
+
+;;;  type-of
+(defmethod |anything.type-of| (x)(bard-type-of x))
+
 ;;; ---------------------------------------------------------------------
 ;;; init bard functions
 ;;; ---------------------------------------------------------------------
@@ -939,6 +946,13 @@
   ;; set-right!
   (global-set! bard 'bard::|set-right!| (%construct-function |Pair| |Anything| :|name| 'bard::|set-right!|))
   (add-method! (global-ref bard 'bard::|set-right!|)(list |cons| |Anything|) #'|cons.set-right!|)
+
+  ;; Type protocol
+  ;; ----------------------------------------
+
+  ;; left
+  (global-set! bard 'bard::|type-of| (%construct-function |Anything| :|name| 'bard::|type-of|))
+  (add-method! (global-ref bard 'bard::|type-of|)(list |Anything|) #'|anything.type-of|)
 
   )
 

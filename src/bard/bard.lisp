@@ -421,6 +421,16 @@
 (defun |string.tails| (x)(folio2:tails x))
 (defun |treelist.tails| (x)(folio2:tails x))
 
+;;; take
+(defun |cons.take|(n ls)(folio2:take n ls))
+(defun |string.take|(n ls)(folio2:take n ls))
+(defun |treelist.take|(n ls)(folio2:take n ls))
+
+;;; take-by
+(defun |cons.take-by|(m n ls)(folio2:take-by m n ls))
+(defun |string.take-by|(m n ls)(folio2:take-by m n ls))
+(defun |treelist.take-by|(m n ls)(folio2:take-by m n ls))
+
 ;;; Math protocol
 ;;; ----------------------------------------
 
@@ -809,6 +819,18 @@
   (add-method! (global-ref bard 'bard::|tails|)(list |cons|) #'|cons.tails|)
   (add-method! (global-ref bard 'bard::|tails|)(list |string|) #'|string.tails|)
   (add-method! (global-ref bard 'bard::|tails|)(list |treelist|) #'|treelist.tails|)
+
+  ;;; take
+  (global-set! bard 'bard::|take| (%construct-function |Integer| |List| :|name| 'bard::|take|))
+  (add-method! (global-ref bard 'bard::|take|)(list |Integer| |cons|) #'|cons.take|)
+  (add-method! (global-ref bard 'bard::|take|)(list |Integer| |string|) #'|string.take|)
+  (add-method! (global-ref bard 'bard::|take|)(list |Integer| |treelist|) #'|treelist.take|)
+
+  ;;; take-by
+  (global-set! bard 'bard::|take-by| (%construct-function |Integer| |Integer| |List| :|name| 'bard::|take-by|))
+  (add-method! (global-ref bard 'bard::|take-by|)(list |Integer| |Integer| |cons|) #'|cons.take-by|)
+  (add-method! (global-ref bard 'bard::|take-by|)(list |Integer| |Integer| |string|) #'|string.take-by|)
+  (add-method! (global-ref bard 'bard::|take-by|)(list |Integer| |Integer| |treelist|) #'|treelist.take-by|)
 
   ;; Math protocol
   ;; ----------------------------------------

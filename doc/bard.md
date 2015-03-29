@@ -8,10 +8,10 @@ A reference for Alpaca's built-in Lisp
 
 Bard's special forms, reserved words, and lexical syntax
 
-| Name | Description
-| -
-| `^` | Construct a method
-| `->` | Construct a function
+| Name | Description |
+| - |
+| `^` | Construct a method |
+| `->` | Construct a function |
 | `""` | Construct a string
 | `[ ]` | Construct an immutable list
 | `{ }` | Construct an immutable map

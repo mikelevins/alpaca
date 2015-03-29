@@ -53,6 +53,8 @@
 ;;; (bard-internal::repl)
 ;;; (setf $win (capi:contain (make-instance 'alpaca::bard-listener)))
 
+;;; (define win (document-window (rectangular-point 900 60)(rectangular-extent 600 400)))
+
 ;;; TODO: invent an apropos feature for the Bard subsystem
 ;;; TODO: implement #<type> as a reader macro for (with-intended-type (type) ...)
 ;;;       in the short run, with-intended-type can simply expand into (as type ...)

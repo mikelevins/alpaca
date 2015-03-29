@@ -8,7 +8,7 @@ A reference for Alpaca's built-in Lisp
 
 Bard's special forms, reserved words, and lexical syntax
 
-| Name | Description |
+| Name | Description |  
 | - |
 | `^` | Construct a method |
 | `->` | Construct a function |

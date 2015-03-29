@@ -180,6 +180,7 @@
 ;;; any
 (defun |cons.any| (ls)(elt ls (random (length ls))))
 (defun |string.any| (ls)(elt ls (random (length ls))))
+(defun |text.any| (ls)(fset:@ (text-data ls) (random (fset:size (text-data ls)))))
 (defun |treelist.any| (ls)(fset:@ ls (random (fset:size ls))))
 
 ;;; apportion
@@ -192,8 +193,12 @@
     (cl:apply 'net.bardcode.folio2.sequences:apportion ls fns*)))
 
 (defun |treelist.apportion| (ls &rest fns)
-  (cl:apply 'net.bardcode.folio2.sequences:apportion ls fns)(let ((fns* (mapcar #'bard-predicate->lisp-predicate fns)))
+  (let ((fns* (mapcar #'bard-predicate->lisp-predicate fns)))
     (cl:apply 'net.bardcode.folio2.sequences:apportion ls fns*)))
+
+(defun |text.apportion| (ls &rest fns)
+  (let ((fns* (mapcar #'bard-predicate->lisp-predicate fns)))
+    (cl:apply 'net.bardcode.folio2.sequences:apportion (text-data ls) fns*)))
 
 ;;; append
 (defmethod |binary-append| ((x cl:null)(y cl:null)) nil)
@@ -571,6 +576,7 @@
   (global-set! bard 'bard::|any| (%construct-function |List| :|name| 'bard::|any|))
   (add-method! (global-ref bard 'bard::|any|)(list |cons|) #'|cons.any|)
   (add-method! (global-ref bard 'bard::|any|)(list |string|) #'|string.any|)
+  (add-method! (global-ref bard 'bard::|any|)(list |text|) #'|text.any|)
   (add-method! (global-ref bard 'bard::|any|)(list |treelist|) #'|treelist.any|)
 
   ;; append
@@ -583,6 +589,7 @@
   (global-set! bard 'bard::|apportion| (%construct-function |List| (&) :|name| 'bard::|apportion|))
   (add-method! (global-ref bard 'bard::|apportion|)(list |cons| (&)) #'|cons.apportion|)
   (add-method! (global-ref bard 'bard::|apportion|)(list |string| (&)) #'|string.apportion|)
+  (add-method! (global-ref bard 'bard::|apportion|)(list |text| (&)) #'|text.apportion|)
   (add-method! (global-ref bard 'bard::|apportion|)(list |treelist| (&)) #'|treelist.apportion|)
 
   ;; by

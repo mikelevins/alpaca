@@ -204,11 +204,16 @@
 (defmethod |binary-append| ((x cl:null)(y cl:null)) nil)
 (defmethod |binary-append| ((x cl:list)(y cl:list)) (cl:append x y))
 (defmethod |binary-append| ((x cl:string)(y cl:string)) (cl:concatenate 'cl:string x y))
+(defmethod |binary-append| ((x text)(y text))
+  (%construct-text (fset:concat (text-data x)(text-data y))))
 (defmethod |binary-append| ((x fset:wb-seq)(y fset:wb-seq))(fset:concat x y))
 
 ;;; by
 (defun |cons.by| (n ls)(folio2:by n ls))
 (defun |string.by| (n ls)(folio2:by n ls))
+(defun |text.by| (n ls)
+  (let ((parts (folio2:by n (text-data ls))))
+    (fset:image (^ (p)(%construct-text p)) parts)))
 (defun |treelist.by| (n ls)(folio2:by n ls))
 
 ;;; count-if
@@ -225,6 +230,10 @@
 
 (defun |string.count-if| (pred str)
   (cl:count-if (bard-predicate->lisp-predicate pred) str))
+
+(defun |text.count-if| (pred tx)
+  (let ((data (text-data tx)))
+    (|treelist.count-if| pred data)))
 
 (defun |treelist.count-if| (pred tls)
   (loop for i from 0 below (fset:size tls)
@@ -583,6 +592,7 @@
   (global-set! bard 'bard::|append| (%construct-function |List| |List| :|name| 'bard::|append|))
   (add-method! (global-ref bard 'bard::|append|)(list |cons| |cons|) #'|binary-append|)
   (add-method! (global-ref bard 'bard::|append|)(list |string| |string|) #'|binary-append|)
+  (add-method! (global-ref bard 'bard::|append|)(list |text| |text|) #'|binary-append|)
   (add-method! (global-ref bard 'bard::|append|)(list |treelist| |treelist|) #'|binary-append|)
 
   ;; apportion
@@ -596,12 +606,14 @@
   (global-set! bard 'bard::|by| (%construct-function |Integer| |List| :|name| 'bard::|by|))
   (add-method! (global-ref bard 'bard::|by|)(list |Integer| |cons|) #'|cons.by|)
   (add-method! (global-ref bard 'bard::|by|)(list |Integer| |string|) #'|string.by|)
+  (add-method! (global-ref bard 'bard::|by|)(list |Integer| |text|) #'|text.by|)
   (add-method! (global-ref bard 'bard::|by|)(list |Integer| |treelist|) #'|treelist.by|)
 
   ;; count-if
   (global-set! bard 'bard::|count-if| (%construct-function |Procedure| |List| :|name| 'bard::|count-if|))
   (add-method! (global-ref bard 'bard::|count-if|)(list |Procedure| |cons|) #'|cons.count-if|)
   (add-method! (global-ref bard 'bard::|count-if|)(list |Procedure| |string|) #'|string.count-if|)
+  (add-method! (global-ref bard 'bard::|count-if|)(list |Procedure| |text|) #'|text.count-if|)
   (add-method! (global-ref bard 'bard::|count-if|)(list |Procedure| |treelist|) #'|treelist.count-if|)
 
   ;; dispose

@@ -174,6 +174,7 @@
 ;;; add-last
 (defun |cons.add-last| (c x)(append c (list x)))
 (defun |string.add-last| (c x)(concatenate 'string c (cl:string x)))
+(defun |text.add-last| (c x)(%construct-text (fset:insert (text-data c)(fset:size (text-data c)) x)))
 (defun |treelist.add-last| (c x)(fset:insert c (fset:size c) x))
 
 ;;; any
@@ -560,9 +561,10 @@
   (add-method! (global-ref bard 'bard::|add-first|)(list |Anything| |treelist|) #'|treelist.add-first|)
 
   ;; add-last
-  (global-set! bard 'bard::|add-last| (%construct-function |List| :|name| 'bard::|add-last|))
+  (global-set! bard 'bard::|add-last| (%construct-function |List| |Anything| :|name| 'bard::|add-last|))
   (add-method! (global-ref bard 'bard::|add-last|)(list |cons| |Anything|) #'|cons.add-last|)
   (add-method! (global-ref bard 'bard::|add-last|)(list |string| |Character|) #'|string.add-last|)
+  (add-method! (global-ref bard 'bard::|add-last|)(list |text| |Character|) #'|text.add-last|)
   (add-method! (global-ref bard 'bard::|add-last|)(list |treelist| |Anything|) #'|treelist.add-last|)
 
   ;; any

@@ -70,7 +70,7 @@ Bard's abstract types
 |`Container`     | Objects that contain groups of other objects
 |`Event`      | Conditions that represent things users can do, such as clicking a mouse button
 |`Extent`      | Representations of geometric areas
-|`Float`    | Inexact decimalß numbers
+|`Float`    | Inexact decimal numbers
 |`Geometry`  | Representations of geometric objects
 |`Integer`  | Whole numbers
 |`List`         | Ordered, countable collections

@@ -304,6 +304,7 @@
 ;;; indexes
 (defun |cons.indexes| (x)(folio2:indexes x))
 (defun |string.indexes| (x)(folio2:indexes x))
+(defun |text.indexes| (x)(folio2:indexes (text-data x)))
 (defun |treelist.indexes| (x)(folio2:indexes x))
 
 ;;; interleave
@@ -699,6 +700,7 @@
   (global-set! bard 'bard::|indexes| (%construct-function |List| :|name| 'bard::|indexes|))
   (add-method! (global-ref bard 'bard::|indexes|)(list |cons|) #'|cons.indexes|)
   (add-method! (global-ref bard 'bard::|indexes|)(list |string|) #'|string.indexes|)
+  (add-method! (global-ref bard 'bard::|indexes|)(list |text|) #'|text.indexes|)
   (add-method! (global-ref bard 'bard::|indexes|)(list |treelist|) #'|treelist.indexes|)
 
   ;; interleave

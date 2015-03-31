@@ -407,21 +407,25 @@
 ;;; search
 (defun |cons.search|(pref ls)(folio2:search pref ls :test #'equal))
 (defun |string.search| (pref ls)(folio2:search pref ls :test #'equal))
+(defun |text.search| (pref ls)(folio2:search (text-data pref) (text-data ls) :test #'equal))
 (defun |treelist.search| (pref ls)(folio2:search pref ls :test #'equal))
 
 ;;; second
 (defun |cons.second| (x)(folio2:second x))
 (defun |string.second| (x)(folio2:second x))
+(defun |text.second| (x)(folio2:second (text-data x)))
 (defun |treelist.second| (x)(folio2:second x))
 
 ;;; select
 (defun |cons.select|(ls indexes)(folio2:select ls indexes))
 (defun |string.select| (ls indexes)(folio2:select ls indexes))
+(defun |text.select| (ls indexes)(folio2:select (text-data ls) indexes))
 (defun |treelist.select| (ls indexes)(folio2:select ls indexes))
 
 ;;; shuffle
 (defun |cons.shuffle| (x)(folio2:shuffle x))
 (defun |string.shuffle| (x)(folio2:shuffle x))
+(defun |text.shuffle| (x)(%construct-text (folio2:shuffle (text-data x))))
 (defun |treelist.shuffle| (x)(folio2:shuffle x))
 
 ;;; some?
@@ -837,24 +841,28 @@
   (global-set! bard 'bard::|search| (%construct-function |List| |List| :|name| 'bard::|search|))
   (add-method! (global-ref bard 'bard::|search|)(list |cons| |cons|) #'|cons.search|)
   (add-method! (global-ref bard 'bard::|search|)(list |string| |string|) #'|string.search|)
+  (add-method! (global-ref bard 'bard::|search|)(list |text| |text|) #'|text.search|)
   (add-method! (global-ref bard 'bard::|search|)(list |treelist| |treelist|) #'|treelist.search|)
 
   ;;; second
   (global-set! bard 'bard::|second| (%construct-function |List| :|name| 'bard::|second|))
   (add-method! (global-ref bard 'bard::|second|)(list |cons|) #'|cons.second|)
   (add-method! (global-ref bard 'bard::|second|)(list |string|) #'|string.second|)
+  (add-method! (global-ref bard 'bard::|second|)(list |text|) #'|text.second|)
   (add-method! (global-ref bard 'bard::|second|)(list |treelist|) #'|treelist.second|)
 
   ;; select
   (global-set! bard 'bard::|select| (%construct-function |List| |List| :|name| 'bard::|select|))
   (add-method! (global-ref bard 'bard::|select|)(list |cons| |List|) #'|cons.select|)
   (add-method! (global-ref bard 'bard::|select|)(list |string| |List|) #'|string.select|)
+  (add-method! (global-ref bard 'bard::|select|)(list |text| |List|) #'|text.select|)
   (add-method! (global-ref bard 'bard::|select|)(list |treelist| |List|) #'|treelist.select|)
 
   ;;; shuffle
   (global-set! bard 'bard::|shuffle| (%construct-function |List| :|name| 'bard::|shuffle|))
   (add-method! (global-ref bard 'bard::|shuffle|)(list |cons|) #'|cons.shuffle|)
   (add-method! (global-ref bard 'bard::|shuffle|)(list |string|) #'|string.shuffle|)
+  (add-method! (global-ref bard 'bard::|shuffle|)(list |text|) #'|text.shuffle|)
   (add-method! (global-ref bard 'bard::|shuffle|)(list |treelist|) #'|treelist.shuffle|)
 
   ;; some?

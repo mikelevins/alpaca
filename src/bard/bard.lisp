@@ -98,6 +98,7 @@
   (global-set! bard 'bard::|Mutable| |Mutable|)
   (global-set! bard 'bard::|Name| |Name|)
   (global-set! bard 'bard::|Number| |Number|) 
+  (global-set! bard 'bard::|Orderable| |Orderable|)
   (global-set! bard 'bard::|Pair| |Pair|)
   (global-set! bard 'bard::|Presentation| |Presentation|)
   (global-set! bard 'bard::|Procedure| |Procedure|)
@@ -431,11 +432,13 @@
 ;;; some?
 (defun |cons.some?|(pred ls)(folio2:some? (bard-predicate->lisp-predicate pred) ls))
 (defun |string.some?| (pred ls)(folio2:some? (bard-predicate->lisp-predicate pred) ls))
+(defun |text.some?| (pred ls)(folio2:some? (bard-predicate->lisp-predicate pred) (text-data ls)))
 (defun |treelist.some?| (pred ls)(folio2:some? (bard-predicate->lisp-predicate pred) ls))
 
 ;;; sort
 (defun |cons.sort|(pred ls)(folio2:sort ls (bard-predicate->lisp-predicate pred)))
 (defun |string.sort| (pred ls)(folio2:sort ls (bard-predicate->lisp-predicate pred)))
+(defun |text.sort| (pred ls)(%construct-text (folio2:sort (text-data ls) (bard-predicate->lisp-predicate pred))))
 (defun |treelist.sort| (pred ls)(folio2:sort ls (bard-predicate->lisp-predicate pred)))
 
 ;;; split
@@ -503,23 +506,30 @@
 ;;; /
 (defun |Math./| (&rest nums)(cl:apply #'cl:/ nums))
 
-;;; <
-(defun |Math.<| (&rest nums)(cl:apply #'cl:< nums))
-
-;;; <=
-(defun |Math.<=| (&rest nums)(cl:apply #'cl:<= nums))
-
-;;; >
-(defun |Math.>| (&rest nums)(cl:apply #'cl:> nums))
-
-;;; >=
-(defun |Math.>=| (&rest nums)(cl:apply #'cl:>= nums))
-
 ;;; even?
 (defun |Integer.even?| (x)(if (cl:evenp x) (true) (false)))
 
 ;;; odd?
 (defun |Integer.odd?| (x)(if (cl:oddp x) (true) (false)))
+
+;;; Orderable protocol
+;;; ----------------------------------------
+
+;;; <
+(defun |Number.<| (&rest nums)(if (cl:apply #'cl:< nums)(true)(false)))
+(defun |Character.<| (&rest chars)(if (cl:apply #'cl:char< chars)(true)(false)))
+
+;;; <=
+(defun |Number.<=| (&rest nums)(cl:apply #'cl:<= nums))
+(defun |Character.<=| (&rest chars)(if (cl:apply #'cl:char<= chars)(true)(false)))
+
+;;; >
+(defun |Number.>| (&rest nums)(cl:apply #'cl:> nums))
+(defun |Character.>| (&rest chars)(if (cl:apply #'cl:char> chars)(true)(false)))
+
+;;; >=
+(defun |Number.>=| (&rest nums)(cl:apply #'cl:>= nums))
+(defun |Character.>=| (&rest chars)(if (cl:apply #'cl:char>= chars)(true)(false)))
 
 
 ;;; Pair protocol
@@ -869,12 +879,14 @@
   (global-set! bard 'bard::|some?| (%construct-function |Procedure| |List| :|name| 'bard::|some?|))
   (add-method! (global-ref bard 'bard::|some?|)(list |Procedure| |cons|) #'|cons.some?|)
   (add-method! (global-ref bard 'bard::|some?|)(list |Procedure| |string|) #'|string.some?|)
+  (add-method! (global-ref bard 'bard::|some?|)(list |Procedure| |text|) #'|text.some?|)
   (add-method! (global-ref bard 'bard::|some?|)(list |Procedure| |treelist|) #'|treelist.some?|)
 
   ;; sort
   (global-set! bard 'bard::|sort| (%construct-function |Procedure| |List| :|name| 'bard::|sort|))
   (add-method! (global-ref bard 'bard::|sort|)(list |Procedure| |cons|) #'|cons.sort|)
   (add-method! (global-ref bard 'bard::|sort|)(list |Procedure| |string|) #'|string.sort|)
+  (add-method! (global-ref bard 'bard::|sort|)(list |Procedure| |text|) #'|text.sort|)
   (add-method! (global-ref bard 'bard::|sort|)(list |Procedure| |treelist|) #'|treelist.sort|)
 
   ;;; split
@@ -958,17 +970,24 @@
   (global-set! bard 'bard::|odd?| (%construct-function |Integer| :|name| 'bard::|odd?|))
   (add-method! (global-ref bard 'bard::|odd?|)(list |Integer|) #'|Integer.odd?|)
 
-  (global-set! bard 'bard::|<| (%construct-function |Number| |Number| (&) :|name| 'bard::|<|))
-  (add-method! (global-ref bard 'bard::|<|)(list |Number| |Number| (&)) #'|Math.<|)
+  ;; Orderable protocol
+  ;; ----------------------------------------
 
-  (global-set! bard 'bard::|<=| (%construct-function |Number| |Number| (&) :|name| 'bard::|<=|))
-  (add-method! (global-ref bard 'bard::|<=|)(list |Number| |Number| (&)) #'|Math.<=|)
+  (global-set! bard 'bard::|<| (%construct-function |Orderable| |Orderable| (&) :|name| 'bard::|<|))
+  (add-method! (global-ref bard 'bard::|<|)(list |Number| |Number| (&)) #'|Number.<|)
+  (add-method! (global-ref bard 'bard::|<|)(list |Character| |Character| (&)) #'|Character.<|)
 
-  (global-set! bard 'bard::|>| (%construct-function |Number| |Number| (&) :|name| 'bard::|>|))
-  (add-method! (global-ref bard 'bard::|>|)(list |Number| |Number| (&)) #'|Math.>|)
+  (global-set! bard 'bard::|<=| (%construct-function |Orderable| |Orderable| (&) :|name| 'bard::|<=|))
+  (add-method! (global-ref bard 'bard::|<=|)(list |Number| |Number| (&)) #'|Number.<=|)
+  (add-method! (global-ref bard 'bard::|<=|)(list |Character| |Character| (&)) #'|Character.<=|)
 
-  (global-set! bard 'bard::|>=| (%construct-function |Number| |Number| (&) :|name| 'bard::|>=|))
-  (add-method! (global-ref bard 'bard::|>=|)(list |Number| |Number| (&)) #'|Math.>=|)
+  (global-set! bard 'bard::|>| (%construct-function |Orderable| |Orderable| (&) :|name| 'bard::|>|))
+  (add-method! (global-ref bard 'bard::|>|)(list |Number| |Number| (&)) #'|Number.>|)
+  (add-method! (global-ref bard 'bard::|>|)(list |Character| |Character| (&)) #'|Character.>|)
+
+  (global-set! bard 'bard::|>=| (%construct-function |Orderable| |Orderable| (&) :|name| 'bard::|>=|))
+  (add-method! (global-ref bard 'bard::|>=|)(list |Number| |Number| (&)) #'|Number.>=|)
+  (add-method! (global-ref bard 'bard::|>=|)(list |Character| |Character| (&)) #'|Character.>=|)
 
   ;; Pair protocol
   ;; ----------------------------------------

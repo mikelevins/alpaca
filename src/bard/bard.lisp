@@ -310,41 +310,49 @@
 ;;; interleave
 (defun |cons.interleave| (x y)(folio2:interleave x y))
 (defun |string.interleave| (x y)(folio2:interleave x y))
+(defun |text.interleave| (x y)(%construct-text (folio2:interleave (text-data x) (text-data y))))
 (defun |treelist.interleave| (x y)(folio2:interleave x y))
 
 ;;; interpose
 (defun |cons.interpose| (x y)(folio2:interpose x y))
 (defun |string.interpose| (x y)(folio2:interpose x y))
+(defun |text.interpose| (x y)(%construct-text (folio2:interpose x (text-data y))))
 (defun |treelist.interpose| (x y)(folio2:interpose x y))
 
 ;;; last
 (defun |cons.last| (x)(car (cl:last x)))
 (defun |string.last| (x)(elt x (1- (length x))))
+(defun |text.last| (x)(fset:@ (text-data x) (1- (fset:size (text-data x)))))
 (defun |treelist.last| (x)(fset:@ x (1- (fset:size x))))
 
 ;;; leave
 (defun |cons.leave| (n x)($ #'folio2:leave n x))
 (defun |string.leave| (n x)($ #'folio2:leave n x))
+(defun |text.leave| (n x)(%construct-text ($ #'folio2:leave n (text-data x))))
 (defun |treelist.leave| (n x)($ #'folio2:leave n x))
 
 ;;; length
 (defun |cons.length| (x)(cl:length x))
 (defun |string.length| (x)(cl:length x))
+(defun |text.length| (x)(fset:size (text-data x)))
 (defun |treelist.length| (x)(fset:size x))
 
 ;;; mismatch
 (defun |cons.mismatch| (x y)(folio2:mismatch x y :test #'cl:equal))
 (defun |string.mismatch| (x y)(folio2:mismatch x y :test #'cl:equal))
+(defun |text.mismatch| (x y)(folio2:mismatch (text-data x) (text-data y) :test #'cl:equal))
 (defun |treelist.mismatch| (x y)(folio2:mismatch x y :test #'cl:equal))
 
 ;;; partition
 (defun |cons.partition| (pred ls)(folio2:partition (bard-predicate->lisp-predicate pred) ls))
 (defun |string.partition| (pred ls)(folio2:partition (bard-predicate->lisp-predicate pred) ls))
+(defun |text.partition| (pred ls)(folio2:partition (bard-predicate->lisp-predicate pred) (text-data ls)))
 (defun |treelist.partition| (pred ls)(folio2:partition (bard-predicate->lisp-predicate pred) ls))
 
 ;;; penult
 (defun |cons.penult| (x)(folio2:penult x))
 (defun |string.penult| (x)(folio2:penult x))
+(defun |text.penult| (x)(folio2:penult (text-data x)))
 (defun |treelist.penult| (x)(folio2:penult x))
 
 ;;; position-if
@@ -707,30 +715,35 @@
   (global-set! bard 'bard::|interleave| (%construct-function |List| |List| :|name| 'bard::|interleave|))
   (add-method! (global-ref bard 'bard::|interleave|)(list |cons| |cons|) #'|cons.interleave|)
   (add-method! (global-ref bard 'bard::|interleave|)(list |string| |string|) #'|string.interleave|)
+  (add-method! (global-ref bard 'bard::|interleave|)(list |text| |text|) #'|text.interleave|)
   (add-method! (global-ref bard 'bard::|interleave|)(list |treelist| |treelist|) #'|treelist.interleave|)
 
   ;; interpose
   (global-set! bard 'bard::|interpose| (%construct-function |Anything| |List|  :|name| 'bard::|interpose|))
   (add-method! (global-ref bard 'bard::|interpose|)(list |Anything| |cons|) #'|cons.interpose|)
   (add-method! (global-ref bard 'bard::|interpose|)(list |Character| |string| ) #'|string.interpose|)
+  (add-method! (global-ref bard 'bard::|interpose|)(list |Character| |text| ) #'|text.interpose|)
   (add-method! (global-ref bard 'bard::|interpose|)(list |Anything| |treelist| ) #'|treelist.interpose|)
 
   ;; last
   (global-set! bard 'bard::|last| (%construct-function |List| :|name| 'bard::|last|))
   (add-method! (global-ref bard 'bard::|last|)(list |cons|) #'|cons.last|)
   (add-method! (global-ref bard 'bard::|last|)(list |string|) #'|string.last|)
+  (add-method! (global-ref bard 'bard::|last|)(list |text|) #'|text.last|)
   (add-method! (global-ref bard 'bard::|last|)(list |treelist|) #'|treelist.last|)
 
   ;; leave
   (global-set! bard 'bard::|leave| (%construct-function |Integer| |List| :|name| 'bard::|leave|))
   (add-method! (global-ref bard 'bard::|leave|)(list |Integer| |cons|) #'|cons.leave|)
   (add-method! (global-ref bard 'bard::|leave|)(list |Integer| |string|) #'|string.leave|)
+  (add-method! (global-ref bard 'bard::|leave|)(list |Integer| |text|) #'|text.leave|)
   (add-method! (global-ref bard 'bard::|leave|)(list |Integer| |treelist|) #'|treelist.leave|)
 
   ;; length
   (global-set! bard 'bard::|length| (%construct-function |List| :|name| 'bard::|length|))
   (add-method! (global-ref bard 'bard::|length|)(list |cons|) #'|cons.length|)
   (add-method! (global-ref bard 'bard::|length|)(list |string|) #'|string.length|)
+  (add-method! (global-ref bard 'bard::|length|)(list |text|) #'|text.length|)
   (add-method! (global-ref bard 'bard::|length|)(list |treelist|) #'|treelist.length|)
   
   ;; list?
@@ -738,24 +751,28 @@
   (add-method! (global-ref bard 'bard::|list?|)(list |Anything|) (constantly (false)))
   (add-method! (global-ref bard 'bard::|list?|)(list |cons|) (constantly (true)))
   (add-method! (global-ref bard 'bard::|list?|)(list |string|) (constantly (true)))
+  (add-method! (global-ref bard 'bard::|list?|)(list |text|) (constantly (true)))
   (add-method! (global-ref bard 'bard::|list?|)(list |treelist|) (constantly (true)))
 
   ;; mismatch
   (global-set! bard 'bard::|mismatch| (%construct-function |List| |List| :|name| 'bard::|mismatch|))
   (add-method! (global-ref bard 'bard::|mismatch|)(list |cons| |cons|) #'|cons.mismatch|)
   (add-method! (global-ref bard 'bard::|mismatch|)(list |string| |string|) #'|string.mismatch|)
+  (add-method! (global-ref bard 'bard::|mismatch|)(list |text| |text|) #'|text.mismatch|)
   (add-method! (global-ref bard 'bard::|mismatch|)(list |treelist| |treelist|) #'|treelist.mismatch|)
 
   ;; partition
   (global-set! bard 'bard::|partition| (%construct-function |Procedure| |List| :|name| 'bard::|partition|))
   (add-method! (global-ref bard 'bard::|partition|)(list |Procedure| |cons|) #'|cons.partition|)
   (add-method! (global-ref bard 'bard::|partition|)(list |Procedure| |string|) #'|string.partition|)
+  (add-method! (global-ref bard 'bard::|partition|)(list |Procedure| |text|) #'|text.partition|)
   (add-method! (global-ref bard 'bard::|partition|)(list |Procedure| |treelist|) #'|treelist.partition|)
 
   ;; penult
   (global-set! bard 'bard::|penult| (%construct-function |List| :|name| 'bard::|penult|))
   (add-method! (global-ref bard 'bard::|penult|)(list |cons|) #'|cons.penult|)
   (add-method! (global-ref bard 'bard::|penult|)(list |string|) #'|string.penult|)
+  (add-method! (global-ref bard 'bard::|penult|)(list |text|) #'|text.penult|)
   (add-method! (global-ref bard 'bard::|penult|)(list |treelist|) #'|treelist.penult|)
 
   ;; position-if

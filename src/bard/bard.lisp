@@ -286,16 +286,19 @@
 ;;; first
 (defun |cons.first| (x)(car x))
 (defun |string.first| (x)(elt x 0))
+(defun |text.first| (x)(fset:@ (text-data x) 0))
 (defun |treelist.first| (x)(fset:@ x 0))
 
 ;;; head
 (defun |cons.head| (x)(car x))
 (defun |string.head| (x)(elt x 0))
+(defun |text.head| (x)(fset:@ (text-data x) 0))
 (defun |treelist.head| (x)(fset:@ x 0))
 
 ;;; image
 (defun |cons.image| (fn ls)(folio2:image fn ls))
 (defun |string.image| (fn ls)(folio2:image fn ls))
+(defun |text.image| (fn ls)(folio2:image fn (text-data ls)))
 (defun |treelist.image| (fn ls)(folio2:image fn ls))
 
 ;;; indexes
@@ -675,18 +678,21 @@
   (global-set! bard 'bard::|first| (%construct-function |List| :|name| 'bard::|first|))
   (add-method! (global-ref bard 'bard::|first|)(list |cons|) #'|cons.first|)
   (add-method! (global-ref bard 'bard::|first|)(list |string|) #'|string.first|)
+  (add-method! (global-ref bard 'bard::|first|)(list |text|) #'|text.first|)
   (add-method! (global-ref bard 'bard::|first|)(list |treelist|) #'|treelist.first|)
 
   ;; head
   (global-set! bard 'bard::|head| (%construct-function |List| :|name| 'bard::|head|))
   (add-method! (global-ref bard 'bard::|head|)(list |cons|) #'|cons.head|)
   (add-method! (global-ref bard 'bard::|head|)(list |string|) #'|string.head|)
+  (add-method! (global-ref bard 'bard::|head|)(list |text|) #'|text.head|)
   (add-method! (global-ref bard 'bard::|head|)(list |treelist|) #'|treelist.head|)
 
   ;; image
   (global-set! bard 'bard::|image| (%construct-function |Procedure| |List| :|name| 'bard::|image|))
   (add-method! (global-ref bard 'bard::|image|)(list |Procedure| |cons|) #'|cons.image|)
   (add-method! (global-ref bard 'bard::|image|)(list |Procedure| |string|) #'|string.image|)
+  (add-method! (global-ref bard 'bard::|image|)(list |Procedure| |text|) #'|text.image|)
   (add-method! (global-ref bard 'bard::|image|)(list |Procedure| |treelist|) #'|treelist.image|)
   
   ;; indexes

@@ -11,7 +11,8 @@
 (defpackage #:bard-internal
   (:use #:cl)
   (:shadow #:compile #:function #:make-method #:method #:no-applicable-method #:structure)
-  (:import-from :NET.BARDCODE.FOLIO2.FUNCTIONS #:$ #:^))
+  (:import-from :NET.BARDCODE.FOLIO2.FUNCTIONS #:$ #:^)
+  (:import-from :NET.BARDCODE.FOLIO2.AS #:AS))
 
 (defpackage #:bard
   (:use #:cl)

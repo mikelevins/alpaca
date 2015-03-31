@@ -171,7 +171,6 @@ Bard's built-in functions, methods, and variables, organized by protocol
 `apportion`  
 `by`  
 `count-if`  
-`dispose`  
 `drop`  
 `drop-while`  
 `element`  

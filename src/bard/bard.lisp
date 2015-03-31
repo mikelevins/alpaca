@@ -121,7 +121,7 @@
 
 ;;; Character protocol
 ;;; ----------------------------------------
-(defun |character.alphanumeric?| (c)(if (cl:alpha-char-p c) (true)(false)))
+(defun |character.alphanumeric?| (c)(if (cl:alphanumericp c) (true)(false)))
 
 ;;; Construction protocol
 ;;; ----------------------------------------
@@ -246,30 +246,31 @@
              1
              0)))
 
-;;; dispose
-(defun |cons.dispose| (x &rest fns)(cl:apply #'folio2:dispose x fns))
-(defun |string.dispose| (x &rest fns)(cl:apply #'folio2:dispose x fns))
-(defun |treelist.dispose| (x &rest fns)(cl:apply #'folio2:dispose x fns))
-
 ;;; drop
 (defun |cons.drop| (n x)($ #'folio2:drop n x))
 (defun |string.drop| (n x)($ #'folio2:drop n x))
+(defun |text.drop| (n x)(%construct-text ($ #'folio2:drop n (text-data x))))
 (defun |treelist.drop| (n x)($ #'folio2:drop n x))
 
 ;;; drop-while
 (defun |cons.drop-while| (pred x)($ #'folio2:drop-while (bard-predicate->lisp-predicate pred) x))
 (defun |string.drop-while| (pred x)($ #'folio2:drop-while (bard-predicate->lisp-predicate pred) x))
+(defun |text.drop-while| (pred x)(%construct-text
+                                  ($ #'folio2:drop-while (bard-predicate->lisp-predicate pred)
+                                     (text-data x))))
 (defun |treelist.drop-while| (pred x)($ #'folio2:drop-while (bard-predicate->lisp-predicate pred) x))
 
 ;;; element
 (defun |cons.element| (ls i)(elt ls i))
 (defun |string.element| (ls i)(elt ls i))
+(defun |text.element| (ls i)(fset:@ (text-data ls) i))
 (defun |treelist.element| (ls i)(fset:@ ls i))
 
 ;;; empty?
-(defun |cons.empty?| (ls)(folio2:empty? ls))
-(defun |string.empty?| (ls)(folio2:empty? ls))
-(defun |treelist.empty?| (ls)(folio2:empty? ls))
+(defun |cons.empty?| (ls)(if (folio2:empty? ls)(true)(false)))
+(defun |string.empty?| (ls)(if (folio2:empty? ls)(true)(false)))
+(defun |text.empty?| (ls)(if (folio2:empty? (text-data ls))(true)(false)))
+(defun |treelist.empty?| (ls)(if (folio2:empty? ls)(true)(false)))
 
 ;;; filter
 (defun |cons.filter| (pred ls)(folio2:filter (bard-predicate->lisp-predicate pred) ls))
@@ -279,6 +280,7 @@
 ;;; find-if
 (defun |cons.find-if| (pred ls)(folio2:find-if (bard-predicate->lisp-predicate pred) ls))
 (defun |string.find-if| (pred ls)(folio2:find-if (bard-predicate->lisp-predicate pred) ls))
+(defun |text.find-if| (pred ls)(folio2:find-if (bard-predicate->lisp-predicate pred) (text-data ls)))
 (defun |treelist.find-if| (pred ls)(folio2:find-if (bard-predicate->lisp-predicate pred) ls))
 
 ;;; first
@@ -628,34 +630,32 @@
   (add-method! (global-ref bard 'bard::|count-if|)(list |Procedure| |text|) #'|text.count-if|)
   (add-method! (global-ref bard 'bard::|count-if|)(list |Procedure| |treelist|) #'|treelist.count-if|)
 
-  ;; dispose
-  (global-set! bard 'bard::|dispose| (%construct-function |List| (&) :|name| 'bard::|dispose|))
-  (add-method! (global-ref bard 'bard::|dispose|)(list |cons| (&)) #'|cons.dispose|)
-  (add-method! (global-ref bard 'bard::|dispose|)(list |string| (&)) #'|string.dispose|)
-  (add-method! (global-ref bard 'bard::|dispose|)(list |treelist| (&)) #'|treelist.dispose|)
-
   ;; drop
   (global-set! bard 'bard::|drop| (%construct-function |Integer| |List| :|name| 'bard::|drop|))
   (add-method! (global-ref bard 'bard::|drop|)(list |Integer| |cons|) #'|cons.drop|)
   (add-method! (global-ref bard 'bard::|drop|)(list |Integer| |string|) #'|string.drop|)
+  (add-method! (global-ref bard 'bard::|drop|)(list |Integer| |text|) #'|text.drop|)
   (add-method! (global-ref bard 'bard::|drop|)(list |Integer| |treelist|) #'|treelist.drop|)
 
   ;; drop-while
   (global-set! bard 'bard::|drop-while| (%construct-function |Procedure| |List| :|name| 'bard::|drop-while|))
   (add-method! (global-ref bard 'bard::|drop-while|)(list |Procedure| |cons|) #'|cons.drop-while|)
   (add-method! (global-ref bard 'bard::|drop-while|)(list |Procedure| |string|) #'|string.drop-while|)
+  (add-method! (global-ref bard 'bard::|drop-while|)(list |Procedure| |text|) #'|text.drop-while|)
   (add-method! (global-ref bard 'bard::|drop-while|)(list |Procedure| |treelist|) #'|treelist.drop-while|)
 
   ;; element
   (global-set! bard 'bard::|element| (%construct-function |List| |Integer| :|name| 'bard::|element|))
   (add-method! (global-ref bard 'bard::|element|)(list |cons| |Integer|) #'|cons.element|)
   (add-method! (global-ref bard 'bard::|element|)(list |string| |Integer|) #'|string.element|)
+  (add-method! (global-ref bard 'bard::|element|)(list |text| |Integer|) #'|text.element|)
   (add-method! (global-ref bard 'bard::|element|)(list |treelist| |Integer|) #'|treelist.element|)
 
   ;; empty?
   (global-set! bard 'bard::|empty?| (%construct-function |List| :|name| 'bard::|empty?|))
   (add-method! (global-ref bard 'bard::|empty?|)(list |cons|) #'|cons.empty?|)
   (add-method! (global-ref bard 'bard::|empty?|)(list |string|) #'|string.empty?|)
+  (add-method! (global-ref bard 'bard::|empty?|)(list |text|) #'|text.empty?|)
   (add-method! (global-ref bard 'bard::|empty?|)(list |treelist|) #'|treelist.empty?|)
 
   ;; filter
@@ -668,6 +668,7 @@
   (global-set! bard 'bard::|find-if| (%construct-function |Procedure| |List| :|name| 'bard::|find-if|))
   (add-method! (global-ref bard 'bard::|find-if|)(list |Procedure| |cons|) #'|cons.find-if|)
   (add-method! (global-ref bard 'bard::|find-if|)(list |Procedure| |string|) #'|string.find-if|)
+  (add-method! (global-ref bard 'bard::|find-if|)(list |Procedure| |text|) #'|text.find-if|)
   (add-method! (global-ref bard 'bard::|find-if|)(list |Procedure| |treelist|) #'|treelist.find-if|)
   
   ;; first

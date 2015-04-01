@@ -466,37 +466,65 @@
 ;;; suffix-match?
 (defun |cons.suffix-match?|(ls suff)(if (folio2:suffix-match? ls suff)(true)(false)))
 (defun |string.suffix-match?| (ls suff)(if (folio2:suffix-match? ls suff)(true)(false)))
+(defun |text.suffix-match?| (ls suff)(if (folio2:suffix-match? (text-data ls) (text-data suff))(true)(false)))
 (defun |treelist.suffix-match?| (ls suff)(if (folio2:suffix-match? ls suff)(true)(false)))
 
 ;;; tail
 (defun |cons.tail| (x)(folio2:tail x))
 (defun |string.tail| (x)(folio2:tail x))
+(defun |text.tail| (x)(%construct-text (folio2:tail (text-data x))))
 (defun |treelist.tail| (x)(folio2:tail x))
 
 ;;; tails
 (defun |cons.tails| (x)(folio2:tails x))
 (defun |string.tails| (x)(folio2:tails x))
+(defun |text.tails| (x)(fset:image #'%construct-text (folio2:tails (text-data x))))
 (defun |treelist.tails| (x)(folio2:tails x))
 
 ;;; take
 (defun |cons.take|(n ls)(folio2:take n ls))
 (defun |string.take|(n ls)(folio2:take n ls))
+(defun |text.take|(n ls)(%construct-text (folio2:take n (text-data ls))))
 (defun |treelist.take|(n ls)(folio2:take n ls))
 
 ;;; take-by
 (defun |cons.take-by|(m n ls)(folio2:take-by m n ls))
 (defun |string.take-by|(m n ls)(folio2:take-by m n ls))
+(defun |text.take-by|(m n ls)(fset:image #'%construct-text (folio2:take-by m n (text-data ls))))
 (defun |treelist.take-by|(m n ls)(folio2:take-by m n ls))
 
 ;;; take-while
 (defun |cons.take-while|(pred ls)(folio2:take-while (bard-predicate->lisp-predicate pred) ls))
 (defun |string.take-while|(pred ls)(folio2:take-while (bard-predicate->lisp-predicate pred) ls))
+(defun |text.take-while|(pred ls)(%construct-text (folio2:take-while (bard-predicate->lisp-predicate pred) (text-data ls))))
 (defun |treelist.take-while|(pred ls)(folio2:take-while (bard-predicate->lisp-predicate pred) ls))
 
 ;;; zip
 (defun |cons.zip|(ls1 ls2)(folio2:zip  ls1 ls2))
 (defun |string.zip|(ls1 ls2)(folio2:zip ls1 ls2))
+(defun |text.zip|(ls1 ls2)(folio2:zip (text-data ls1) (text-data ls2)))
 (defun |treelist.zip|(ls1 ls2)(folio2:zip ls1 ls2))
+
+;;; Map protocol
+;;; ----------------------------------------
+
+;;; contains-key?
+(defun |treemap.contains-key?|(mp k)(if (folio2:contains-key?  mp k)(true)(false)))
+
+;;; contains-value?
+(defun |treemap.contains-value?|(mp k)(if (folio2:contains-value?  mp k)(true)(false)))
+
+;;; get-key
+(defun |treemap.get-key|(mp k default)(folio2:get-key mp k :default default))
+
+;;; keys
+(defun |treemap.keys|(mp)(folio2:keys mp))
+
+;;; merge
+(defun |treemap.merge|(mp1 mp2)(folio2:merge mp1 mp2))
+
+;;; put-key
+(defun |treemap.put-key|(mp k val)(folio2:put-key mp k val))
 
 ;;; Math protocol
 ;;; ----------------------------------------
@@ -921,44 +949,83 @@
   (global-set! bard 'bard::|suffix-match?| (%construct-function |List| |List| :|name| 'bard::|suffix-match?|))
   (add-method! (global-ref bard 'bard::|suffix-match?|)(list |cons| |cons|) #'|cons.suffix-match?|)
   (add-method! (global-ref bard 'bard::|suffix-match?|)(list |string| |string|) #'|string.suffix-match?|)
+  (add-method! (global-ref bard 'bard::|suffix-match?|)(list |text| |text|) #'|text.suffix-match?|)
   (add-method! (global-ref bard 'bard::|suffix-match?|)(list |treelist| |treelist|) #'|treelist.suffix-match?|)
 
   ;;; tail
   (global-set! bard 'bard::|tail| (%construct-function |List| :|name| 'bard::|tail|))
   (add-method! (global-ref bard 'bard::|tail|)(list |cons|) #'|cons.tail|)
   (add-method! (global-ref bard 'bard::|tail|)(list |string|) #'|string.tail|)
+  (add-method! (global-ref bard 'bard::|tail|)(list |text|) #'|text.tail|)
   (add-method! (global-ref bard 'bard::|tail|)(list |treelist|) #'|treelist.tail|)
 
   ;;; tails
   (global-set! bard 'bard::|tails| (%construct-function |List| :|name| 'bard::|tails|))
   (add-method! (global-ref bard 'bard::|tails|)(list |cons|) #'|cons.tails|)
   (add-method! (global-ref bard 'bard::|tails|)(list |string|) #'|string.tails|)
+  (add-method! (global-ref bard 'bard::|tails|)(list |text|) #'|text.tails|)
   (add-method! (global-ref bard 'bard::|tails|)(list |treelist|) #'|treelist.tails|)
 
   ;;; take
   (global-set! bard 'bard::|take| (%construct-function |Integer| |List| :|name| 'bard::|take|))
   (add-method! (global-ref bard 'bard::|take|)(list |Integer| |cons|) #'|cons.take|)
   (add-method! (global-ref bard 'bard::|take|)(list |Integer| |string|) #'|string.take|)
+  (add-method! (global-ref bard 'bard::|take|)(list |Integer| |text|) #'|text.take|)
   (add-method! (global-ref bard 'bard::|take|)(list |Integer| |treelist|) #'|treelist.take|)
 
   ;;; take-by
   (global-set! bard 'bard::|take-by| (%construct-function |Integer| |Integer| |List| :|name| 'bard::|take-by|))
   (add-method! (global-ref bard 'bard::|take-by|)(list |Integer| |Integer| |cons|) #'|cons.take-by|)
   (add-method! (global-ref bard 'bard::|take-by|)(list |Integer| |Integer| |string|) #'|string.take-by|)
+  (add-method! (global-ref bard 'bard::|take-by|)(list |Integer| |Integer| |text|) #'|text.take-by|)
   (add-method! (global-ref bard 'bard::|take-by|)(list |Integer| |Integer| |treelist|) #'|treelist.take-by|)
 
   ;; take-while
   (global-set! bard 'bard::|take-while| (%construct-function |Procedure| |List| :|name| 'bard::|take-while|))
   (add-method! (global-ref bard 'bard::|take-while|)(list |Procedure| |cons|) #'|cons.take-while|)
   (add-method! (global-ref bard 'bard::|take-while|)(list |Procedure| |string|) #'|string.take-while|)
+  (add-method! (global-ref bard 'bard::|take-while|)(list |Procedure| |text|) #'|text.take-while|)
   (add-method! (global-ref bard 'bard::|take-while|)(list |Procedure| |treelist|) #'|treelist.take-while|)
 
   ;;; zip
   (global-set! bard 'bard::|zip| (%construct-function |List| |List| :|name| 'bard::|zip|))
   (add-method! (global-ref bard 'bard::|zip|)(list |cons| |cons|) #'|cons.zip|)
   (add-method! (global-ref bard 'bard::|zip|)(list |string| |string|) #'|string.zip|)
+  (add-method! (global-ref bard 'bard::|zip|)(list |text| |text|) #'|text.zip|)
   (add-method! (global-ref bard 'bard::|zip|)(list |treelist| |treelist|) #'|treelist.zip|)
 
+  ;; Map protocol
+  ;; ----------------------------------------
+
+  ;; contains-key?
+  (global-set! bard 'bard::|contains-key?| (%construct-function |Map| |Anything| :|name| 'bard::|contains-key?|))
+  (add-method! (global-ref bard 'bard::|contains-key?|)(list |treemap| |Anything|) #'|treemap.contains-key?|)
+
+  ;; contains-value?
+  (global-set! bard 'bard::|contains-value?| (%construct-function |Map| |Anything| :|name| 'bard::|contains-value?|))
+  (add-method! (global-ref bard 'bard::|contains-value?|)(list |treemap| |Anything|) #'|treemap.contains-value?|)
+
+  ;; get-key
+  (global-set! bard 'bard::|get-key| (%construct-function |Map| |Anything| |Anything| :|name| 'bard::|get-key|))
+  (add-method! (global-ref bard 'bard::|get-key|)(list |treemap| |Anything| |Anything|) #'|treemap.get-key|)
+
+  ;; keys
+  (global-set! bard 'bard::|keys| (%construct-function |Map| :|name| 'bard::|keys|))
+  (add-method! (global-ref bard 'bard::|keys|)(list |treemap|) #'|treemap.keys|)
+  
+  ;; map?
+  (global-set! bard 'bard::|map?| (%construct-function |Anything| :|name| 'bard::|map?|))
+  (add-method! (global-ref bard 'bard::|map?|)(list |Anything|) (constantly (false)))
+  (add-method! (global-ref bard 'bard::|map?|)(list |treemap|) (constantly (true)))
+  
+  ;; merge
+  (global-set! bard 'bard::|merge| (%construct-function |Map| |Map| :|name| 'bard::|merge|))
+  (add-method! (global-ref bard 'bard::|merge|)(list |Map| |Map|) #'|treemap.merge|)
+
+  ;; put-key
+  (global-set! bard 'bard::|put-key| (%construct-function |Map| |Anything| |Anything| :|name| 'bard::|put-key|))
+  (add-method! (global-ref bard 'bard::|put-key|)(list |treemap| |Anything| |Anything|) #'|treemap.put-key|)
+  
   ;; Math protocol
   ;; ----------------------------------------
 

@@ -444,16 +444,23 @@
 ;;; split
 (defun |cons.split|(ls sentinel)(folio2:split ls sentinel :test #'equal))
 (defun |string.split| (ls sentinel)(folio2:split ls sentinel :test #'equal))
+(defun |text.split| (ls sentinel)(fset:image #'%construct-text (folio2:split (text-data ls) (text-data sentinel) :test #'equal)))
 (defun |treelist.split| (ls sentinel)(folio2:split ls sentinel :test #'equal))
 
 ;;; sublist
 (defun |cons.sublist|(ls start end)(folio2:subsequence ls start end))
 (defun |string.sublist|(ls start end)(folio2:subsequence ls start end))
+(defun |text.sublist|(ls start end)(%construct-text (folio2:subsequence (text-data ls) start end)))
 (defun |treelist.sublist|(ls start end)(folio2:subsequence ls start end))
 
 ;;; substitute-if
 (defun |cons.substitute-if|(new pred ls)(folio2:substitute-if new (bard-predicate->lisp-predicate pred) ls))
 (defun |string.substitute-if|(new pred ls)(folio2:substitute-if new (bard-predicate->lisp-predicate pred) ls))
+(defun |text.substitute-if|(new pred ls)
+  (%construct-text
+   (folio2:substitute-if new
+                         (bard-predicate->lisp-predicate pred)
+                         (text-data ls))))
 (defun |treelist.substitute-if|(new pred ls)(folio2:substitute-if new (bard-predicate->lisp-predicate pred) ls))
 
 ;;; suffix-match?
@@ -893,18 +900,21 @@
   (global-set! bard 'bard::|split| (%construct-function |List| |Anything| :|name| 'bard::|split|))
   (add-method! (global-ref bard 'bard::|split|)(list |cons| |cons|) #'|cons.split|)
   (add-method! (global-ref bard 'bard::|split|)(list |string| |string|) #'|string.split|)
+  (add-method! (global-ref bard 'bard::|split|)(list |text| |text|) #'|text.split|)
   (add-method! (global-ref bard 'bard::|split|)(list |treelist| |treelist|) #'|treelist.split|)
 
   ;; sublist
   (global-set! bard 'bard::|sublist| (%construct-function |List| |Integer| |Integer| :|name| 'bard::|sublist|))
   (add-method! (global-ref bard 'bard::|sublist|)(list |cons| |Integer| |Integer|) #'|cons.sublist|)
   (add-method! (global-ref bard 'bard::|sublist|)(list |string| |Integer| |Integer|) #'|string.sublist|)
+  (add-method! (global-ref bard 'bard::|sublist|)(list |text| |Integer| |Integer|) #'|text.sublist|)
   (add-method! (global-ref bard 'bard::|sublist|)(list |treelist| |Integer| |Integer|) #'|treelist.sublist|)
 
   ;; substitute-if
   (global-set! bard 'bard::|substitute-if| (%construct-function |Anything| |Procedure| |List| :|name| 'bard::|substitute-if|))
   (add-method! (global-ref bard 'bard::|substitute-if|)(list |Anything| |Procedure| |cons|) #'|cons.substitute-if|)
-  (add-method! (global-ref bard 'bard::|substitute-if|)(list |Anything| |Procedure| |string|) #'|string.substitute-if|)
+  (add-method! (global-ref bard 'bard::|substitute-if|)(list |Character| |Procedure| |string|) #'|string.substitute-if|)
+  (add-method! (global-ref bard 'bard::|substitute-if|)(list |Character| |Procedure| |text|) #'|text.substitute-if|)
   (add-method! (global-ref bard 'bard::|substitute-if|)(list |Anything| |Procedure| |treelist|) #'|treelist.substitute-if|)
 
   ;; suffix-match?

@@ -526,6 +526,9 @@
 ;;; put-key
 (defun |treemap.put-key|(mp k val)(folio2:put-key mp k val))
 
+;;; vals
+(defun |treemap.vals|(mp)(folio2:values mp))
+
 ;;; Math protocol
 ;;; ----------------------------------------
 
@@ -1025,6 +1028,10 @@
   ;; put-key
   (global-set! bard 'bard::|put-key| (%construct-function |Map| |Anything| |Anything| :|name| 'bard::|put-key|))
   (add-method! (global-ref bard 'bard::|put-key|)(list |treemap| |Anything| |Anything|) #'|treemap.put-key|)
+
+  ;; vals
+  (global-set! bard 'bard::|vals| (%construct-function |Map| :|name| 'bard::|vals|))
+  (add-method! (global-ref bard 'bard::|vals|)(list |treemap|) #'|treemap.vals|)
   
   ;; Math protocol
   ;; ----------------------------------------

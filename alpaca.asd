@@ -8,6 +8,14 @@
 ;;;;
 ;;;; ***********************************************************************
 
+;;; TODO: invent an apropos feature for the Bard subsystem
+;;; TODO: implement #<type> as a reader macro for (with-intended-type (type) ...)
+;;;       in the short run, with-intended-type can simply expand into (as type ...)
+;;;       which is just a conversion, but in the longer run, introducing
+;;;       the macro with-intended-type could enable the compiler to arrange
+;;;       for the intended type to be constructed from the start, without
+;;;       need for the conversion step in at least some cases
+
 (in-package :cl-user)
 
 (require :asdf)
@@ -52,14 +60,4 @@
 ;;; (load-alpaca)
 ;;; (bard-internal::repl)
 ;;; (setf $win (capi:contain (make-instance 'alpaca::bard-listener)))
-
-;;; (define win (document-window (rectangular-point 900 60)(rectangular-extent 600 400)))
-
-;;; TODO: invent an apropos feature for the Bard subsystem
-;;; TODO: implement #<type> as a reader macro for (with-intended-type (type) ...)
-;;;       in the short run, with-intended-type can simply expand into (as type ...)
-;;;       which is just a conversion, but in the longer run, introducing
-;;;       the macro with-intended-type could enable the compiler to arrange
-;;;       for the intended type to be constructed from the start, without
-;;;       need for the conversion step in at least some cases
 

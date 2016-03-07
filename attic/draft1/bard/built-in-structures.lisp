@@ -80,14 +80,14 @@
 ;;; document-window
 ;;; ---------------------------------------------------------------------
 
-(defun %construct-document-window (location extent)
-  (let ((left (point-x location))
-        (top (point-y location))
-        (width (extent-width extent))
-        (height (extent-height extent)))
-    (capi:contain (make-instance 'alpaca::document-window
-                                 :x left :y top
-                                 :width width :height height))))
+(defun %construct-document-window (&key
+                                     (|left| 0)
+                                     (|top| 0)
+                                     (|width| 600)
+                                     (|height| 400))
+  (capi:contain (make-instance 'alpaca::document-window
+                               :x |left| :y |top|
+                               :width |width| :height |height|)))
 
 (defparameter |document-window|
   (make-instance 'primitive-structure

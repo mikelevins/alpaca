@@ -7,7 +7,7 @@
 	<key>ApplicationVersion</key>
 	<array>
 		<string>com.omnigroup.OmniGrafflePro</string>
-		<string>139.16.0.171715</string>
+		<string>139.18.0.187838</string>
 	</array>
 	<key>AutoAdjust</key>
 	<false/>
@@ -55,7 +55,7 @@
 	<array>
 		<dict>
 			<key>Bounds</key>
-			<string>{{224.00003051757818, 188.97759647046246}, {562.91461181640602, 632.02241441850879}}</string>
+			<string>{{230.54269409179693, 191}, {562.91461181640602, 632.02241441850879}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>HFlip</key>
@@ -387,6 +387,8 @@
 						<key>r</key>
 						<string>0</string>
 					</dict>
+					<key>Draws</key>
+					<string>NO</string>
 					<key>Fuzziness</key>
 					<real>0.42759749293327332</real>
 					<key>ShadowVector</key>
@@ -394,8 +396,17 @@
 				</dict>
 				<key>stroke</key>
 				<dict>
-					<key>Draws</key>
-					<string>NO</string>
+					<key>Color</key>
+					<dict>
+						<key>b</key>
+						<string>0.0352941</string>
+						<key>g</key>
+						<string>0.0745098</string>
+						<key>r</key>
+						<string>0.184314</string>
+					</dict>
+					<key>Width</key>
+					<real>12</real>
 				</dict>
 			</dict>
 		</dict>
@@ -766,6 +777,11 @@
 						<string>0.96911</string>
 					</dict>
 				</dict>
+				<key>shadow</key>
+				<dict>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
 				<key>stroke</key>
 				<dict>
 					<key>Color</key>
@@ -808,6 +824,11 @@
 						<key>r</key>
 						<string>0.518045</string>
 					</dict>
+				</dict>
+				<key>shadow</key>
+				<dict>
+					<key>Draws</key>
+					<string>NO</string>
 				</dict>
 				<key>stroke</key>
 				<dict>
@@ -892,7 +913,7 @@
 		</dict>
 		<dict>
 			<key>Lock</key>
-			<string>YES</string>
+			<string>NO</string>
 			<key>Name</key>
 			<string>Layer 3</string>
 			<key>Print</key>
@@ -902,7 +923,7 @@
 		</dict>
 		<dict>
 			<key>Lock</key>
-			<string>YES</string>
+			<string>NO</string>
 			<key>Name</key>
 			<string>Layer 4</string>
 			<key>Print</key>
@@ -912,7 +933,7 @@
 		</dict>
 		<dict>
 			<key>Lock</key>
-			<string>YES</string>
+			<string>NO</string>
 			<key>Name</key>
 			<string>Layer 2</string>
 			<key>Print</key>
@@ -953,7 +974,7 @@
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2013-02-19 08:32:02 +0000</string>
+	<string>2016-03-07 00:49:04 +0000</string>
 	<key>Modifier</key>
 	<string>mikel evins</string>
 	<key>NotesVisible</key>
@@ -1052,7 +1073,7 @@
 		<key>SidebarWidth</key>
 		<integer>120</integer>
 		<key>VisibleRegion</key>
-		<string>{{-322, -53}, {1668, 1131}}</string>
+		<string>{{-322, -52}, {1668, 1128}}</string>
 		<key>Zoom</key>
 		<real>1</real>
 		<key>ZoomValues</key>

@@ -20,7 +20,7 @@ programmable text editor and word processor that combined features
 like pagination and rich-text page layout with the utilities and
 programmability of Emacs-style editors. I used it to write a novel.
 
-That version of Alpaca ran only on OS X. For some time I;ve been
+That version of Alpaca ran only on OS X. For some time I've been
 wanting to bring it up-to-date and get it working on Linux and
 Windows, too. Doing that means almost a complete rewrite, but it seems
 like a worthwhile goal.

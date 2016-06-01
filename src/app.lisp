@@ -45,5 +45,8 @@
 ;;; 
 ;;; ---------------------------------------------------------------------
 
+(defparameter *main-window* nil)
+
 (defun main ()
-  (with-main-window (window (make-instance 'frame))))
+  (with-main-window (window (make-instance 'frame))
+    (setf *main-window* window)))

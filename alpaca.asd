@@ -8,24 +8,19 @@
 ;;;;
 ;;;; ***********************************************************************
 
-(in-package :cl-user)
+(in-package #:cl-user)
 
-(require :asdf)
+(asdf:defsystem alpaca
+  :name "alpaca"
+  :license "Apache 2.0"
+  :description "A programmable editor"
+  :serial t
+  :depends-on (:qtools :qtcore :qtgui
+                       :cl-ppcre
+                       :trivial-gray-streams)
+  :components ((:module "src"
+                        :serial t
+                        :components ((:file "package")
+                                     (:file "alpaca")))))
 
-(asdf:defsystem #:alpaca
-    :description "a programmable editor"
-    :author "mikel evins <mevins@me.com>"
-    :license "Apache 2.0"
-    :serial t
-    :depends-on (:qtools :qtcore :qtgui)
-    :components ((:module "src"
-                          :serial t
-                          :components ((:file "package")
-                                       (:file "app")
-                                       ))))
-
-(defun load-alpaca ()
-  (asdf:load-system :alpaca))
-
-;;; (load-alpaca)
-;;; (alpaca:main)
+;;; (asdf:load-system :alpaca)

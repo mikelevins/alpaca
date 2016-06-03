@@ -19,17 +19,16 @@
 
 (define-override (repl key-press-event) (ev)
   (cond ;; Signal return pressed.
-        ((or (= (q+:key ev) (q+:qt.key_enter))
-             (= (q+:key ev) (q+:qt.key_return)))
-         (call-next-qmethod)
-         (signal! repl (return-pressed)))
-        ;; Catch escape to forbid removing text before input.
-        ((= (q+:key ev) (q+:qt.key_backspace))
-         (when (< (input-begin repl) (cursor repl))
-           (call-next-qmethod)))
-        ;; Delegate standard.
-        (T
-         (call-next-qmethod))))
+    ((or (= (q+:key ev) (q+:qt.key_enter))
+         (= (q+:key ev) (q+:qt.key_return)))
+     (call-next-qmethod)
+     (signal! repl (return-pressed)))
+    ;; Catch escape to prevent removing text before input.
+    ((= (q+:key ev) (q+:qt.key_backspace))
+     (when (< (input-begin repl) (cursor repl))
+       (call-next-qmethod)))
+    ;; Delegate standard.
+    (t (call-next-qmethod))))
 
 (define-initializer (repl setup)
   (let ((font (q+:make-qfont "Monospace" 12)))
@@ -119,7 +118,7 @@
 (define-subwidget (evaluator repl) (make-instance 'repl))
 
 (define-subwidget (evaluator layout) (q+:make-qvboxlayout evaluator)
-  (setf (q+:window-title evaluator) "Evaluator")
+  (setf (q+:window-title evaluator) "Listener")
   (q+:add-widget layout repl))
 
 (define-initializer (evaluator setup)

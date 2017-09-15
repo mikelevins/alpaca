@@ -1,8 +1,8 @@
 ;;;; ***********************************************************************
 ;;;;
-;;;; Name:          alpaca.asd
-;;;; Project:       alpaca: a programmable text editor
-;;;; Purpose:       alpaca system definition
+;;;; Name:          package.lisp
+;;;; Project:       Alpaca
+;;;; Purpose:       package definitions
 ;;;; Author:        mikel evins
 ;;;; Copyright:     2017 by mikel evins
 ;;;;
@@ -11,19 +11,9 @@
 (in-package :cl-user)
 
 ;;; ---------------------------------------------------------------------
-;;; system definitions
+;;; alpaca
 ;;; ---------------------------------------------------------------------
 
-(require :asdf)
+(defpackage #:alpaca
+  (:use #:cl))
 
-(asdf:defsystem #:alpaca
-  :version "0.9"
-  :serial t
-  :components
-  ((:module src
-            :serial t
-            :components
-            ((:file "package")
-             ))))
-
-;;; (asdf:load-system :alpaca)

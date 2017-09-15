@@ -2,5 +2,6 @@
 
 A programmable editor.
 
-Restoring and updating the original CCL-based version of Alpaca.
+Alpaca is under reconstruction.
+
 

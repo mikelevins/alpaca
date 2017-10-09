@@ -2,6 +2,6 @@
 
 A programmable editor.
 
-Alpaca is under reconstruction.
+This is the experimental Racket implementation of Alpaca.
 
 

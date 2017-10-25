@@ -17,3 +17,7 @@
     frame))
 
 ;;; (define $ed (new-editor))
+
+;; (define $result
+;;   (with-output-to-string
+;;     (lambda () (system* "/usr/local/bin/cmark-gfm" "../README.md"))))

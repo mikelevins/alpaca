@@ -4,7 +4,7 @@
 ;;;; Project:       Alpaca
 ;;;; Purpose:       package definitions
 ;;;; Author:        mikel evins
-;;;; Copyright:     2017 by mikel evins
+;;;; Copyright:     2003-2020 by mikel evins
 ;;;;
 ;;;; ***********************************************************************
 

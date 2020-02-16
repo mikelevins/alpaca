@@ -4,7 +4,7 @@
 ;;;; Project:       alpaca: a programmable text editor
 ;;;; Purpose:       alpaca system definition
 ;;;; Author:        mikel evins
-;;;; Copyright:     2017 by mikel evins
+;;;; Copyright:     2003-2020 by mikel evins
 ;;;;
 ;;;; ***********************************************************************
 
@@ -17,7 +17,7 @@
 (require :asdf)
 
 (asdf:defsystem #:alpaca
-  :version "0.9"
+  :version "1.0.0"
   :serial t
   :components
   ((:module src

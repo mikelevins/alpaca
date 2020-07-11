@@ -1,5 +1,5 @@
 ;;;; package.lisp
 
 (defpackage #:alpaca
-  (:use #:cl+qt)
+  (:use #:cl+qt #:trivial-gray-streams)
   (:export #:main))

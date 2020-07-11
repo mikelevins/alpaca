@@ -7,7 +7,7 @@
   :version "0.9.1"
   :homepage "https://github.com/mikelevins/alpaca"
   :serial t
-  :depends-on (:qtools :qtcore :qtgui)
+  :depends-on (:qtools :qtcore :qtgui :cl-ppcre :trivial-gray-streams)
   :components ((:module "src"
                         :serial t
                         :components ((:file "package")

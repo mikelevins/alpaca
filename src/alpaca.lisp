@@ -26,7 +26,7 @@
          (call-next-qmethod))))
 
 (define-initializer (repl setup)
-  (let ((font (q+:make-qfont "Menlo" 16 500 nil))) ; originally "Monospace"
+  (let ((font (q+:make-qfont "Source Code Pro" 16 500 nil))) ; originally "Monospace"
     (setf (q+:style-hint font) (q+:qfont.type-writer))
     (setf (q+:font repl) font))
   (output-prefix repl))
@@ -137,6 +137,7 @@
   (output-prefix repl))
 
 (defun main ()
-  (with-main-window (window (make-instance 'evaluator))))
+  (with-main-window (window (make-instance 'evaluator))
+    (q+:resize window 800 400)))
 
 

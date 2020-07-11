@@ -1,0 +1,139 @@
+# from https://github.com/phoe-trash/furcadia-post-splitter/blob/master/.travis.yml
+# contains clues to successfully loading qt-libs and qtools
+
+os:
+- linux
+- windows
+- osx
+language: c
+env:
+- SBCL_VERSION="2.0.3"
+branches:
+  only:
+  - master
+cache:
+  directories:
+  - "$HOME/sbcl"
+  - "$HOME/quicklisp"
+  - "$HOME/.cache/common-lisp"
+  - "$HOME/AppData/Local/cache/common-lisp"
+install:
+- SOURCE_DIR=$(pwd)
+- cd ~
+# Windows - bootstrap from the official 1.4.14 binary
+- if [ "$TRAVIS_OS_NAME" = "windows" -a ! -f "$HOME/sbcl/bin/sbcl" ]; then 
+  SBCL_WINDOWS="http://prdownloads.sourceforge.net/sbcl/sbcl-1.4.14-x86-64-windows-binary.msi";
+  wget $SBCL_WINDOWS -O sbcl.msi; 
+  choco install lessmsi make;
+  lessmsi x sbcl.msi $(cygpath -w "`pwd`/sbcl_ex/"); 
+  mv "sbcl_ex/SourceDir/PFiles/Steel Bank Common Lisp/1.4.14" sbcl_bin;
+  export SBCL_HOME="`pwd`/sbcl_bin"; 
+  export PATH="`pwd`/sbcl_bin:${PATH}";
+  ls -alh $SBCL_HOME;
+  fi
+# macOS - use homebrew
+- if [ "$TRAVIS_OS_NAME" = "osx" -a ! -f "$HOME/sbcl/bin/sbcl" ]; then 
+  HOMEBREW_NO_AUTO_UPDATE=1 brew install sbcl;
+  fi
+# Linux - use apt
+- if [ "$TRAVIS_OS_NAME" = "linux" -a ! -f "$HOME/sbcl/bin/sbcl" ]; then 
+  sudo apt update;
+  sudo apt install sbcl;
+  fi
+# Download and make new SBCL
+- if [ ! -f "$HOME/sbcl/bin/sbcl" ]; then 
+  SBCL_SOURCE="http://downloads.sourceforge.net/project/sbcl/sbcl/$SBCL_VERSION/sbcl-$SBCL_VERSION-source.tar.bz2";
+  wget $SBCL_SOURCE -O sbcl.tar.bz2;
+  tar -xf sbcl.tar.bz2;
+  cd "sbcl-$SBCL_VERSION";
+  sh make.sh --fancy;
+  unset SBCL_HOME;
+  INSTALL_ROOT=~/sbcl ./install.sh;
+  cd ~;
+  fi
+# Link new SBCL to PATH
+- export SBCL_HOME="$HOME/sbcl/lib/sbcl"
+- export PATH="$HOME/sbcl/bin:${PATH}"
+# Setup Quicklisp
+- if [ ! -f "$HOME/quicklisp/setup.lisp" ]; then
+  wget https://beta.quicklisp.org/quicklisp.lisp;
+  sbcl --disable-debugger 
+  --eval "(load \"quicklisp.lisp\")"
+  --eval "(quicklisp-quickstart:install)"
+  --eval "(ql-util:without-prompting (ql:add-to-init-file))"
+  --eval "(ql:update-all-dists)"
+  --eval "(sb-ext:exit)";
+  else
+  sbcl --disable-debugger
+  --eval "(load \"quicklisp/setup.lisp\")"
+  --eval "(ql-util:without-prompting (ql:add-to-init-file))"
+  --eval "(sb-ext:exit)";
+  rm -rf ~/quicklisp/local-projects;
+  mkdir ~/quicklisp/local-projects;
+  fi
+# macOS - work around qt-libs 2.0.2 bug
+- if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+  cd ~/quicklisp/local-projects;
+  git clone https://github.com/Shinmera/qt-libs;
+  cd qt-libs;
+  git checkout 1b20ca062402;
+  git cherry-pick 6e70e7f01a;
+  cd ~;
+  fi
+# Windows - download zlib1.dll
+- if [ "$TRAVIS_OS_NAME" = "windows" ]; then
+  ZLIB1_SOURCE="http://repo.msys2.org/mingw/x86_64/mingw-w64-x86_64-zlib-1.2.11-7-any.pkg.tar.xz";
+  wget "$ZLIB1_SOURCE" -O zlib.tar.xz;
+  7z x zlib.tar.xz;
+  7z x zlib.tar;
+  ls -alh;
+  cp mingw64/bin/zlib1.dll "$HOME/sbcl/bin/";
+  fi
+# Install sources in Quicklisp's local projects
+- mv $SOURCE_DIR ~/quicklisp/local-projects
+script:
+- sbcl --disable-debugger
+  --eval "(ql:update-all-dists)"
+  --eval "(sb-ext:exit)"
+- sbcl --disable-debugger
+  --eval "(ql:quickload :qtools)"
+  --eval "(sb-ext:exit)"
+- sbcl --disable-debugger
+  --eval "(ql:quickload :qtools)"
+  --eval "(ql:quickload :furcadia-post-splitter)"
+  --eval "(sb-ext:exit)"
+- sbcl --disable-debugger
+  --eval "(asdf:make :furcadia-post-splitter)"
+- mv ~/quicklisp/local-projects/furcadia-post-splitter/bin ~/bin
+before_deploy:
+# Windows: prerequisites
+- if [ "$TRAVIS_OS_NAME" = "windows" ]; then 
+  choco install zip gzip;
+  fi
+# Move the binaries into the proper place
+- mv ~/bin ~/quicklisp/local-projects/furcadia-post-splitter/bin
+- cd ~/quicklisp/local-projects/furcadia-post-splitter
+# Workaround: qtools/deploy do not attach all required libraries
+- if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+  cp ~/quicklisp/local-projects/qt-libs/standalone/qtlibs!z.dylib bin;
+  cp ~/quicklisp/local-projects/qt-libs/standalone/qtlibs!png16.dylib bin;
+  fi
+# Workaround: on Windows, we must add the .exe extension
+- if [ "$TRAVIS_OS_NAME" = "windows" ]; then
+  mv bin/raptor-splitter bin/raptor-splitter.exe;
+  fi
+# Zip the release
+- mkdir release
+- zip -r "release/binaries-$TRAVIS_OS_NAME.zip" bin/;
+- export SHORT_HASH="`git rev-parse --short ${TRAVIS_COMMIT}`"
+- export TRAVIS_TAG="nightly-${SHORT_HASH}"
+deploy:
+  provider: releases
+  api_key:
+    secure: hOB4ySsqe6Z5//kKtReEiNPweU0duWoFg6kjKyGv1uoGOdkcd7WqVWv0I4FEB9F7Kd+hP9+RYnnYiDje9aTUK67Nh/DabeGfGlHGG3BYAn3cr8GqOvfwiRYpEo6qGnu4AhnCoTO75K1318UdANill+KA5Mk1RCQyk+V4CbSUVG5xOskxJxghOzoGe16+RhInxqV4z02nRvFiqlqKYjh0Xt48rNJd3nvhgCNT3kke78Aip+Q66lKHcd74y3wifTvxJmCQrTBJazxRW14hc0OUWa9at2tRVso9urfPy2OZlJE9qxh2ms6lRbYz5H/6yyRyQc+AQ7iOguEh3OpdfnFiYNu0WTSGilgqU/0iQcyVEM5L1xkUW0pFGx2xEDVbgY3ibh3DPmtaHkDSQEIs5/pXNC9JV4vomFhP09iPnOHsky16dyfCscwZ081Fl+uEtDFG6o+vjYWb9V0aWuS9evGXA/fZoG0JKHy+GCGg4XPhBWX02TKk0NW9CE51RfcZn1z0LGpG7PX3W41SoaGHlr4FAJS2iuvCgIsLZbY9HaNEyWwGS5J/L9852JY+Ysa3dGeaOa5u+ta9mWzS0OEX4+tQG5AOnkOvPt4xBnZlF/q/IQRAb6gVQQSHY0kEBM73rW2FlC8lkoh/lCHxq/CHIgcTxlSF3P/nYlOBGzGq+UKAZKw=
+  file_glob: true
+  file: release/*
+  on:
+    repo: phoe-trash/furcadia-post-splitter
+  skip_cleanup: true
+  overwrite: true

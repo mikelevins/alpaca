@@ -1,29 +1,16 @@
-;;;; ***********************************************************************
-;;;;
-;;;; Name:          alpaca.asd
-;;;; Project:       alpaca: a programmable text editor
-;;;; Purpose:       alpaca system definition
-;;;; Author:        mikel evins
-;;;; Copyright:     2017-2020 by mikel evins
-;;;;
-;;;; ***********************************************************************
-
-(in-package :cl-user)
-
-;;; ---------------------------------------------------------------------
-;;; system definitions
-;;; ---------------------------------------------------------------------
-
-(require :asdf)
+;;;; alpaca.asd
 
 (asdf:defsystem #:alpaca
-  :version "0.9"
+  :description "Describe alpaca here"
+  :author "Your Name <your.name@example.com>"
+  :license  "Specify license here"
+  :version "0.0.1"
   :serial t
-  :components
-  ((:module src
-            :serial t
-            :components
-            ((:file "package")
-             ))))
+  :depends-on (:qtools :qtcore :qtgui)
+  :components ((:module "src"
+                        :serial t
+                        :components ((:file "package")
+                                     (:file "alpaca")))))
+
 
 ;;; (asdf:load-system :alpaca)

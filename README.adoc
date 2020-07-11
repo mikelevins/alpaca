@@ -1,0 +1,7 @@
+# alpaca
+:toc:
+
+A programmable editor.
+
+This is the experimental qtools branch of the Alpaca implementation.
+

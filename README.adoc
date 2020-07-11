@@ -5,3 +5,6 @@ A programmable editor.
 
 This is the experimental qtools branch of the Alpaca implementation.
 
+I wrote the original Alpaca with https://ccl.clozure.com/[Clozure Common Lisp], using its (very good) Objective-C interface. This branch is an experiment in using Nicholas Hafner's https://github.com/Shinmera/qtools[QTools] interface  to the https://www.qt.io/[Qt toolkit] to build a cross-platform version of Alpaca.
+
+It's at a very early stage of implementation.
